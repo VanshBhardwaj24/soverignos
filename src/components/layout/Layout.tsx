@@ -12,6 +12,7 @@ import { LogModal } from '../log/LogModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LevelUpOverlay } from '../stats/LevelUpOverlay';
 import { QuestModal } from '../quests/QuestModal';
+import { ProofModal } from '../log/ProofModal';
 import { STATS } from '../../lib/constants';
 import { cn } from '../../lib/utils';
 
@@ -114,6 +115,7 @@ export const Layout = () => {
 
       <LogModal />
       <QuestModal />
+      <ProofModal />
       {location.pathname === '/' && <FlowPlayer />}
       <CommandPalette />
       <InventoryModal />

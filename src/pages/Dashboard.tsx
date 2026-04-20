@@ -13,8 +13,9 @@ import { cn } from '../lib/utils';
 
 export default function Dashboard() {
   const {
-    freedomScore, dailyQuests, completeQuest, addQuest,
-    statLevels, statXP, gold, activityLog
+    freedomScore, dailyQuests, addQuest,
+    statLevels, statXP, gold, activityLog,
+    setTargetQuestId, setPendingActivity, setProofModalOpen
   } = useSovereignStore();
   const [now, setNow] = React.useState(new Date());
 
@@ -168,7 +169,15 @@ export default function Dashboard() {
                 )}>
                   <div className="flex items-center gap-4">
                     <button
-                      onClick={() => completeQuest(quest.id)}
+                      onClick={() => {
+                        setTargetQuestId(quest.id);
+                        setPendingActivity({
+                          statId: quest.statId,
+                          xp: quest.xpReward,
+                          questId: quest.id
+                        });
+                        setProofModalOpen(true);
+                      }}
                       disabled={quest.completed || quest.failed}
                       className={cn(
                         "h-10 w-10 rounded-xl flex items-center justify-center transition-all",

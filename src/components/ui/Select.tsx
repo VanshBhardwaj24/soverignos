@@ -13,9 +13,10 @@ interface SelectProps {
   value: string;
   onChange: (val: string) => void;
   className?: string;
+  disabled?: boolean;
 }
 
-export function Select({ options, value, onChange, className }: SelectProps) {
+export function Select({ options, value, onChange, className, disabled }: SelectProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,13 +33,15 @@ export function Select({ options, value, onChange, className }: SelectProps) {
   }, []);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className={cn("relative", disabled && "opacity-50 cursor-not-allowed")} ref={ref}>
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        disabled={disabled}
+        onClick={() => !disabled && setOpen(!open)}
         className={cn(
           "w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 text-[var(--text-primary)] font-sans text-sm outline-none flex justify-between items-center hover:border-[var(--text-strong)] transition-all",
-          className
+          className,
+          disabled && "cursor-not-allowed pointer-events-none"
         )}
       >
         <span>{selectedOption?.label}</span>

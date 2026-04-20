@@ -237,6 +237,10 @@ interface SovereignStore {
   logModalOpen: boolean;
   questModalOpen: boolean;
   setQuestModalOpen: (open: boolean) => void;
+  proofModalOpen: boolean;
+  setProofModalOpen: (open: boolean) => void;
+  pendingActivity: { statId: string; xp: number; questId?: string } | null;
+  setPendingActivity: (data: { statId: string; xp: number; questId?: string } | null) => void;
   targetQuestId: string | null;
   setTargetQuestId: (id: string | null) => void;
   theme: 'dark' | 'light';
@@ -247,6 +251,9 @@ interface SovereignStore {
   addQuest: (quest: Omit<Quest, 'id' | 'completed' | 'streak'>) => Promise<void>;
   resetDailyQuests: () => Promise<void>;
   resetWeeklyQuests: () => Promise<void>;
+  archiveQuest: (id: string) => Promise<void>;
+  restoreQuest: (id: string) => Promise<void>;
+  deleteQuest: (id: string) => Promise<void>;
   setLogModalOpen: (open: boolean) => void;
   setTheme: (theme: 'dark' | 'light') => void;
   setSelectedStat: (statId: string | null) => void;
@@ -492,6 +499,10 @@ export const useSovereignStore = create<SovereignStore>()(
       logModalOpen: false,
       questModalOpen: false,
       setQuestModalOpen: (open) => set({ questModalOpen: open }),
+      proofModalOpen: false,
+      setProofModalOpen: (open) => set({ proofModalOpen: open }),
+      pendingActivity: null,
+      setPendingActivity: (data) => set({ pendingActivity: data }),
       targetQuestId: null,
       setTargetQuestId: (id) => set({ targetQuestId: id }),
       theme: 'dark',
@@ -582,8 +593,8 @@ export const useSovereignStore = create<SovereignStore>()(
 
             // F31: Immediate Gold and XP sanctions for every missed mission
             // Sanctions escalate with consecutive failures
-            const goldPenalty = Math.floor((quest.xpReward / 4) * escalationFactor);
-            const xpPenalty = Math.floor((quest.xpReward / 4) * escalationFactor);
+            const goldPenalty = Math.floor((quest.xpReward / 2) * escalationFactor);
+            const xpPenalty = Math.floor((quest.xpReward / 2) * escalationFactor);
 
             set(state => {
               const currentXP = state.statXP[quest.statId] || 0;
@@ -642,21 +653,25 @@ export const useSovereignStore = create<SovereignStore>()(
           punishments: [...newPunishments, ...state.punishments].slice(0, 100),
           statTodayXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0 },
           dailyQuests: state.dailyQuests.map(q => {
-            // Only reset recurring missions
+            // Handle repeating missions
             if (q.repeating && (q.type === 'daily' || (q.type === 'raid' && q.completed))) {
               return {
                 ...q,
                 completed: false,
                 failed: false,
                 currentPhase: q.type === 'raid' ? 1 : undefined,
-                expiresAt: expiresAt
+                expiresAt: expiresAt,
+                // Reset subtasks for repeating missions
+                subtasks: q.subtasks?.map(s => ({ ...s, completed: false }))
               };
             }
             // Archive completed one-offs
             if (!q.repeating && q.completed) {
-              return { ...q, archived: true };
+              return { ...q, archived: true, failed: false };
             }
-            return q;
+
+            // Ensure non-repeating failed also reset failed flag but stay archived if they were archived
+            return { ...q, failed: false };
           })
         }));
 
@@ -822,12 +837,12 @@ export const useSovereignStore = create<SovereignStore>()(
 
         // F36: Integrity Calculation
         const streakVitality = Math.min(globalStreak.current / 30, 1) * 100;
-        
+
         let statIntegrity = 100;
         if (totalLevels > 0) {
           const avg = totalLevels / Object.keys(statLevels).length;
           const variance = Object.values(statLevels).reduce((acc, lvl) => acc + Math.abs(lvl - avg), 0) / totalLevels;
-          statIntegrity = Math.max(0, 100 - (variance * 200)); 
+          statIntegrity = Math.max(0, 100 - (variance * 200));
         }
 
         const integrity = (accountabilityScore * 0.4) + (streakVitality * 0.3) + (statIntegrity * 0.3);
@@ -991,7 +1006,7 @@ export const useSovereignStore = create<SovereignStore>()(
             last_completed_at: now.toISOString(),
             created_at: new Date().toISOString()
           });
-          
+
           if (upsertError) {
             console.error('[DB_ERROR] completeQuest:', upsertError);
             get().addNotification({ title: 'PERSISTENCE FAILED', description: 'Failed to save mission completion to cloud.', status: 'URGENT', iconType: 'alert' });
@@ -1061,6 +1076,7 @@ export const useSovereignStore = create<SovereignStore>()(
         const poolTask = PUNISHMENT_POOL[Math.floor(Math.random() * PUNISHMENT_POOL.length)];
         const punishmentId = Math.random().toString(36).substr(2, 9);
 
+        let xpPenalty = 0;
         set((state) => {
           // F41: Priority-weighted Accountability loss
           // P0 = 6 points, P1 = 4 points, P2 = 2 points, P3 = 1 point
@@ -1068,10 +1084,20 @@ export const useSovereignStore = create<SovereignStore>()(
           const penaltyWeight = priorityWeights[questToFail.priority] || 1;
           const scoreLoss = 2 * penaltyWeight;
 
+          xpPenalty = Math.floor((questToFail.xpReward / 2) * penaltyWeight);
+          const currentXP = state.statXP[questToFail.statId] || 0;
+          const newXP = Math.max(0, currentXP - xpPenalty);
+
+          let level = 1;
+          while (xpForLevel(level) <= newXP) { level++; }
+          level = Math.max(1, level - 1);
+
           return {
             dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, failed: true, streak: 0 } : q),
-            gold: Math.max(0, state.gold - (Math.floor(questToFail.xpReward / 4) * penaltyWeight) - (poolTask.type === 'financial' ? poolTask.penalty || 0 : 0)),
+            gold: Math.max(0, state.gold - (Math.floor(questToFail.xpReward / 2) * penaltyWeight) - (poolTask.type === 'financial' ? poolTask.penalty || 0 : 0)),
             accountabilityScore: Math.max(0, state.accountabilityScore - scoreLoss),
+            statXP: { ...state.statXP, [questToFail.statId]: newXP },
+            statLevels: { ...state.statLevels, [questToFail.statId]: level },
             punishments: [{
               id: punishmentId,
               type: poolTask.type as 'physical' | 'financial' | 'mental',
@@ -1098,7 +1124,7 @@ export const useSovereignStore = create<SovereignStore>()(
             streak: 0,
             created_at: new Date().toISOString()
           });
-          
+
           if (upsertError) {
             console.error('[DB_ERROR] failQuest:', upsertError);
             get().addNotification({ title: 'PERSISTENCE FAILED', description: 'Failed to sync failure state to cloud.', status: 'URGENT', iconType: 'alert' });
@@ -1108,7 +1134,7 @@ export const useSovereignStore = create<SovereignStore>()(
 
         get().addNotification({
           title: 'PROTOCOL FAILED',
-          description: `"${questToFail.title}" — punishment logged & score reduced.`,
+          description: `-${xpPenalty} ${questToFail.statId.toUpperCase()} XP. "${questToFail.title}" — punishment logged & score reduced.`,
           status: 'NOW',
           iconType: 'alert'
         });
@@ -1120,7 +1146,7 @@ export const useSovereignStore = create<SovereignStore>()(
         if (!quest) return;
 
         const count = quest.postponeCount || 0;
-        
+
         // 4th strike = Terminal Failure
         if (quest.type === 'boss' && count >= 3) {
           await get().failQuest(id);
@@ -1180,9 +1206,9 @@ export const useSovereignStore = create<SovereignStore>()(
             get().addNotification({ title: 'RESCHEDULE SYNC FAILED', description: 'Changes saved locally but cloud update failed.', status: 'URGENT', iconType: 'alert' });
           }
 
-          await supabase.from('user_stats').update({ 
+          await supabase.from('user_stats').update({
             gold: get().gold,
-            accountability_score: get().accountabilityScore 
+            accountability_score: get().accountabilityScore
           }).eq('id', user.id);
         }
 
@@ -1244,11 +1270,11 @@ export const useSovereignStore = create<SovereignStore>()(
 
           if (insertError) {
             console.error('[DB_ERROR] addQuest:', insertError);
-            get().addNotification({ 
-              title: 'PERSISTENCE FAILURE', 
-              description: 'Mission not saved to cloud. Check database schema or connection.', 
-              status: 'URGENT', 
-              iconType: 'alert' 
+            get().addNotification({
+              title: 'PERSISTENCE FAILURE',
+              description: 'Mission not saved to cloud. Check database schema or connection.',
+              status: 'URGENT',
+              iconType: 'alert'
             });
           }
         }
@@ -1326,9 +1352,9 @@ export const useSovereignStore = create<SovereignStore>()(
         const { user } = get();
         const newId = Math.random().toString(36).substr(2, 9);
         const newApp = { ...app, id: newId };
-        
-        set((state) => ({ 
-          jobApplications: [...state.jobApplications, newApp] 
+
+        set((state) => ({
+          jobApplications: [...state.jobApplications, newApp]
         }));
 
         if (user) {
@@ -1337,11 +1363,11 @@ export const useSovereignStore = create<SovereignStore>()(
             if (error) throw error;
           } catch (err) {
             console.error('[DB_ERROR] addJobApp:', err);
-            get().addNotification({ 
-              title: 'SYNC ERROR', 
-              description: 'Failed to save target to cloud. Local state preserved.', 
-              status: 'URGENT', 
-              iconType: 'alert' 
+            get().addNotification({
+              title: 'SYNC ERROR',
+              description: 'Failed to save target to cloud. Local state preserved.',
+              status: 'URGENT',
+              iconType: 'alert'
             });
           }
         }
@@ -1350,7 +1376,7 @@ export const useSovereignStore = create<SovereignStore>()(
       updateJobApp: async (id, data) => {
         const { user, jobApplications } = get();
         const updatedApps = jobApplications.map(job => job.id === id ? { ...job, ...data } : job);
-        
+
         set({ jobApplications: updatedApps });
 
         if (user) {
@@ -1359,11 +1385,11 @@ export const useSovereignStore = create<SovereignStore>()(
             if (error) throw error;
           } catch (err) {
             console.error('[DB_ERROR] updateJobApp:', err);
-            get().addNotification({ 
-              title: 'SYNC ERROR', 
-              description: 'Target update failed in cloud.', 
-              status: 'URGENT', 
-              iconType: 'alert' 
+            get().addNotification({
+              title: 'SYNC ERROR',
+              description: 'Target update failed in cloud.',
+              status: 'URGENT',
+              iconType: 'alert'
             });
           }
         }
@@ -1379,20 +1405,20 @@ export const useSovereignStore = create<SovereignStore>()(
             if (error) throw error;
           } catch (err) {
             console.error('[DB_ERROR] deleteJobApp:', err);
-            get().addNotification({ 
-              title: 'SYNC ERROR', 
-              description: 'Failed to remove target from cloud.', 
-              status: 'URGENT', 
-              iconType: 'alert' 
+            get().addNotification({
+              title: 'SYNC ERROR',
+              description: 'Failed to remove target from cloud.',
+              status: 'URGENT',
+              iconType: 'alert'
             });
           }
         }
 
-        get().addNotification({ 
-          title: 'TARGET NEUTRALIZED', 
-          description: 'Job application removed from engine.', 
-          status: 'NOW', 
-          iconType: 'milestone' 
+        get().addNotification({
+          title: 'TARGET NEUTRALIZED',
+          description: 'Job application removed from engine.',
+          status: 'NOW',
+          iconType: 'milestone'
         });
       },
 
@@ -1593,14 +1619,14 @@ export const useSovereignStore = create<SovereignStore>()(
           if (data.failed !== undefined) updateData.failed = data.failed;
 
           const { error: updateError } = await supabase.from('quests').update(updateData).eq('id', id);
-          
+
           if (updateError) {
             console.error('[DB_ERROR] updateQuest:', updateError);
-            get().addNotification({ 
-              title: 'SYNC FAILURE', 
-              description: 'Failed to update mission in cloud. Data mismatch detected.', 
-              status: 'URGENT', 
-              iconType: 'alert' 
+            get().addNotification({
+              title: 'SYNC FAILURE',
+              description: 'Failed to update mission in cloud. Data mismatch detected.',
+              status: 'URGENT',
+              iconType: 'alert'
             });
           }
         }
@@ -1629,6 +1655,36 @@ export const useSovereignStore = create<SovereignStore>()(
         set(state => ({
           recurringTransactions: state.recurringTransactions.filter(r => r.id !== id)
         }));
+      },
+
+      deleteQuest: async (id) => {
+        const { user } = get();
+        set(state => ({
+          dailyQuests: state.dailyQuests.filter(q => q.id !== id)
+        }));
+        if (user) {
+          await supabase.from('quests').delete().eq('id', id).eq('user_id', user.id);
+        }
+      },
+
+      archiveQuest: async (id) => {
+        const { user } = get();
+        set(state => ({
+          dailyQuests: state.dailyQuests.map(q => q.id === id ? { ...q, archived: true } : q)
+        }));
+        if (user) {
+          await supabase.from('quests').update({ archived: true }).eq('id', id).eq('user_id', user.id);
+        }
+      },
+
+      restoreQuest: async (id) => {
+        const { user } = get();
+        set(state => ({
+          dailyQuests: state.dailyQuests.map(q => q.id === id ? { ...q, archived: false, completed: false, failed: false } : q)
+        }));
+        if (user) {
+          await supabase.from('quests').update({ archived: false, completed: false, failed: false }).eq('id', id).eq('user_id', user.id);
+        }
       },
 
       addVentureRevenue: async (id, amount, memo) => {

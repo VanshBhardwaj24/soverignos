@@ -253,15 +253,19 @@ function ProgressionTab({ store }: { store: any }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {Object.values(STATS).filter((s: any) => s.id !== 'freedom').map((stat: any) => {
-           const nextXP = xpForLevel((statLevels[stat.id] || 0) + 1);
+           const currentLevel = statLevels[stat.id] || 1;
+           const currentLevelXP = xpForLevel(currentLevel);
+           const nextXP = xpForLevel(currentLevel + 1);
            const currentXP = statXP[stat.id] || 0;
-           const progress = (currentXP / nextXP) * 100;
+           const progressXP = Math.max(0, currentXP - currentLevelXP);
+           const totalNeeded = Math.max(1, nextXP - currentLevelXP);
+           const progress = (progressXP / totalNeeded) * 100;
            
            return (
              <div key={stat.id} className="bg-white/[0.03] border border-white/10 rounded-3xl p-6">
                 <div className="flex justify-between items-center mb-4">
                    <span className="font-mono text-[9px] text-white/40 uppercase tracking-widest font-black">{stat.name} Progress</span>
-                   <span className="font-mono text-[10px] text-white">LV. {statLevels[stat.id] || 0}</span>
+                   <span className="font-mono text-[10px] text-white">LV. {currentLevel}</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <div 
@@ -270,7 +274,7 @@ function ProgressionTab({ store }: { store: any }) {
                    />
                 </div>
                 <div className="mt-2 text-right">
-                   <span className="font-mono text-[8px] text-white/20 uppercase">{currentXP.toLocaleString()} / {nextXP.toLocaleString()} XP</span>
+                   <span className="font-mono text-[8px] text-white/20 uppercase">{Math.floor(progressXP).toLocaleString()} / {totalNeeded.toLocaleString()} XP</span>
                 </div>
              </div>
            );

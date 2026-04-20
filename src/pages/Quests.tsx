@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSovereignStore } from '../store/sovereign';
 import {
-  AlertTriangle, ChevronDown, ChevronUp, Trash2, CheckCircle, List, Pencil, RefreshCcw,
-  Plus, Search, Zap, Flame, CheckSquare
+  AlertTriangle, Trash2, CheckCircle, List, Pencil, RefreshCcw,
+  Plus, Search, Zap, Flame, CheckSquare, ChevronUp, ChevronDown, RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { STATS } from '../lib/constants';
@@ -21,7 +21,7 @@ export default function Quests() {
   const [postponeId, setPostponeId] = useState<string | null>(null);
 
   const {
-    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setLogModalOpen, failQuest, bulkCompleteQuests
+    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setPendingActivity, failQuest, bulkCompleteQuests
   } = useSovereignStore();
 
   useEffect(() => {
@@ -37,13 +37,17 @@ export default function Quests() {
       const matchesPillar = !selectedPillar || q.statId === selectedPillar;
       const matchesSearch = q.title.toLowerCase().includes(search.toLowerCase());
       const isArchived = q.archived === true;
+      const isCompleted = q.completed === true;
+
+      // Filter logic: Done missions go to archive, Failed missions stay as reminders.
       const matchesTab =
-        (activeTab === 'archived' ? isArchived : !isArchived) && (
-          (activeTab === 'strategic' && q.type === 'daily') ||
-          (activeTab === 'operational' && q.type === 'weekly') ||
-          (activeTab === 'campaigns' && q.type === 'boss') ||
-          (activeTab === 'archived')
-        );
+        (activeTab === 'archived')
+          ? (isArchived || isCompleted)
+          : (!isArchived && !isCompleted) && (
+            (activeTab === 'strategic' && q.type === 'daily') ||
+            (activeTab === 'operational' && q.type === 'weekly') ||
+            (activeTab === 'campaigns' && q.type === 'boss')
+          );
       return matchesPillar && matchesSearch && matchesTab;
     });
 
@@ -166,11 +170,29 @@ export default function Quests() {
           {/* Tab Navigation & Secondary Meta */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Tabs Row */}
-            <div className="flex items-center gap-1 bg-white/[0.02] p-1 rounded-xl border border-white/5 w-fit">
-              <TabButton active={activeTab === 'strategic'} onClick={() => setActiveTab('strategic')} label="Strategic" />
-              <TabButton active={activeTab === 'operational'} onClick={() => setActiveTab('operational')} label="Operational" />
-              <TabButton active={activeTab === 'campaigns'} onClick={() => setActiveTab('campaigns')} label="Campaigns" />
-              <TabButton active={activeTab === 'archived'} onClick={() => setActiveTab('archived')} label="Archived" />
+            <div className="relative flex p-1 bg-white/[0.03] border border-white/5 rounded-xl w-fit overflow-hidden">
+              <motion.div
+                layoutId="activeTab"
+                className="absolute inset-y-1 bg-white/10 rounded-lg shadow-sm"
+                initial={false}
+                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                style={{
+                  left: `${Object.keys({ strategic: 0, operational: 1, campaigns: 2, archived: 3 }).indexOf(activeTab) * 25}%`,
+                  width: '25%'
+                }}
+              />
+              {(['strategic', 'operational', 'campaigns', 'archived'] as QuestTab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    "relative z-10 px-5 py-1.5 font-mono text-[9px] font-bold tracking-[0.2em] uppercase transition-colors whitespace-nowrap",
+                    activeTab === tab ? "text-white" : "text-white/20 hover:text-white/40"
+                  )}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
 
             <div className="flex items-center gap-3">
@@ -201,11 +223,17 @@ export default function Quests() {
                     isSelectMode={isSelectMode}
                     onExecute={() => {
                       setTargetQuestId(quest.id);
-                      setLogModalOpen(true);
+                      setPendingActivity({ 
+                        statId: quest.statId, 
+                        xp: quest.xpReward, 
+                        questId: quest.id 
+                      });
+                      useSovereignStore.getState().setProofModalOpen(true);
                     }}
                     onFail={() => failQuest(quest.id)}
                     onUpdateNotes={(notes, subtasks) => updateQuestNotes(quest.id, notes, subtasks)}
                     onPostpone={() => setPostponeId(quest.id)}
+                    activeTab={activeTab}
                   />
                 ))
               )}
@@ -272,34 +300,24 @@ function Metric({ label, value, color = "text-white/80" }: { label: string, valu
   );
 }
 
-function TabButton({ active, onClick, label }: { active: boolean, onClick: () => void, label: string }) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "px-6 py-2 rounded-lg font-mono text-[10px] font-bold tracking-widest uppercase transition-all whitespace-nowrap",
-        active ? "bg-white/10 text-white" : "text-white/30 hover:text-white/60"
-      )}
-    >
-      {label}
-    </button>
-  );
-}
-
 function QuestEntry({
-  quest, onExecute, onFail, index, isSelected, onToggleSelect, isSelectMode, onUpdateNotes, onPostpone
+  quest, onExecute, onFail, index, isSelected, onToggleSelect, isSelectMode, onUpdateNotes, onPostpone, activeTab
 }: {
   quest: any, onExecute: () => void, onFail: () => void, index: number,
   isSelected: boolean, onToggleSelect: () => void, isSelectMode: boolean,
   onUpdateNotes: (notes: string, subtasks: any[]) => void,
-  onPostpone: () => void
+  onPostpone: () => void,
+  activeTab: string
 }) {
   const isBoss = quest.type === 'boss';
   const isWeekly = quest.type === 'weekly';
+  const isArchivedTab = activeTab === 'archived';
   const [expanded, setExpanded] = useState(false);
   const [notes, setNotes] = useState(quest.notes || '');
   const setTargetQuestId = useSovereignStore(state => state.setTargetQuestId);
   const setQuestModalOpen = useSovereignStore(state => state.setQuestModalOpen);
+  const restoreQuest = useSovereignStore(state => state.restoreQuest);
+  const deleteQuest = useSovereignStore(state => state.deleteQuest);
 
   return (
     <motion.div
@@ -310,52 +328,61 @@ function QuestEntry({
       className={cn(
         "relative rounded-xl border transition-all duration-300 group overflow-hidden",
         quest.completed ? "bg-white/[0.01] border-white/5 opacity-40" :
-          quest.failed ? "bg-[var(--danger)]/[0.03] border-[var(--danger)]/20" :
+          quest.failed ? "bg-red-500/[0.05] border-red-500/20 grayscale-[0.5]" :
             isBoss ? "bg-[var(--bg-elevated)] border-[#7649C9]/30 shadow-[0_0_20px_rgba(118,73,201,0.1)]" :
               "bg-white/[0.03] border-white/5 hover:border-white/10 shadow-sm",
         isSelected && "border-white/40 ring-1 ring-white/20"
       )}
     >
-      <div className="flex items-center justify-between gap-6 p-4">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between gap-6 p-3">
+        <div className="flex items-center gap-3">
           {isSelectMode ? (
             <button
               onClick={onToggleSelect}
               className={cn(
-                "h-9 w-9 rounded-lg flex items-center justify-center border transition-all",
+                "h-7 w-7 rounded-lg flex items-center justify-center border transition-all",
                 isSelected ? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/20"
               )}
             >
-              {isSelected ? <CheckSquare size={18} /> : <div className="h-4 w-4 border-2 border-white/10 rounded" />}
+              {isSelected ? <CheckSquare size={14} /> : <div className="h-3 w-3 border-2 border-white/10 rounded" />}
+            </button>
+          ) : isArchivedTab ? (
+            <button
+              onClick={() => restoreQuest(quest.id)}
+              className="h-8 w-8 rounded-lg flex items-center justify-center bg-white/10 text-white border border-white/10 hover:bg-white hover:text-black transition-all"
+              title="Restore to Active Board"
+            >
+              <RotateCcw size={16} />
             </button>
           ) : (
             <button
               onClick={onExecute}
               disabled={quest.completed || quest.failed}
               className={cn(
-                "h-9 w-9 rounded-lg flex items-center justify-center transition-all border",
+                "h-8 w-8 rounded-lg flex items-center justify-center transition-all border",
                 quest.completed ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20 shadow-[0_0_10px_var(--success)]" :
                   isBoss ? "bg-[#7649C9]/20 text-[#7649C9] border-[#7649C9]/30" :
-                    "bg-white/5 text-white/20 border-white/10 hover:text-white hover:border-white/30"
+                    quest.failed ? "bg-red-500/20 text-red-500 border-red-500/30" :
+                      "bg-white/5 text-white/20 border-white/10 hover:text-white hover:border-white/30"
               )}
             >
-              {quest.completed ? <CheckSquare size={18} /> : <Zap size={18} />}
+              {quest.completed ? <CheckSquare size={16} /> : <Zap size={16} strokeWidth={1.5} />}
             </button>
           )}
 
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-1.5 mb-1">
               <span className={cn(
-                "font-mono text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded-sm uppercase text-white/50 border border-white/10",
-                isBoss ? "bg-[#7649C9]/20 text-[#7649C9] border-[#7649C9]/30" : "bg-white/5"
+                "font-mono text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm uppercase text-white/50 border border-white/5 bg-white/[0.02]",
+                isBoss ? "text-[#7649C9] border-[#7649C9]/20 bg-[#7649C9]/5" : ""
               )}>
-                {quest.statId} // {quest.type} // {quest.difficulty || 'medium'}
+                {quest.statId} // {quest.type}
               </span>
               <span className={cn(
-                "font-mono text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded-sm border",
-                quest.priority === 'P0' ? "bg-red-500/20 text-red-500 border-red-500/30" :
-                  quest.priority === 'P1' ? "bg-orange-500/20 text-orange-500 border-orange-500/30" :
-                    "bg-blue-500/20 text-blue-500 border-blue-500/30 text-white/40"
+                "font-mono text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm border",
+                quest.priority === 'P0' ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                  quest.priority === 'P1' ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
+                    "bg-white/5 text-white/30 border-white/5"
               )}>
                 {quest.priority}
               </span>
@@ -381,8 +408,10 @@ function QuestEntry({
             <div className="flex items-center gap-3">
               <h3 className={cn(
                 "font-sans text-sm font-bold tracking-tight uppercase",
-                quest.completed || quest.failed ? "text-white/20 line-through" : "text-white"
+                quest.completed ? "text-white/20 line-through" : 
+                  quest.failed ? "text-red-500/40" : "text-white"
               )}>
+                {quest.failed && <span className="mr-2 text-red-500 font-black">[FAILED]</span>}
                 {quest.title}
               </h3>
               <button
@@ -449,13 +478,26 @@ function QuestEntry({
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => {
+                if (quest.completed && !quest.repeating) return;
                 setTargetQuestId(quest.id);
                 setQuestModalOpen(true);
               }}
-              className="p-2 text-white/20 hover:text-white transition-colors"
-              title="Edit Protocol"
+              disabled={quest.completed && !quest.repeating}
+              className={cn(
+                "p-2 transition-colors",
+                quest.completed && !quest.repeating ? "text-white/5 cursor-not-allowed" : "text-white/20 hover:text-white"
+              )}
+              title={quest.completed && !quest.repeating ? "Protocol Locked" : "Edit Protocol"}
             >
               <Pencil size={14} />
+            </button>
+            
+            <button
+              onClick={() => deleteQuest(quest.id)}
+              className="p-2 text-white/10 hover:text-red-500 transition-colors"
+              title="Delete Permanently"
+            >
+              <Trash2 size={14} />
             </button>
             {!quest.completed && !quest.failed && (
               <>

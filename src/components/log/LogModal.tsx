@@ -49,11 +49,12 @@ export const LogModal = () => {
   const isOpen = useSovereignStore(state => state.logModalOpen);
   const setOpen = useSovereignStore(state => state.setLogModalOpen);
   const logActivity = useSovereignStore(state => state.logActivity);
+  const setProofOpen = useSovereignStore(state => state.setProofModalOpen);
+  const setPendingActivity = useSovereignStore(state => state.setPendingActivity);
 
   const [selectedStat, setSelectedStat] = useState<string>('code');
   const [selectedActivity, setSelectedActivity] = useState<string>('');
   const [xp, setXp] = useState<number>(0);
-  const [notes, setNotes] = useState('');
   const targetQuestId = useSovereignStore(state => state.targetQuestId);
   const quests = useSovereignStore(state => state.dailyQuests);
   const inventory = useSovereignStore(state => state.inventory);
@@ -113,14 +114,14 @@ export const LogModal = () => {
     e.preventDefault();
     if (!selectedStat) return;
 
-    if (targetQuest && notes.trim().length === 0) {
-      alert("STRICT ACCOUNTABILITY: Proof/Notes required to clear a mission.");
-      return;
+    if (targetQuest) {
+      setPendingActivity({ statId: selectedStat, xp, questId: targetQuestId || undefined });
+      setOpen(false);
+      setProofOpen(true);
+    } else {
+      logActivity(selectedStat, xp);
+      setOpen(false);
     }
-
-    logActivity(selectedStat, xp);
-    setOpen(false);
-    setNotes('');
   }
 
   useEffect(() => {
@@ -314,17 +315,6 @@ export const LogModal = () => {
                   )}
                 </div>
 
-                <div>
-                  <label className="font-mono text-xs tracking-widest text-[var(--danger)] mb-3 block">
-                    NOTES / PROOF {targetQuest ? '(REQUIRED)' : '(OPTIONAL)'}
-                  </label>
-                  <textarea
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
-                    placeholder={targetQuest ? "Provide strict proof of completion..." : "(Optional) Specific details, problem name, weight lifted..."}
-                    className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 text-[var(--text-primary)] font-sans tracking-wide text-sm outline-none focus:border-[var(--text-muted)] resize-none min-h-[80px]"
-                  />
-                </div>
 
                 <button
                   type="submit"

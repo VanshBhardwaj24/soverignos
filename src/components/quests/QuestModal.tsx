@@ -27,20 +27,21 @@ export const QuestModal = () => {
   });
 
   const isEditMode = !!targetQuestId;
+  const currentQuest = isEditMode ? quests.find(q => q.id === targetQuestId) : null;
+  const isLocked = currentQuest?.completed && !currentQuest?.repeating;
 
   useEffect(() => {
     if (isEditMode && isOpen) {
-      const quest = quests.find(q => q.id === targetQuestId);
-      if (quest) {
+      if (currentQuest) {
         setFormData({
-          title: quest.title,
-          statId: quest.statId,
-          type: quest.type,
-          difficulty: quest.difficulty || 'medium',
-          xpReward: quest.xpReward,
-          priority: quest.priority || 'P2',
-          dueDate: quest.dueDate || '',
-          repeating: quest.repeating !== undefined ? quest.repeating : true
+          title: currentQuest.title,
+          statId: currentQuest.statId,
+          type: currentQuest.type,
+          difficulty: currentQuest.difficulty || 'medium',
+          xpReward: currentQuest.xpReward,
+          priority: currentQuest.priority || 'P2',
+          dueDate: currentQuest.dueDate || '',
+          repeating: currentQuest.repeating !== undefined ? currentQuest.repeating : true
         });
       }
     } else if (isOpen) {
@@ -55,7 +56,7 @@ export const QuestModal = () => {
         repeating: true
       });
     }
-  }, [targetQuestId, isOpen, quests]);
+  }, [targetQuestId, isOpen, quests, isEditMode, currentQuest]);
 
   if (!isOpen) return null;
 
@@ -65,7 +66,7 @@ export const QuestModal = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.title) return;
+    if (!formData.title || isLocked) return;
     
     if (isEditMode) {
       await updateQuest(targetQuestId, formData);
@@ -94,7 +95,7 @@ export const QuestModal = () => {
         >
           <div className="flex justify-between items-center mb-6 border-b border-[var(--border-default)] pb-4">
             <h2 className="font-mono text-xl font-bold text-[var(--text-primary)] tracking-widest uppercase">
-              {isEditMode ? 'Modify Protocol' : 'Register Protocol'}
+              {isEditMode ? (isLocked ? 'Protocol Log (Locked)' : 'Modify Protocol') : 'Register Protocol'}
             </h2>
             <button onClick={handleClose} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
               <X size={20} />
@@ -107,9 +108,10 @@ export const QuestModal = () => {
               <input
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 text-[var(--text-primary)] font-sans text-sm focus:border-[var(--text-strong)] outline-none transition-all placeholder:text-[var(--text-muted)]/50"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 text-[var(--text-primary)] font-sans text-sm focus:border-[var(--text-strong)] outline-none transition-all placeholder:text-[var(--text-muted)]/50 disabled:opacity-50"
                 placeholder="Enter objective details..."
                 autoFocus
+                disabled={isLocked}
               />
             </div>
 
@@ -120,6 +122,7 @@ export const QuestModal = () => {
                   value={formData.statId}
                   onChange={(val) => setFormData(prev => ({ ...prev, statId: val }))}
                   options={Object.values(STATS).filter(s => s.id !== 'freedom').map(s => ({ value: s.id, label: s.name }))}
+                  disabled={isLocked}
                 />
               </div>
               <div>
@@ -132,6 +135,7 @@ export const QuestModal = () => {
                     { value: 'weekly', label: 'Weekly / Operational' },
                     { value: 'boss', label: 'Boss / Campaign' }
                   ]}
+                  disabled={isLocked}
                 />
               </div>
             </div>
@@ -141,7 +145,7 @@ export const QuestModal = () => {
                 "p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between",
                 formData.repeating ? "bg-[var(--success)]/10 border-[var(--success)]/30" : "bg-white/5 border-white/10"
               )}
-              onClick={() => setFormData(prev => ({ ...prev, repeating: !prev.repeating }))}
+              onClick={() => !isLocked && setFormData(prev => ({ ...prev, repeating: !prev.repeating }))}
               >
                 <div className="flex items-center gap-2">
                   <RefreshCw size={14} className={formData.repeating ? "text-[var(--success)]" : "text-[var(--text-muted)]"} />
@@ -164,9 +168,10 @@ export const QuestModal = () => {
                   value={formData.dueDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, dueDate: e.target.value }))}
                   className={cn(
-                    "w-full bg-[var(--bg-elevated)] border rounded-lg p-2.5 text-[var(--text-primary)] font-mono text-xs focus:border-[var(--text-strong)] outline-none transition-all color-scheme-dark",
+                    "w-full bg-[var(--bg-elevated)] border rounded-lg p-2.5 text-[var(--text-primary)] font-mono text-xs focus:border-[var(--text-strong)] outline-none transition-all color-scheme-dark disabled:opacity-50",
                     !formData.repeating && !formData.dueDate ? "border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.1)]" : "border-[var(--border-default)]"
                   )}
+                  disabled={isLocked}
                 />
               </div>
             </div>
@@ -183,6 +188,7 @@ export const QuestModal = () => {
                     { value: 'P2', label: 'P2: OPERATIONAL' },
                     { value: 'P3', label: 'P3: ROUTINE' }
                   ]}
+                  disabled={isLocked}
                 />
               </div>
               <div>
@@ -192,7 +198,8 @@ export const QuestModal = () => {
                     type="number"
                     value={formData.xpReward || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, xpReward: parseInt(e.target.value) || 0 }))}
-                    className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 pl-8 text-[var(--success)] font-mono font-bold text-sm focus:border-[var(--text-strong)] outline-none transition-all"
+                    className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 pl-8 text-[var(--success)] font-mono font-bold text-sm focus:border-[var(--text-strong)] outline-none transition-all disabled:opacity-50"
+                    disabled={isLocked}
                   />
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-[var(--success)] font-bold text-sm">+</span>
                 </div>
@@ -201,11 +208,11 @@ export const QuestModal = () => {
 
             <button
               onClick={handleSubmit}
-              disabled={!formData.title || (!formData.repeating && !formData.dueDate)}
+              disabled={!formData.title || (!formData.repeating && !formData.dueDate) || isLocked}
               className="w-full bg-[var(--text-primary)] text-[var(--bg-primary)] font-mono font-bold text-sm tracking-widest p-4 rounded-xl mt-2 hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed group"
             >
               <span className="group-hover:tracking-[0.2em] transition-all">
-                {isEditMode ? 'UPDATE PROTOCOL' : 'INITIALIZE PROTOCOL'}
+                {isEditMode ? (isLocked ? 'LOCKED' : 'UPDATE PROTOCOL') : 'INITIALIZE PROTOCOL'}
               </span>
             </button>
           </div>
