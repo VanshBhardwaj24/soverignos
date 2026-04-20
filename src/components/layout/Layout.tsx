@@ -15,6 +15,8 @@ import { QuestModal } from '../quests/QuestModal';
 import { ProofModal } from '../log/ProofModal';
 import { STATS } from '../../lib/constants';
 import { cn } from '../../lib/utils';
+import { useDailyBriefing } from '../../hooks/useDailyBriefing';
+import { ReminderModal } from '../ui/ReminderModal';
 
 export const Layout = () => {
   const setLogModalOpen = useSovereignStore(state => state.setLogModalOpen);
@@ -22,9 +24,11 @@ export const Layout = () => {
   const theme = useSovereignStore(state => state.theme);
   const lastLeveledStat = useSovereignStore(state => state.lastLeveledStat);
   const setLastLeveledStat = useSovereignStore(state => state.setLastLeveledStat);
-  const location = useLocation();
-
-  const leveledStatInfo = lastLeveledStat ? STATS[lastLeveledStat.statId] : null;
+   const location = useLocation();
+ 
+   const { modalMode, closeBriefing, date } = useDailyBriefing();
+ 
+   const leveledStatInfo = lastLeveledStat ? STATS[lastLeveledStat.statId] : null;
 
   useEffect(() => {
     if (theme === 'light') {
@@ -111,9 +115,15 @@ export const Layout = () => {
         useSovereignStore.getState().sidebarCollapsed ? "md:pl-20" : "md:pl-64"
       )}>
         <Outlet />
-      </main>
-
-      <LogModal />
+       </main>
+ 
+       <ReminderModal 
+         mode={modalMode} 
+         onClose={closeBriefing} 
+         date={date} 
+       />
+ 
+       <LogModal />
       <QuestModal />
       <ProofModal />
       {location.pathname === '/' && <FlowPlayer />}

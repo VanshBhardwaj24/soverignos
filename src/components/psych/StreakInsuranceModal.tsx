@@ -19,7 +19,8 @@ export function StreakInsuranceModal({ onConfirm, onCancel, questTitle }: Streak
   const [used, setUsed] = useState(false);
 
   const isMatch = typed === REQUIRED_PHRASE;
-  const isAvailable = !streakInsurance.usedThisMonth;
+  const usesLeft = 4 - (streakInsurance.usesThisMonth || 0);
+  const isAvailable = usesLeft > 0;
 
   const handleActivate = () => {
     if (!isMatch) { setFailed(true); return; }
@@ -84,7 +85,7 @@ export function StreakInsuranceModal({ onConfirm, onCancel, questTitle }: Streak
                 <KeyRound size={20} className={isAvailable ? 'text-amber-400' : 'text-red-400'} />
                 <div>
                   <p className={cn('font-mono text-[10px] font-black uppercase tracking-widest', isAvailable ? 'text-amber-400' : 'text-red-400')}>
-                    {isAvailable ? '1 SOVEREIGN OVERRIDE AVAILABLE THIS MONTH' : 'NO OVERRIDES REMAINING — USED THIS MONTH'}
+                    {isAvailable ? `${usesLeft} SOVEREIGN OVERRIDE${usesLeft > 1 ? 'S' : ''} AVAILABLE THIS MONTH` : 'NO OVERRIDES REMAINING — EXHAUSTED THIS MONTH'}
                   </p>
                   {streakInsurance.lastUsedDate && (
                     <p className="font-mono text-[8px] text-white/20 mt-0.5">
@@ -92,6 +93,21 @@ export function StreakInsuranceModal({ onConfirm, onCancel, questTitle }: Streak
                     </p>
                   )}
                 </div>
+              </div>
+
+              {/* Credits Visual */}
+              <div className="flex gap-2 justify-center px-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div 
+                    key={i} 
+                    className={cn(
+                      "h-1.5 flex-1 rounded-full transition-all duration-700",
+                      i <= (streakInsurance.usesThisMonth || 0) 
+                        ? "bg-white/10" 
+                        : "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.4)]"
+                    )}
+                  />
+                ))}
               </div>
 
               {questTitle && (

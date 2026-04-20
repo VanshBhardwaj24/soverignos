@@ -16,7 +16,8 @@ import SundayProtocol from './pages/SundayProtocol';
 import { useSovereignStore } from './store/sovereign';
 import { useEffect } from 'react';
 import { AuthOverlay } from './components/auth/AuthOverlay';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
+import { Calendar } from 'lucide-react';
 
 function App() {
   const { resetDailyQuests } = useSovereignStore();
@@ -32,6 +33,18 @@ function App() {
 
     return () => clearInterval(interval);
   }, [resetDailyQuests]);
+
+  // Sunday Protocol Reminder
+  useEffect(() => {
+    const isSunday = new Date().getDay() === 0;
+    if (isSunday) {
+      toast.info('COMMANDER, THE SUNDAY PROTOCOL IS ACTIVE', {
+        description: 'Weekly reflection is mandatory for accountability.',
+        icon: <Calendar className="text-blue-400" size={18} />,
+        duration: 8000,
+      });
+    }
+  }, []);
 
   return (
     <AuthOverlay>

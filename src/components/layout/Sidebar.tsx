@@ -49,6 +49,10 @@ export const Sidebar = () => {
 
       <nav className="flex-1 flex flex-col gap-4 px-3 py-3 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
+          const isSundayPath = item.path === '/sunday';
+          const isSunday = new Date().getDay() === 0;
+          const isLocked = isSundayPath && !isSunday;
+
           const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
           const Icon = item.icon;
 
@@ -59,7 +63,8 @@ export const Sidebar = () => {
               className={cn(
                 "flex items-center rounded-xl transition-all relative group overflow-hidden h-12",
                 sidebarCollapsed ? "justify-center px-0" : "px-4 gap-4",
-                isActive ? "text-[var(--text-primary)] bg-[var(--text-primary)]/5" : "text-[var(--text-secondary)] hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]"
+                isActive ? "text-[var(--text-primary)] bg-[var(--text-primary)]/5" : "text-[var(--text-secondary)] hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]",
+                isLocked && "opacity-40 grayscale hover:grayscale-0 hover:opacity-100"
               )}
             >
               {isActive && (
@@ -71,7 +76,7 @@ export const Sidebar = () => {
               <Icon size={18} className={cn(
                 "shrink-0 transition-colors", 
                 isActive ? "text-[var(--text-primary)]" : "group-hover:text-[var(--text-primary)]",
-                item.path === '/sunday' && new Date().getDay() === 0 && !isActive && "animate-pulse text-[var(--stat-mind)]"
+                isSundayPath && isSunday && !isActive && "animate-pulse text-[var(--stat-mind)]"
               )} />
 
               {!sidebarCollapsed && (
@@ -80,7 +85,7 @@ export const Sidebar = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="font-mono text-xs tracking-widest uppercase mt-0.5 truncate whitespace-nowrap"
                 >
-                  {item.label}
+                  {isSundayPath && isSunday ? "SUNDAY PROTOCOL (ACTIVE)" : item.label}
                 </motion.span>
               )}
             </button>

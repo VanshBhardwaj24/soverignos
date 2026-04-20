@@ -115,7 +115,7 @@ export interface DeadManConfig {
 }
 
 export interface StreakInsurance {
-  usedThisMonth: boolean;
+  usesThisMonth: number;
   lastUsedDate?: string;
   lastUsedMonth?: number; // 0-11
   lastUsedYear?: number;
@@ -525,32 +525,31 @@ export const usePsychStore = create<PsychStore>()(
         set(state => ({ deadManConfig: { ...state.deadManConfig, lastCheckIn: new Date().toISOString() } })),
 
       // ── Streak Insurance ──────────────────────────────────────────────────
-      streakInsurance: { usedThisMonth: false },
+      streakInsurance: { usesThisMonth: 0 },
       useStreakInsurance: () => {
         const { streakInsurance } = get();
         const now = new Date();
+
+        let currentUses = streakInsurance.usesThisMonth;
 
         // Reset if new month
         if (
           streakInsurance.lastUsedMonth !== undefined &&
           (streakInsurance.lastUsedMonth !== now.getMonth() || streakInsurance.lastUsedYear !== now.getFullYear())
         ) {
-          set({ streakInsurance: { usedThisMonth: false } });
+          currentUses = 0;
         }
 
-        if (get().streakInsurance.usedThisMonth) return false;
+        if (currentUses >= 4) return false;
 
-        // Check not used yesterday
-        if (streakInsurance.lastUsedDate) {
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          if (streakInsurance.lastUsedDate === yesterday.toISOString().split('T')[0]) return false;
-        }
+        // Check not used today
+        const today = now.toISOString().split('T')[0];
+        if (streakInsurance.lastUsedDate === today) return false;
 
         set({
           streakInsurance: {
-            usedThisMonth: true,
-            lastUsedDate: now.toISOString().split('T')[0],
+            usesThisMonth: currentUses + 1,
+            lastUsedDate: today,
             lastUsedMonth: now.getMonth(),
             lastUsedYear: now.getFullYear(),
           },
@@ -564,7 +563,7 @@ export const usePsychStore = create<PsychStore>()(
           streakInsurance.lastUsedMonth !== undefined &&
           (streakInsurance.lastUsedMonth !== now.getMonth() || streakInsurance.lastUsedYear !== now.getFullYear())
         ) {
-          set({ streakInsurance: { usedThisMonth: false } });
+          set({ streakInsurance: { usesThisMonth: 0 } });
         }
       },
 

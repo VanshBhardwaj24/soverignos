@@ -18,6 +18,7 @@ export const ProofModal = () => {
   const [learnings, setLearnings] = useState('');
   const [achievement, setAchievement] = useState('100');
   const [speed, setSpeed] = useState('on-time');
+  const [quality, setQuality] = useState('5');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +31,7 @@ export const ProofModal = () => {
     setLearnings('');
     setAchievement('100');
     setSpeed('on-time');
+    setQuality('5');
     setError(null);
   };
 
@@ -52,7 +54,8 @@ export const ProofModal = () => {
         { 
           learnings: learnings.trim(),
           achievement: achievement,
-          speed: speed
+          speed: speed,
+          quality: quality
         }
       );
       handleClose();
@@ -77,6 +80,14 @@ export const ProofModal = () => {
     { value: '1h-early', label: 'Efficient Action (+10% Bonus)' },
     { value: '4h-early', label: 'Strategic Rush (+25% Bonus)' },
     { value: '8h-early', label: 'Blitz / Instant Clear (+50% Bonus)' }
+  ];
+
+  const qualityOptions = [
+    { value: '5', label: 'L5 - Peak Performance (100% XP)' },
+    { value: '4', label: 'L4 - Standard Effort (85% XP)' },
+    { value: '3', label: 'L3 - Minor Distractions (70% XP)' },
+    { value: '2', label: 'L2 - Poor Focus (55% XP)' },
+    { value: '1', label: 'L1 - Minimal Trace (40% XP)' }
   ];
 
   return (
@@ -124,13 +135,28 @@ export const ProofModal = () => {
                   </p>
                 </div>
 
-                <div>
-                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Execution Speed</label>
-                  <Select 
-                    options={speedOptions}
-                    value={speed}
-                    onChange={setSpeed}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Execution Speed</label>
+                    <Select 
+                      options={speedOptions}
+                      value={speed}
+                      onChange={setSpeed}
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Session Quality</label>
+                    <Select 
+                      options={qualityOptions}
+                      value={quality}
+                      onChange={setQuality}
+                    />
+                    {parseInt(quality) < 5 && (
+                      <p className="mt-2 text-[9px] text-red-400/70 font-mono italic">
+                        * Tactical Penalty: -{(5 - parseInt(quality)) * 15}% XP reduction.
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div>

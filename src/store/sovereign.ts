@@ -32,6 +32,8 @@ export interface Quest {
   currentPhase?: number;
   totalPhases?: number;
   notes?: string;
+  dailyBriefingId?: string;
+  dailyBriefingDate?: string;
 }
 
 export interface JobApp {
@@ -226,6 +228,23 @@ interface SovereignStore {
   recurringTransactions: RecurringTx[];
 
   // Actions
+  
+  // Daily Briefing State
+  briefingSeenDates: string[]; // Morning
+  summarySeenDates: string[];  // Evening
+  briefingTemplates: {
+    id: string;
+    title: string;
+    tasks: { title: string; statId: string; xpReward: number; priority: 'P0'|'P1'|'P2'|'P3' }[];
+  }[];
+
+  // Actions
+  setBriefingSeen: (date: string) => void;
+  setSummarySeen: (date: string) => void;
+  applyDailyTemplate: (templateId: string) => void;
+  finalizeDailyBriefing: (date: string) => { success: boolean; xpReward: number };
+  saveTemplates: (templates: any[]) => void;
+  
   takeSnapshot: () => void;
   addContact: (c: Omit<Contact, 'id'>) => void;
   logOutreach: (id: string) => void;
@@ -531,6 +550,95 @@ export const useSovereignStore = create<SovereignStore>()(
       targetQuestId: null,
       setTargetQuestId: (id) => set({ targetQuestId: id }),
       theme: 'dark',
+      
+      // Daily Briefing State
+      briefingSeenDates: [],
+      summarySeenDates: [],
+      briefingTemplates: [
+        {
+          id: 'sovereign_prime',
+          title: 'Sovereign Prime',
+          tasks: [
+            { title: 'Coding & Strategic Learning (4h)', statId: 'code', xpReward: 100, priority: 'P0' },
+            { title: 'High-Intensity Training (Gym)', statId: 'body', xpReward: 50, priority: 'P1' },
+            { title: 'Hydration Cycle (4L Water)', statId: 'spirit', xpReward: 20, priority: 'P2' },
+            { title: 'Operational Expansion (10 Job Apps)', statId: 'network', xpReward: 80, priority: 'P1' },
+            { title: 'Personal Brand (Tweet/X)', statId: 'brand', xpReward: 30, priority: 'P2' },
+            { title: 'Deep Work Session (2h)', statId: 'mind', xpReward: 60, priority: 'P1' },
+            { title: 'Intellectual Synthesis (Reading)', statId: 'mind', xpReward: 40, priority: 'P2' }
+          ]
+        },
+        {
+          id: 'monk_mode',
+          title: 'Monk Mode',
+          tasks: [
+            { title: 'Deep Learning (4h)', statId: 'mind', xpReward: 120, priority: 'P0' },
+            { title: 'Body Conditioning', statId: 'body', xpReward: 60, priority: 'P1' },
+            { title: 'Clean Diet & 4L Water', statId: 'spirit', xpReward: 40, priority: 'P1' },
+            { title: 'Portfolio Build', statId: 'code', xpReward: 80, priority: 'P1' },
+            { title: 'Market Analysis', statId: 'wealth', xpReward: 50, priority: 'P2' }
+          ]
+        }
+      ],
+
+      setBriefingSeen: (date) => set(state => ({
+        briefingSeenDates: state.briefingSeenDates.includes(date) 
+          ? state.briefingSeenDates 
+          : [...state.briefingSeenDates, date]
+      })),
+
+      setSummarySeen: (date) => set(state => ({
+        summarySeenDates: state.summarySeenDates.includes(date) 
+          ? state.summarySeenDates 
+          : [...state.summarySeenDates, date]
+      })),
+
+      applyDailyTemplate: (templateId) => {
+        const { briefingTemplates, addQuest } = get();
+        const template = briefingTemplates.find(t => t.id === templateId);
+        if (!template) return;
+
+        const dateString = new Date().toISOString().split('T')[0];
+        
+        template.tasks.forEach(task => {
+          addQuest({
+            title: task.title,
+            statId: task.statId,
+            xpReward: task.xpReward,
+            priority: task.priority,
+            type: 'daily',
+            repeating: false,
+            dailyBriefingId: template.id,
+            dailyBriefingDate: dateString
+          });
+        });
+
+        toast.success(`TEMPLATE APPLIED: ${template.title}`, {
+          description: `${template.tasks.length} protocols initialized for ${dateString}.`
+        });
+      },
+
+      finalizeDailyBriefing: (date) => {
+        const { dailyQuests, logActivity } = get();
+        const dayQuests = dailyQuests.filter(q => q.dailyBriefingDate === date);
+        if (dayQuests.length === 0) return { success: false, xpReward: 0 };
+
+        const allCompleted = dayQuests.every(q => q.completed);
+        const reward = allCompleted ? 15 : 0; // Small bonus
+
+        if (allCompleted) {
+          logActivity('mind', 10, undefined, { type: 'daily_briefing_bonus', date });
+          logActivity('spirit', 5, undefined, { type: 'daily_briefing_bonus', date });
+          toast.success('DAILY OBJECTIVES COMPLETED', {
+            description: 'System integrity remains at 100%. Small XP bonus awarded.'
+          });
+        }
+
+        return { success: allCompleted, xpReward: reward };
+      },
+
+      saveTemplates: (templates) => set({ briefingTemplates: templates }),
+
 
       // F1: Daily Reset
       resetDailyQuests: async () => {
@@ -875,7 +983,20 @@ export const useSovereignStore = create<SovereignStore>()(
           multiplier *= (speedBonuses[metadata.speed] || 1.0);
         }
 
-        const boostedXP = Math.floor(xp * multiplier);
+        // F42: Session Quality Multiplier (1-5 SCALE)
+        if (metadata?.quality) {
+          const qVal = parseInt(metadata.quality);
+          // Error Checking: Ensure quality is within valid tactical range [1-5]
+          if (qVal >= 1 && qVal <= 5) {
+            const qualityMultiplier = 1 - ((5 - qVal) * 0.15);
+            multiplier *= Math.max(0, qualityMultiplier);
+          } else {
+            console.warn(`[DATA_INTEGRITY] Invalid quality level: ${qVal}. Defaulting to 1.0 multiplier.`);
+          }
+        }
+
+        // Error Checking: Prevent accidental XP overflow or negative yields
+        const boostedXP = Math.max(0, Math.floor(xp * multiplier));
 
         // F5: Activity Log
         const logEntry: ActivityLogEntry = {
@@ -1435,7 +1556,7 @@ export const useSovereignStore = create<SovereignStore>()(
           }
         }
       },
-      
+
       protectQuest: async (questId: string) => {
         set(state => ({
           dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, protected: true } : q)

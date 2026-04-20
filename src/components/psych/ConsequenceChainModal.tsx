@@ -131,7 +131,7 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
               </button>
 
               <div className="flex gap-2">
-                {onUseInsurance && !streakInsurance.usedThisMonth && (
+                {onUseInsurance && (streakInsurance.usesThisMonth || 0) < 4 && (
                   <button
                     onClick={onUseInsurance}
                     className="flex-1 py-3 bg-amber-500/10 border border-amber-500/30 text-amber-500 font-mono text-[9px] uppercase tracking-widest rounded-xl hover:bg-amber-500/20 transition-all flex items-center justify-center gap-2"
@@ -143,10 +143,10 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
                   onClick={onConfirmSkip}
                   className={cn(
                     "py-3 bg-white/5 border border-white/10 text-white/30 font-mono text-[9px] uppercase tracking-widest rounded-xl hover:text-white/50 transition-all",
-                    onUseInsurance && !streakInsurance.usedThisMonth ? "px-4" : "flex-1"
+                    onUseInsurance && (streakInsurance.usesThisMonth || 0) < 4 ? "px-4" : "flex-1"
                   )}
                 >
-                  <X size={14} /> {(!onUseInsurance || streakInsurance.usedThisMonth) && "Confirm Skip"}
+                  <X size={14} /> {(!onUseInsurance || (streakInsurance.usesThisMonth || 0) >= 4) && "Confirm Skip"}
                 </button>
               </div>
             </div>

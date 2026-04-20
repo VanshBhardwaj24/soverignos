@@ -8,7 +8,7 @@ import { SundayNumbers } from '../components/psych/SundayNumbers';
 import { CommitmentContract } from '../components/psych/CommitmentContract';
 import { useSovereignStore } from '../store/sovereign';
 import { cn } from '../lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { DependencyMirror } from '../components/psych/DependencyMirror';
@@ -40,6 +40,63 @@ export default function SundayProtocol() {
   const [completed, setCompleted] = useState(false);
   const { logActivity } = useSovereignStore();
   const navigate = useNavigate();
+
+  const isSunday = new Date().getDay() === 0;
+
+  if (!isSunday) {
+    const now = new Date();
+    const nextSunday = new Date(now);
+    nextSunday.setDate(now.getDate() + (7 - now.getDay()) % 7);
+    nextSunday.setHours(0, 0, 0, 0);
+    const diff = nextSunday.getTime() - now.getTime();
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md w-full bg-[#0a0a0a] border border-white/10 rounded-[40px] p-10 text-center relative overflow-hidden"
+        >
+          {/* Ambient Glow */}
+          {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[var(--stat-mind)]/5 blur-[80px] rounded-full" /> */}
+
+          <div className="relative z-10">
+            <div className="h-20 w-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
+              <Calendar size={32} className="text-white/20" />
+              <div className="absolute inset-0 bg-white/5 animate-pulse rounded-3xl" />
+            </div>
+
+            <h2 className="font-mono text-[10px] tracking-[0.3em] text-white/30 uppercase font-black mb-2">System Protocol</h2>
+            <h1 className="font-mono text-2xl font-light text-white mb-4">LOCKED</h1>
+
+            <p className="font-mono text-[11px] text-white/20 leading-relaxed mb-8">
+              The Sunday Protocol is a weekly terminal for system-wide reflection and recalibration. It only unlocks when the cycle completes.
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 mb-10">
+              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                <p className="font-mono text-[18px] font-black text-white">{hours}h</p>
+                <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mt-1">HOURS REMAINING</p>
+              </div>
+              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                <p className="font-mono text-[18px] font-black text-white">{minutes}m</p>
+                <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mt-1">MINUTES REMAINING</p>
+              </div>
+            </div>
+
+            <Link
+              to="/"
+              className="w-full py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center justify-center gap-2 relative z-50 cursor-pointer"
+            >
+              <ArrowLeft size={14} className="pointer-events-none" /> Return to HQ
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const handleStepComplete = () => {
     if (currentStep < PROTOCOL_STEPS.length - 1) {
@@ -86,12 +143,12 @@ export default function SundayProtocol() {
               <span className="font-mono text-[10px] text-[var(--stat-spirit)] font-black uppercase tracking-wider">+30 SPIRIT XP</span>
             </div>
           </div>
-          <button
-            onClick={() => navigate('/')}
-            className="mt-8 px-10 py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2"
+          <Link
+            to="/"
+            className="mt-8 px-10 py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2 relative z-50 cursor-pointer"
           >
-            <ArrowLeft size={14} /> Return to HQ
-          </button>
+            <ArrowLeft size={14} className="pointer-events-none" /> Return to HQ
+          </Link>
         </motion.div>
       </div>
     );
