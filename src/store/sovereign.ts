@@ -12,6 +12,7 @@ export interface Quest {
   statId: string;
   completed: boolean;
   failed?: boolean;
+  protected?: boolean;
   type: 'daily' | 'weekly' | 'boss' | 'raid';
   streak: number;
   lastCompletedAt?: string;
@@ -42,6 +43,8 @@ export interface JobApp {
   notes?: string;
   requiredSkills?: string[];
   followUpDate?: string;
+  effort?: 'low' | 'high';
+  appliedAt?: string;
 }
 
 export interface Transaction {
@@ -119,6 +122,7 @@ export interface ActivityLogEntry {
   questId?: string;
   timestamp: string;
   multiplier: number;
+  stat?: string;
   metadata?: Record<string, any>;
 }
 
@@ -249,6 +253,7 @@ interface SovereignStore {
   completeQuest: (questId: string, skipLog?: boolean) => Promise<void>;
   failQuest: (questId: string) => Promise<void>;
   addQuest: (quest: Omit<Quest, 'id' | 'completed' | 'streak'>) => Promise<void>;
+  protectQuest: (questId: string) => Promise<void>;
   resetDailyQuests: () => Promise<void>;
   resetWeeklyQuests: () => Promise<void>;
   archiveQuest: (id: string) => Promise<void>;
@@ -311,6 +316,7 @@ interface SovereignStore {
   collectResource: (name: string, amount: number) => void;
   craftItem: (recipeId: string) => Promise<void>;
   reviewKnowledgeCard: (id: string, quality: number) => void;
+  checkMissionExpiries: () => Promise<void>;
   tickQuests: () => void;
 }
 
@@ -417,30 +423,47 @@ export const useSovereignStore = create<SovereignStore>()(
             statLevels: {
               code: stats.code_level, wealth: stats.wealth_level, body: stats.body_level,
               mind: stats.mind_level, brand: stats.brand_level, network: stats.network_level,
-              spirit: stats.spirit_level || 1
+              spirit: stats.spirit_level || 1, create: stats.create_level || 1
+            },
+            globalStreak: {
+              current: stats.global_streak_current || 0,
+              longest: stats.global_streak_longest || 0
             },
             statXP: {
               code: stats.code_xp, wealth: stats.wealth_xp, body: stats.body_xp,
               mind: stats.mind_xp, brand: stats.brand_xp, network: stats.network_xp,
-              spirit: stats.spirit_xp || 0
+              spirit: stats.spirit_xp || 0, create: stats.create_xp || 0
             }
           });
           get().recomputeFreedom();
         }
 
-        // Check if daily reset is needed
-        get().resetDailyQuests();
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Kolkata',
+          year: 'numeric', month: '2-digit', day: '2-digit'
+        });
+        const today = formatter.format(new Date());
+
+        // Check if daily reset is needed - Sync reset date from column
+        const lastResetFromDB = stats?.last_daily_reset || get().lastDailyReset;
+        if (lastResetFromDB !== today) {
+          get().resetDailyQuests();
+        }
+
+        // Initialize cadence monitor
+        get().checkMissionExpiries();
+        setInterval(() => get().checkMissionExpiries(), 60000);
       },
 
-      statLevels: { code: 1, wealth: 1, body: 1, mind: 1, brand: 1, network: 1, spirit: 1 },
-      statXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0 },
-      statTodayXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0 },
+      statLevels: { code: 1, wealth: 1, body: 1, mind: 1, brand: 1, network: 1, spirit: 1, create: 1 },
+      statXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0, create: 0 },
+      statTodayXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0, create: 0 },
       gold: 0,
       inventory: [],
       resources: {},
       freedomScore: 0,
       sovereignty: 0,
-      prestige: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0 },
+      prestige: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, create: 0 },
       unlockedSkills: [],
       integrity: 100,
       consecutiveDaysFailed: 0,
@@ -516,7 +539,7 @@ export const useSovereignStore = create<SovereignStore>()(
           year: 'numeric', month: '2-digit', day: '2-digit'
         });
         const today = formatter.format(new Date());
-        const { lastDailyReset, dailyQuests, accountabilityScore } = get();
+        const { lastDailyReset } = get();
 
         // Trigger weekly reset check
         get().resetWeeklyQuests();
@@ -542,149 +565,177 @@ export const useSovereignStore = create<SovereignStore>()(
           }
         }
 
-        // F1: Calculate Global Streak before resetting
+        // Pull all needed state fresh
+        const {
+          dailyQuests,
+          accountabilityScore,
+          gold,
+          statXP,
+          statLevels,
+          globalStreak,
+          consecutiveDaysFailed,
+          punishments
+        } = get();
+
+        // 1. Calculate Global Streak (respects Streak Insurance protection)
         const completedYesterday = dailyQuests.filter(q => q.type === 'daily' && q.completed).length;
+        const failedUnprotected = dailyQuests.filter(q => q.type === 'daily' && q.failed && !q.protected).length;
+        const totalDailyCount = dailyQuests.filter(q => q.type === 'daily').length;
 
-        set(state => {
-          const newGlobalStreak = completedYesterday > 0
-            ? {
-              current: state.globalStreak.current + 1,
-              longest: Math.max(state.globalStreak.longest, state.globalStreak.current + 1)
-            }
-            : { current: 0, longest: state.globalStreak.longest };
+        const newGlobalStreak = (completedYesterday > 0 && failedUnprotected === 0)
+          ? {
+            current: globalStreak.current + 1,
+            longest: Math.max(globalStreak.longest, globalStreak.current + 1)
+          }
+          : (failedUnprotected > 0 || (totalDailyCount > 0 && completedYesterday === 0))
+            ? { current: 0, longest: globalStreak.longest }
+            : globalStreak;
 
-          return {
-            globalStreak: newGlobalStreak,
-            statTodayXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0 },
-            lastDailyReset: today
-          };
-        });
+        // 2. Handle Missed Quests & Punishments (only unprotected)
+        const { PUNISHMENT_POOL } = await import('../lib/constants');
+        const missedQuests = dailyQuests.filter(q => q.type === 'daily' && !q.completed && !q.protected);
 
-        // Detect missed daily quests and generate punishments
-        const missedQuests = dailyQuests.filter(q => q.type === 'daily' && !q.completed);
-        let newScore = accountabilityScore;
-        const newPunishments: Punishment[] = [];
+        let workingScore = accountabilityScore;
+        let workingGold = gold;
+        const workingStatXP = { ...statXP };
+        const workingStatLevels = { ...statLevels };
+        const newPunishmentsList: Punishment[] = [];
+        let newConsecutiveFailures = consecutiveDaysFailed;
 
         if (missedQuests.length > 0) {
-          const { PUNISHMENT_POOL } = await import('../lib/constants');
-
-          // F41: Escalation Protocol
-          const newConsecutiveFailures = get().consecutiveDaysFailed + 1;
-          set({ consecutiveDaysFailed: newConsecutiveFailures });
+          newConsecutiveFailures += 1;
+          const escalationFactor = Math.min(2, 1 + (newConsecutiveFailures * 0.2));
 
           missedQuests.forEach(quest => {
-            // Deduct score for missed protocol - Escalates with consecutive failures
-            const basePenalty = 5;
-            const escalationFactor = Math.min(2, 1 + (newConsecutiveFailures * 0.2));
-            newScore = Math.max(0, newScore - (basePenalty * escalationFactor));
+            workingScore = Math.max(0, workingScore - (5 * escalationFactor));
+            const penaltyAmount = Math.floor((quest.xpReward / 2) * escalationFactor);
+            workingGold = Math.max(0, workingGold - penaltyAmount);
 
-            // Generate a random punishment
+            const currentXP = workingStatXP[quest.statId] || 0;
+            const newXP = Math.max(0, currentXP - penaltyAmount);
+            workingStatXP[quest.statId] = newXP;
+
+            let level = 1;
+            while (xpForLevel(level) <= newXP) { level++; }
+            workingStatLevels[quest.statId] = Math.max(1, level - 1);
+
             const poolTask = PUNISHMENT_POOL[Math.floor(Math.random() * PUNISHMENT_POOL.length)];
-            const punishmentId = Math.random().toString(36).substr(2, 9);
+            if (poolTask.type === 'financial') workingGold = Math.max(0, workingGold - (poolTask.penalty || 0));
 
-            newPunishments.push({
-              id: punishmentId,
+            newPunishmentsList.push({
+              id: Math.random().toString(36).substr(2, 9),
               type: poolTask.type as 'physical' | 'financial' | 'mental',
               title: `VIOLATION: ${quest.title}${newConsecutiveFailures > 1 ? ` (ESC-${newConsecutiveFailures})` : ''}`,
               description: poolTask.description,
               penalty: poolTask.penalty,
-              status: 'active' as const,
+              status: 'active',
               date: new Date().toISOString(),
               questId: quest.id
             });
-
-            // F31: Immediate Gold and XP sanctions for every missed mission
-            // Sanctions escalate with consecutive failures
-            const goldPenalty = Math.floor((quest.xpReward / 2) * escalationFactor);
-            const xpPenalty = Math.floor((quest.xpReward / 2) * escalationFactor);
-
-            set(state => {
-              const currentXP = state.statXP[quest.statId] || 0;
-              const newXP = Math.max(0, currentXP - xpPenalty);
-
-              // Recalculate level after XP loss
-              let level = 1;
-              while (xpForLevel(level) <= newXP) { level++; }
-              level = Math.max(1, level - 1);
-
-              return {
-                gold: Math.max(0, state.gold - goldPenalty - (poolTask.type === 'financial' ? poolTask.penalty || 0 : 0)),
-                statXP: { ...state.statXP, [quest.statId]: newXP },
-                statLevels: { ...state.statLevels, [quest.statId]: level }
-              };
-            });
-
-            // F41: High-tier Escalation - Reality Wipe (Random Level Reset)
-            if (newConsecutiveFailures >= 7) {
-              const stats = Object.keys(get().statLevels);
-              const targetStat = stats[Math.floor(Math.random() * stats.length)];
-              set(state => ({
-                statLevels: { ...state.statLevels, [targetStat]: 1 },
-                statXP: { ...state.statXP, [targetStat]: 0 }
-              }));
-              get().addNotification({
-                title: 'CRITICAL FAILURE: REALITY WIPE',
-                description: `Sustained protocol deviation detected. ${targetStat.toUpperCase()} level localized to baseline.`,
-                status: 'NOW',
-                iconType: 'alert'
-              });
-            }
           });
+
+          // Reality Wipe escalation at 7+ consecutive failures
+          if (newConsecutiveFailures >= 7) {
+            const stats = Object.keys(workingStatLevels);
+            const targetStat = stats[Math.floor(Math.random() * stats.length)];
+            workingStatLevels[targetStat] = 1;
+            workingStatXP[targetStat] = 0;
+            get().addNotification({
+              title: 'CRITICAL FAILURE: REALITY WIPE',
+              description: `Sustained protocol deviation detected. ${targetStat.toUpperCase()} level localized to baseline.`,
+              status: 'NOW', iconType: 'alert'
+            });
+          }
         } else {
-          // Reset consecutive failures on successful day
-          set({ consecutiveDaysFailed: 0 });
+          newConsecutiveFailures = 0;
         }
 
-        // Archive completion stats for yesterday
-        const completedYesterdayCount = dailyQuests.filter(q => q.type === 'daily' && q.completed).length;
-        const totalDailyCount = dailyQuests.filter(q => q.type === 'daily').length;
+        // 3. Prepare quest reset + cloud sync payload
+        const now = new Date();
+        const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        const defaultExpiry = midnightToday.toISOString();
 
-        // Take a snapshot of current stats
+        // Prepare cloud sync payload for quests
+        const questSyncPayload: any[] = [];
+
+        const resetQuests = dailyQuests.map(q => {
+          let shiftedExpiresAt = defaultExpiry;
+          let shiftedDueDate = q.dueDate;
+
+          if (q.dueDate) {
+            const prevDue = new Date(q.dueDate);
+            const shifted = new Date(now.getFullYear(), now.getMonth(), now.getDate(), prevDue.getHours(), prevDue.getMinutes(), prevDue.getSeconds());
+            shiftedExpiresAt = shifted.toISOString();
+            shiftedDueDate = shiftedExpiresAt;
+          }
+
+          if (q.repeating && (q.type === 'daily' || (q.type === 'raid' && q.completed))) {
+            questSyncPayload.push({
+              id: q.id,
+              user_id: get().user?.id,
+              completed: false,
+              failed: false,
+              expires_at: shiftedExpiresAt,
+              due_date: shiftedDueDate,
+              streak: q.streak
+            });
+            return {
+              ...q,
+              completed: false,
+              failed: false,
+              protected: false,
+              currentPhase: q.type === 'raid' ? 1 : undefined,
+              expiresAt: shiftedExpiresAt,
+              dueDate: shiftedDueDate,
+              subtasks: q.subtasks?.map(s => ({ ...s, completed: false }))
+            };
+          }
+          if (!q.repeating && q.completed) return { ...q, archived: true, failed: false, protected: false };
+          return { ...q, failed: false, protected: false };
+        });
+
+        // 4. SINGLE ATOMIC STATE UPDATE
+        set({
+          lastDailyReset: today,
+          globalStreak: newGlobalStreak,
+          consecutiveDaysFailed: newConsecutiveFailures,
+          accountabilityScore: workingScore,
+          gold: workingGold,
+          statXP: workingStatXP,
+          statLevels: workingStatLevels,
+          statTodayXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0, create: 0 },
+          punishments: [...newPunishmentsList, ...punishments].slice(0, 100),
+          dailyQuests: resetQuests
+        });
+
+        // 5. Side effects AFTER state is settled
         get().takeSnapshot();
 
-        // Calculate next reset time (IST Midnight)
-        const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        const istMidnight = new Date(istNow);
-        istMidnight.setHours(23, 59, 59, 999);
-        const expiresAt = istMidnight.toISOString();
-
-        // Reset daily quests (not weekly/boss)
-        set(state => ({
-          lastDailyReset: today,
-          accountabilityScore: newScore,
-          punishments: [...newPunishments, ...state.punishments].slice(0, 100),
-          statTodayXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0 },
-          dailyQuests: state.dailyQuests.map(q => {
-            // Handle repeating missions
-            if (q.repeating && (q.type === 'daily' || (q.type === 'raid' && q.completed))) {
-              return {
-                ...q,
-                completed: false,
-                failed: false,
-                currentPhase: q.type === 'raid' ? 1 : undefined,
-                expiresAt: expiresAt,
-                // Reset subtasks for repeating missions
-                subtasks: q.subtasks?.map(s => ({ ...s, completed: false }))
-              };
-            }
-            // Archive completed one-offs
-            if (!q.repeating && q.completed) {
-              return { ...q, archived: true, failed: false };
-            }
-
-            // Ensure non-repeating failed also reset failed flag but stay archived if they were archived
-            return { ...q, failed: false };
-          })
-        }));
+        // F41: Check for Embargo (3 days of 0 CREATE XP)
+        (async () => {
+          const { checkEmbargo } = (await import('./sovereign-psych')).usePsychStore.getState();
+          const createXPVal = workingStatXP.create || 0;
+          checkEmbargo({ [today]: createXPVal });
+        })();
 
         const { user } = get();
-        if (user && missedQuests.length > 0) {
-          const { statXP, statLevels, gold, accountabilityScore, punishments } = get();
+        if (user) {
+          // F31: Bulk sync quest reset status to cloud
+          if (questSyncPayload.length > 0) {
+            const { error: questError } = await supabase.from('quests').upsert(questSyncPayload);
+            if (questError) console.error('[SYNC_ERROR] Reset Quests:', questError);
+          }
+
+          // F31: Update stats and reset timestamp in cloud
+          const { statXP, statLevels, gold, accountabilityScore, punishments, globalStreak } = get();
           try {
             const updatePayload: any = {
               gold,
               accountability_score: accountabilityScore,
-              punishments
+              punishments,
+              global_streak_current: globalStreak.current,
+              global_streak_longest: globalStreak.longest,
+              last_daily_reset: today // Persist reset date to cloud
             };
             Object.keys(statXP).forEach(stat => {
               updatePayload[`${stat}_xp`] = statXP[stat];
@@ -692,15 +743,12 @@ export const useSovereignStore = create<SovereignStore>()(
             });
             const { error: statsError } = await supabase.from('user_stats').update(updatePayload).eq('id', user.id);
             if (statsError) throw statsError;
-          } catch(err: any) {
-            console.error('[DB_ERROR] resetDailyQuests user_stats:', err);
-            // Non-blocking fallback if punishments missing
-            if (err?.message?.includes('punishments')) {
-              console.warn('The "punishments" column is missing from user_stats. Persisting locally as fallback.');
-            }
+          } catch (err) {
+            console.error('[SYNC_ERROR] User Stats Reset:', err);
           }
         }
 
+        const completedYesterdayCount = completedYesterday;
         get().addNotification({
           title: 'NEW DAY INITIALIZED',
           description: missedQuests.length > 0
@@ -740,6 +788,33 @@ export const useSovereignStore = create<SovereignStore>()(
           status: 'NOW',
           iconType: 'milestone'
         });
+      },
+
+      // F42: Real-time Cadence Monitor - Background Expiry Check
+      checkMissionExpiries: async () => {
+        const { dailyQuests, user, failQuest } = get();
+        if (!user) return;
+
+        const now = new Date();
+        const expiredQuests = dailyQuests.filter(q =>
+          q.dueDate &&
+          !q.completed &&
+          !q.failed &&
+          !q.archived &&
+          new Date(q.dueDate) < now
+        );
+
+        if (expiredQuests.length > 0) {
+          for (const quest of expiredQuests) {
+            await failQuest(quest.id);
+            get().addNotification({
+              title: 'OBJECTIVE LOST',
+              description: `"${quest.title}" cadence deadline passed. Statistics localized downwards.`,
+              status: 'URGENT',
+              iconType: 'alert'
+            });
+          }
+        }
       },
 
       // F2 + F3: logActivity with real multipliers and perk effects
@@ -784,6 +859,22 @@ export const useSovereignStore = create<SovereignStore>()(
           }
         });
 
+        // F41: Custom Multipliers from Proof Modal (Achievement % and Speed)
+        if (metadata?.achievement) {
+          const achievementRatio = parseInt(metadata.achievement) / 100;
+          multiplier *= achievementRatio;
+        }
+
+        if (metadata?.speed) {
+          const speedBonuses: Record<string, number> = {
+            'on-time': 1.0,
+            '1h-early': 1.1,
+            '4h-early': 1.25,
+            '8h-early': 1.5
+          };
+          multiplier *= (speedBonuses[metadata.speed] || 1.0);
+        }
+
         const boostedXP = Math.floor(xp * multiplier);
 
         // F5: Activity Log
@@ -794,7 +885,11 @@ export const useSovereignStore = create<SovereignStore>()(
           questId,
           timestamp: new Date().toISOString(),
           multiplier,
-          metadata
+          metadata: {
+            ...metadata,
+            rawXP: xp,
+            finalMultiplier: multiplier
+          }
         };
 
         const finalStatUpdate: Record<string, string | number> = {
@@ -809,7 +904,7 @@ export const useSovereignStore = create<SovereignStore>()(
 
           let level = 1;
           while (xpForLevel(level) <= newXP) { level++; }
-          level = level - 1;
+          level = Math.max(1, level - 1);
 
           const oldLevel = state.statLevels[statId] || 1;
           if (level > oldLevel) {
@@ -828,7 +923,24 @@ export const useSovereignStore = create<SovereignStore>()(
         });
 
         if (user) {
-          await supabase.from('user_stats').update(finalStatUpdate).eq('id', user.id);
+          try {
+            // Persist Stat update
+            const { error: statsError } = await supabase.from('user_stats').update(finalStatUpdate).eq('id', user.id);
+            if (statsError) throw statsError;
+
+            // Persist Activity Log to new dedicated table
+            const { error: logError } = await supabase.from('activity_log').insert([{
+              user_id: user.id,
+              stat_id: statId,
+              xp: boostedXP,
+              quest_id: questId || null,
+              multiplier: multiplier,
+              metadata: logEntry.metadata
+            }]);
+            if (logError) console.warn('[DB_SYNC] activity_log insert failed (table might not exist yet):', logError.message);
+          } catch (err) {
+            console.error('[DB_ERROR] logActivity sync:', err);
+          }
         }
 
         // F27: XP gain notification
@@ -1155,16 +1267,16 @@ export const useSovereignStore = create<SovereignStore>()(
             console.error('[DB_ERROR] failQuest:', upsertError);
             get().addNotification({ title: 'PERSISTENCE FAILED', description: 'Failed to sync failure state to cloud.', status: 'URGENT', iconType: 'alert' });
           }
-          
+
           try {
-            const { error: statsError } = await supabase.from('user_stats').update({ 
+            const { error: statsError } = await supabase.from('user_stats').update({
               gold: get().gold,
               accountability_score: get().accountabilityScore,
               punishments: get().punishments,
               [`${questToFail.statId}_xp`]: get().statXP[questToFail.statId],
               [`${questToFail.statId}_level`]: get().statLevels[questToFail.statId]
             }).eq('id', user.id);
-            
+
             if (statsError) throw statsError;
           } catch (err: any) {
             console.error('[DB_ERROR] failQuest user_stats sync:', err);
@@ -1322,6 +1434,22 @@ export const useSovereignStore = create<SovereignStore>()(
             });
           }
         }
+      },
+      
+      protectQuest: async (questId: string) => {
+        set(state => ({
+          dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, protected: true } : q)
+        }));
+        const { user } = get();
+        if (user) {
+          await supabase.from('quests').update({ protected: true }).eq('id', questId);
+        }
+        get().addNotification({
+          title: 'STREAK PROTECTED',
+          description: 'Insurance protocol active for this quest.',
+          status: 'NOW',
+          iconType: 'time'
+        });
       },
 
       // F17: Job Hunt XP Bridge (called from updateJobStatus)

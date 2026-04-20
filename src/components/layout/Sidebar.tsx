@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, BarChart2, Target, Briefcase, Plane, Settings, PieChart, Shield, Zap, Brain, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, BarChart2, Target, Briefcase, Plane, Settings, PieChart, Shield, Zap, Brain, AlertTriangle, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 import { useSovereignStore } from '../../store/sovereign';
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { path: '/marketplace', label: 'BLACK MARKET', icon: Shield },
   { path: '/stats', label: 'SYSTEM STATS', icon: BarChart2 },
   { path: '/analytics', label: 'ANALYTICS', icon: PieChart },
+  { path: '/sunday', label: 'SUNDAY PROTOCOL', icon: Calendar },
   { path: '/settings', label: 'CONFIG', icon: Settings },
 ];
 
@@ -67,7 +68,11 @@ export const Sidebar = () => {
                   className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--text-primary)]"
                 />
               )}
-              <Icon size={18} className={cn("shrink-0 transition-colors", isActive ? "text-[var(--text-primary)]" : "group-hover:text-[var(--text-primary)]")} />
+              <Icon size={18} className={cn(
+                "shrink-0 transition-colors", 
+                isActive ? "text-[var(--text-primary)]" : "group-hover:text-[var(--text-primary)]",
+                item.path === '/sunday' && new Date().getDay() === 0 && !isActive && "animate-pulse text-[var(--stat-mind)]"
+              )} />
 
               {!sidebarCollapsed && (
                 <motion.span

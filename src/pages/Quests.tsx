@@ -5,9 +5,12 @@ import {
   Plus, Search, Zap, Flame, CheckSquare, ChevronUp, ChevronDown, RotateCcw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { STATS } from '../lib/constants';
+import { STATS, IDENTITY_FRAMES } from '../lib/constants';
 import { cn } from '../lib/utils';
 import { PostponeModal } from '../components/quests/PostponeModal';
+import { ConsequenceChainModal } from '../components/psych/ConsequenceChainModal';
+import { StreakInsuranceModal } from '../components/psych/StreakInsuranceModal';
+import { usePsychStore } from '../store/sovereign-psych';
 
 type QuestTab = 'strategic' | 'operational' | 'campaigns' | 'archived';
 
@@ -19,10 +22,24 @@ export default function Quests() {
   const [selectedQuestIds, setSelectedQuestIds] = useState<string[]>([]);
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [postponeId, setPostponeId] = useState<string | null>(null);
+  const [consequenceQuest, setConsequenceQuest] = useState<{ id: string; statId: string; title: string } | null>(null);
+  const [insuranceQuest, setInsuranceQuest] = useState<{ id: string; title: string } | null>(null);
 
   const {
-    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setPendingActivity, failQuest, bulkCompleteQuests
+    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setPendingActivity, failQuest, bulkCompleteQuests, protectQuest
   } = useSovereignStore();
+  const { logSkip } = usePsychStore();
+
+  const handleQuestFail = (quest: { id: string; statId: string; title: string }) => {
+    setConsequenceQuest(quest);
+  };
+
+  const handleConfirmSkip = async () => {
+    if (!consequenceQuest) return;
+    logSkip(consequenceQuest.statId);
+    await failQuest(consequenceQuest.id);
+    setConsequenceQuest(null);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,6 +89,31 @@ export default function Quests() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1200px] mx-auto pb-12">
+
+      <ConsequenceChainModal
+        open={!!consequenceQuest}
+        statId={consequenceQuest?.statId ?? 'code'}
+        questTitle={consequenceQuest?.title ?? ''}
+        onConfirmSkip={handleConfirmSkip}
+        onResume={() => setConsequenceQuest(null)}
+        onUseInsurance={() => {
+          setInsuranceQuest(consequenceQuest);
+          setConsequenceQuest(null);
+        }}
+      />
+
+      <AnimatePresence>
+        {insuranceQuest && (
+          <StreakInsuranceModal
+            questTitle={insuranceQuest.title}
+            onConfirm={async () => {
+              await protectQuest(insuranceQuest.id);
+              setInsuranceQuest(null);
+            }}
+            onCancel={() => setInsuranceQuest(null)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
@@ -230,7 +272,7 @@ export default function Quests() {
                       });
                       useSovereignStore.getState().setProofModalOpen(true);
                     }}
-                    onFail={() => failQuest(quest.id)}
+                    onFail={() => handleQuestFail({ id: quest.id, statId: quest.statId, title: quest.title })}
                     onUpdateNotes={(notes, subtasks) => updateQuestNotes(quest.id, notes, subtasks)}
                     onPostpone={() => setPostponeId(quest.id)}
                     activeTab={activeTab}
@@ -371,6 +413,12 @@ function QuestEntry({
           )}
 
           <div>
+            {/* Identity framing */}
+            {(() => { const frame = IDENTITY_FRAMES[quest.statId]; return frame && !quest.completed && !quest.failed ? (
+              <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mb-0.5">
+                {frame.identity} {frame.question.split('.')[0].toLowerCase()}.
+              </p>
+            ) : null; })()}
             <div className="flex items-center gap-1.5 mb-1">
               <span className={cn(
                 "font-mono text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm uppercase text-white/50 border border-white/5 bg-white/[0.02]",

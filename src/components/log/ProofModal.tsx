@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useSovereignStore } from '../../store/sovereign';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Lock, Terminal, Check, AlertTriangle } from 'lucide-react';
+import { Shield, Check, Info, FileText } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { Select } from '../ui/Select';
 
 export const ProofModal = () => {
   const isOpen = useSovereignStore(state => state.proofModalOpen);
@@ -14,8 +15,11 @@ export const ProofModal = () => {
   const setPendingActivity = useSovereignStore(state => state.setPendingActivity);
   const logActivity = useSovereignStore(state => state.logActivity);
 
-  const [proof, setProof] = useState('');
+  const [learnings, setLearnings] = useState('');
+  const [achievement, setAchievement] = useState('100');
+  const [speed, setSpeed] = useState('on-time');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const targetQuest = targetQuestId ? quests.find(q => q.id === targetQuestId) : null;
 
@@ -23,26 +27,57 @@ export const ProofModal = () => {
     setOpen(false);
     setPendingActivity(null);
     setTargetQuestId(null);
-    setProof('');
+    setLearnings('');
+    setAchievement('100');
+    setSpeed('on-time');
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!proof.trim() || !pendingActivity) return;
+    if (!pendingActivity) return;
+
+    if (parseInt(achievement) === 0 && !learnings.trim()) {
+      setError("Please provide a reflection/learning if objective was not achieved.");
+      return;
+    }
 
     setIsSubmitting(true);
+    setError(null);
     try {
       await logActivity(
         pendingActivity.statId,
         pendingActivity.xp,
         pendingActivity.questId,
-        { proof: proof.trim() }
+        { 
+          learnings: learnings.trim(),
+          achievement: achievement,
+          speed: speed
+        }
       );
       handleClose();
+    } catch (err: any) {
+      console.error('[SUBMIT_ERROR] ProofModal:', err);
+      setError("System failure during verification. Data locally cached.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const achievementOptions = [
+    { value: '100', label: '100% - Objective Secured' },
+    { value: '75', label: '75% - Substantial Progress' },
+    { value: '50', label: '50% - Partial Success' },
+    { value: '25', label: '25% - Initial Breach' },
+    { value: '0', label: '0% - Tactical Pivot' }
+  ];
+
+  const speedOptions = [
+    { value: 'on-time', label: 'Target Completion (On-Time)' },
+    { value: '1h-early', label: 'Efficient Action (+10% Bonus)' },
+    { value: '4h-early', label: 'Strategic Rush (+25% Bonus)' },
+    { value: '8h-early', label: 'Blitz / Instant Clear (+50% Bonus)' }
+  ];
 
   return (
     <AnimatePresence>
@@ -53,96 +88,110 @@ export const ProofModal = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-[#050505] border border-white/10 rounded-3xl p-6 overflow-hidden shadow-2xl"
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="relative w-full max-w-lg bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[32px] p-8 shadow-2xl overflow-hidden"
           >
-            {/* Background Texture */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-              <Terminal size={400} className="absolute -top-20 -left-20 rotate-12" />
-              <Shield size={400} className="absolute -bottom-20 -right-20 -rotate-12" />
-            </div>
-
             <div className="relative z-10">
               {/* Header */}
-              <div className="flex flex-col items-center mb-6 text-center">
-                <div className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--stat-brand)] mb-4 shadow-xl">
-                  <Lock size={20} className="animate-pulse" />
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-12 w-12 rounded-2xl bg-[var(--text-primary)]/5 border border-[var(--text-primary)]/10 flex items-center justify-center text-[var(--text-primary)]">
+                  <Shield size={24} />
                 </div>
-                <h2 className="font-mono text-[10px] tracking-[0.4em] text-[var(--stat-brand)] uppercase font-black mb-1">Identity Verification Required</h2>
-                <div className="text-xl font-black text-white italic tracking-tighter uppercase line-clamp-1">
-                  {targetQuest?.title || "PROTOCOL FINALIZATION"}
+                <div>
+                  <h2 className="font-mono text-[10px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-black">Mission Finalization</h2>
+                  <div className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
+                    {targetQuest?.title || "PROTOCOL VERIFICATION"}
+                  </div>
                 </div>
               </div>
 
-              {/* Terminal View */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="relative group">
-                  <div className="absolute top-4 left-4 font-mono text-[8px] text-white/20 uppercase tracking-widest flex items-center gap-2">
-                    <Terminal size={10} /> console.sovereign.proof / input_stream
-                  </div>
-                  <textarea
-                    value={proof}
-                    onChange={e => setProof(e.target.value)}
-                    placeholder="Enter strict proof of mission completion..."
-                    className="w-full h-32 bg-white/5 border border-white/10 rounded-xl p-6 pt-10 text-white font-mono text-xs tracking-wide focus:border-white/30 outline-none transition-all resize-none scrollbar-hide"
-                    autoFocus
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Achievement Level</label>
+                  <Select 
+                    options={achievementOptions}
+                    value={achievement}
+                    onChange={setAchievement}
                   />
-                  <div className="absolute bottom-4 right-4 flex items-center gap-4">
-                    <span className="font-mono text-[8px] text-white/20 uppercase">
-                      Chars: {proof.length}
-                    </span>
-                    {proof.length > 0 && (
-                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[var(--success)]/10 border border-[var(--success)]/20 text-[var(--success)] font-mono text-[8px] font-black uppercase">
-                        <Check size={8} /> Readiness Confirmed
-                      </div>
-                    )}
+                  <p className="mt-2 text-[9px] text-[var(--text-muted)] font-mono italic">
+                    * Final XP will be scaled based on achievement ratio.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Execution Speed</label>
+                  <Select 
+                    options={speedOptions}
+                    value={speed}
+                    onChange={setSpeed}
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] block tracking-widest font-bold">Learnings & Reflections</label>
+                    <span className="text-[9px] text-[var(--text-muted)] bg-white/5 px-2 py-0.5 rounded uppercase font-mono">Optional</span>
+                  </div>
+                  <div className="relative">
+                    <textarea
+                      value={learnings}
+                      onChange={e => {
+                        setLearnings(e.target.value);
+                        setError(null);
+                      }}
+                      placeholder="What did you learn from this encounter? (Growth/Failure patterns...)"
+                      className="w-full h-28 bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-2xl p-4 text-[var(--text-primary)] font-sans text-sm focus:border-[var(--text-primary)] outline-none transition-all resize-none"
+                    />
+                    <FileText size={14} className="absolute bottom-4 right-4 text-[var(--text-muted)] opacity-20" />
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-4">
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-mono flex items-center gap-2"
+                  >
+                    <Info size={12} /> {error}
+                  </motion.div>
+                )}
+
+                <div className="pt-2">
                   <button
                     type="submit"
-                    disabled={!proof.trim() || isSubmitting}
+                    disabled={isSubmitting}
                     className={cn(
-                      "w-full h-12 rounded-xl font-black tracking-[0.4em] uppercase transition-all flex items-center justify-center gap-3 group relative overflow-hidden",
-                      proof.trim() && !isSubmitting
-                        ? "bg-white text-black hover:scale-[1.01] shadow-[0_10px_30px_rgba(255,255,255,0.15)]"
-                        : "bg-white/5 text-white/10 border border-white/5 cursor-not-allowed"
+                      "w-full h-14 rounded-2xl font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-3 relative overflow-hidden",
+                      !isSubmitting
+                        ? "bg-[var(--text-primary)] text-[var(--bg-primary)] hover:brightness-90 active:scale-[0.98] shadow-lg"
+                        : "bg-white/5 text-[var(--text-muted)] cursor-not-allowed"
                     )}
                   >
                     {isSubmitting ? (
-                      <div className="h-4 w-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      <div className="h-5 w-5 border-2 border-[var(--bg-primary)] border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <>
-                        <Shield size={16} className="group-hover:rotate-12 transition-transform" />
-                        <span className="text-xs">Submit Verification</span>
+                        <Check size={18} />
+                        <span>Commit Data & Gain XP</span>
                       </>
                     )}
                   </button>
-
+                  
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="w-full h-8 rounded-lg font-mono text-[9px] tracking-widest text-white/20 uppercase hover:text-white transition-colors"
+                    className="w-full mt-4 py-2 text-[10px] font-mono text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors uppercase tracking-widest"
                   >
-                    Abort Sequence [Esc]
+                    Cancel Operations
                   </button>
                 </div>
               </form>
-
-              {/* Warning Bar */}
-              <div className="mt-6 flex items-center gap-3 px-4 py-1.5 border border-red-500/10 bg-red-500/[0.03] rounded-full">
-                <AlertTriangle size={10} className="text-red-500/60" />
-                <span className="font-mono text-[7px] text-red-500/40 uppercase tracking-widest">
-                  Truth is non-negotiable.
-                </span>
-              </div>
             </div>
           </motion.div>
         </div>

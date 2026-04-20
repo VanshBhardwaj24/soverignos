@@ -15,6 +15,7 @@ import {
 import { cn } from '../lib/utils';
 import { STATS, xpForLevel } from '../lib/constants';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ParallelLifeCalculator } from '../components/psych/ParallelLifeCalculator';
 
 const TABS = [
   { id: 'overview', label: 'EXECUTIVE OVERVIEW', icon: Shield },
@@ -126,6 +127,9 @@ function OverviewTab({ store }: { store: any }) {
          <MetricCard label="Daily Yield" value={`${todayXP}`} sub="XP Volume" icon={Zap} color="var(--success)" />
          <MetricCard label="Market Capital" value={`${gold.toLocaleString()}`} sub="Current Balance" icon={Coins} color="var(--stat-wealth)" />
       </div>
+
+      {/* Phase 3: Divergence Audit */}
+      <ParallelLifeCalculator />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Trajectory */}

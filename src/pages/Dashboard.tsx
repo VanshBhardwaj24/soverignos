@@ -1,23 +1,51 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSovereignStore } from '../store/sovereign';
 import { RadarStatChart } from '../components/stats/RadarStatChart';
 import { InteractiveHeatmap } from '../components/stats/InteractiveHeatmap';
-import { CheckSquare, Square, Coins, AlertCircle, Activity, Brain, Smile, Zap, Timer, Play, Pause, RotateCcw, RefreshCcw } from 'lucide-react';
+import { CheckSquare, Square, Coins, AlertCircle, Activity, Brain, Smile, Zap, Timer, Play, Pause, RotateCcw, RefreshCcw, Flame } from 'lucide-react';
 import { XPBar } from '../components/stats/XPBar';
 import { SystemRank } from '../components/stats/SystemRank';
 import { StabilityMeter } from '../components/stats/StabilityMeter';
 import { FreedomBreakdown } from '../components/stats/FreedomBreakdown';
 import { ActivityHistory } from '../components/stats/ActivityHistory';
-import { STATS } from '../lib/constants';
+import { STATS, IDENTITY_FRAMES } from '../lib/constants';
 import { cn } from '../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { SalaryClockWidget } from '../components/psych/SalaryClockWidget';
+import { AntiWishlistCard } from '../components/psych/AntiWishlistCard';
+import { HonestSentence } from '../components/psych/HonestSentence';
+import { EnergyDashboard } from '../components/psych/EnergyDashboard';
+import { ConsequenceChainModal } from '../components/psych/ConsequenceChainModal';
+import { StreakInsuranceModal } from '../components/psych/StreakInsuranceModal';
+import { EmbargoHUD } from '../components/psych/EmbargoHUD';
+import { usePsychStore } from '../store/sovereign-psych';
+import { Calendar, ArrowRight } from 'lucide-react';
 
 export default function Dashboard() {
   const {
     freedomScore, dailyQuests, addQuest,
     statLevels, statXP, gold, activityLog,
-    setTargetQuestId, setPendingActivity, setProofModalOpen
+    setTargetQuestId, setPendingActivity, setProofModalOpen,
+    globalStreak, failQuest, protectQuest
   } = useSovereignStore();
+  const { logSkip } = usePsychStore();
+  const navigate = useNavigate();
+
+  const isSunday = new Date().getDay() === 0;
+
   const [now, setNow] = React.useState(new Date());
+  const [consequenceQuest, setConsequenceQuest] = React.useState<{ id: string; statId: string; title: string } | null>(null);
+  const [insuranceQuest, setInsuranceQuest] = React.useState<{ id: string; title: string } | null>(null);
+
+  const currentStreak = globalStreak?.current || 0;
+
+  const getStreakStyles = () => {
+    if (currentStreak >= 30) return "text-red-500 drop-shadow-[0_0_20px_rgba(239,68,68,0.8)] scale-110";
+    if (currentStreak >= 15) return "text-orange-500 drop-shadow-[0_0_15px_rgba(249,115,22,0.6)] scale-105";
+    if (currentStreak >= 7) return "text-orange-400 drop-shadow-[0_0_10px_rgba(251,146,60,0.4)]";
+    return "text-orange-300 opacity-60";
+  };
 
   React.useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -31,13 +59,7 @@ export default function Dashboard() {
       const today = new Date().toISOString().split('T')[0];
       return log.timestamp.startsWith(today);
     })
-    .reduce((sum, log) => {
-      // Assuming xp / 5 is a placeholder gold equivalent if not explicitly tracked
-      // But quests already have gold rewards in some contexts. 
-      // For now, let's just sum any activity XP/10 as a "Today's Yield" or similar if gold isn't in log.
-      // Wait, let's check ActivityLogEntry interface.
-      return sum + (log.xp / 10);
-    }, 0);
+    .reduce((sum, log) => sum + (log.xp / 10), 0);
 
   const handleQuickAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,8 +77,6 @@ export default function Dashboard() {
 
   const getExpiryTime = (expiresAt?: string, dueDate?: string) => {
     const targetDate = dueDate || expiresAt;
-
-    // If no explicit expiry, default to midnight today for daily missions
     let expiry: Date;
     if (!targetDate) {
       expiry = new Date();
@@ -64,13 +84,10 @@ export default function Dashboard() {
     } else {
       expiry = new Date(targetDate);
     }
-
     const diff = expiry.getTime() - now.getTime();
     if (diff <= 0) return 'EXPIRED';
-
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
-
     if (h > 0) return `${h}h ${m}m`;
     if (m > 0) return `${m}m`;
     return '< 1m';
@@ -85,18 +102,54 @@ export default function Dashboard() {
     } else {
       expiry = new Date(targetDate);
     }
-
     const diff = expiry.getTime() - now.getTime();
     if (diff <= 0) return 'text-red-500';
-
     const hours = diff / 3600000;
     if (hours < 1) return 'text-red-500 animate-pulse';
     if (hours < 4) return 'text-orange-500';
     return 'text-green-500';
   };
 
+  // Intercept fail: show consequence chain first
+  const handleQuestFail = (quest: { id: string; statId: string; title: string }) => {
+    setConsequenceQuest(quest);
+  };
+
+  const handleConfirmSkip = async () => {
+    if (!consequenceQuest) return;
+    logSkip(consequenceQuest.statId);
+    await failQuest(consequenceQuest.id);
+    setConsequenceQuest(null);
+  };
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Consequence Chain Modal */}
+      <ConsequenceChainModal
+        open={!!consequenceQuest}
+        statId={consequenceQuest?.statId ?? 'code'}
+        questTitle={consequenceQuest?.title ?? ''}
+        onConfirmSkip={handleConfirmSkip}
+        onResume={() => setConsequenceQuest(null)}
+        onUseInsurance={() => {
+          setInsuranceQuest(consequenceQuest);
+          setConsequenceQuest(null);
+        }}
+      />
+
+      <AnimatePresence>
+        {insuranceQuest && (
+          <StreakInsuranceModal
+            questTitle={insuranceQuest.title}
+            onConfirm={async () => {
+              await protectQuest(insuranceQuest.id);
+              setInsuranceQuest(null);
+            }}
+            onCancel={() => setInsuranceQuest(null)}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col gap-8 lg:grid lg:grid-cols-12 lg:gap-8">
 
         {/* Left Column (Stats Panel) */}
@@ -117,7 +170,7 @@ export default function Dashboard() {
           <div className="space-y-4 p-4 bg-white/[0.02] border border-white/[0.05] rounded-3xl">
             <h2 className="font-mono text-[10px] tracking-[0.2em] text-white opacity-40 uppercase mb-2">Capabilities Progression</h2>
             <div className="space-y-4">
-              {Object.values(STATS).map(stat => (
+              {Object.values(STATS).filter(s => s.id !== 'sovereignty').map(stat => (
                 <XPBar
                   key={stat.id}
                   statId={stat.id}
@@ -141,11 +194,63 @@ export default function Dashboard() {
         </div>
 
         {/* Center Column (Quest Board & Main Metrics) */}
-        <div className="lg:col-span-6 flex flex-col gap-8">
+        <div className="lg:col-span-6 flex flex-col gap-6">
+
+          {/* Salary Clock — sits above everything */}
+          <SalaryClockWidget />
+
+          {/* Embargo Protocol HUD */}
+          <EmbargoHUD />
+
+          {/* Sunday Protocol Banner */}
+          {isSunday && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-6 bg-[var(--stat-mind)]/10 border border-[var(--stat-mind)]/20 rounded-[32px] flex items-center justify-between group cursor-pointer hover:border-[var(--stat-mind)]/40 transition-all"
+              onClick={() => navigate('/sunday')}
+            >
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-2xl bg-[var(--stat-mind)]/20 flex items-center justify-center text-[var(--stat-mind)] animate-pulse">
+                  <Calendar size={24} />
+                </div>
+                <div>
+                  <h3 className="font-mono text-[10px] font-black tracking-[0.3em] text-[var(--stat-mind)] uppercase">
+                    Protocol Required
+                  </h3>
+                  <p className="font-mono text-xl font-light text-white">
+                    SUNDAY PROTOCOL ACTIVE
+                  </p>
+                  <p className="font-mono text-[9px] text-white/30 uppercase tracking-widest mt-1">
+                    Execute ritual to synchronize system state
+                  </p>
+                </div>
+              </div>
+              <div className="h-10 w-10 rounded-full border border-white/10 flex items-center justify-center text-white/20 group-hover:text-white group-hover:border-white/30 transition-all">
+                <ArrowRight size={20} />
+              </div>
+            </motion.div>
+          )}
+
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-mono text-sm tracking-[0.1em] text-[var(--text-primary)] uppercase">Today's Protocols</h2>
-              <form onSubmit={handleQuickAdd} className="flex-1 max-w-xs ml-4 relative">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <h2 className="font-mono text-sm tracking-[0.1em] text-[var(--text-primary)] uppercase">Today's Protocols</h2>
+
+                {/* Global Streak Indicator */}
+                <div className="flex items-center gap-1.5 ml-2 px-3 py-1 bg-white/[0.03] border border-white/[0.05] rounded-full group cursor-pointer hover:border-white/20 transition-all">
+                  <Flame
+                    size={20}
+                    className={cn("transition-all duration-700", getStreakStyles())}
+                  />
+                  <span className="font-mono text-xs font-black tracking-tight opacity-90">{currentStreak}</span>
+                  <div className="hidden group-hover:block ml-2 font-mono text-[8px] text-white/30 uppercase tracking-widest animate-in fade-in slide-in-from-left-1">
+                    GLOBAL STREAK
+                  </div>
+                </div>
+              </div>
+
+              <form onSubmit={handleQuickAdd} className="flex-1 max-w-xs ml-auto relative">
                 <input
                   type="text"
                   value={quickQuest}
@@ -159,81 +264,105 @@ export default function Dashboard() {
               </form>
             </div>
             <div className="flex flex-col gap-2">
-              {dailyQuests.filter(q => q.type === 'daily' && q.repeating).map(quest => (
-                <div key={quest.id} className={cn(
-                  "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 group",
-                  quest.completed ? 'bg-[var(--bg-primary)] border-[var(--border-subtle)] opacity-40' :
-                    quest.type === 'boss'
-                      ? 'bg-gradient-to-br from-[#111] to-[#222] border-[#7C3AED]/50 shadow-[0_0_30px_rgba(124,58,237,0.15)] ring-1 ring-[#7C3AED]/20'
-                      : 'bg-white/[0.03] border-white/[0.05] hover:border-white/20'
-                )}>
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => {
-                        setTargetQuestId(quest.id);
-                        setPendingActivity({
-                          statId: quest.statId,
-                          xp: quest.xpReward,
-                          questId: quest.id
-                        });
-                        setProofModalOpen(true);
-                      }}
-                      disabled={quest.completed || quest.failed}
-                      className={cn(
-                        "h-10 w-10 rounded-xl flex items-center justify-center transition-all",
-                        quest.completed ? 'bg-[var(--success)]/10 text-[var(--success)] shadow-[0_0_10px_var(--success)]' :
-                          quest.type === 'boss' ? 'bg-[#7C3AED]/20 text-[#7C3AED] border border-[#7C3AED]/30' : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10'
-                      )}
-                    >
-                      {quest.completed ? <CheckSquare size={18} /> : <Square size={18} />}
-                    </button>
-                    <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <span className={cn(
-                          "font-mono text-[9px] font-black tracking-widest uppercase px-1.5 rounded",
-                          quest.type === 'boss' ? 'text-[#7C3AED] bg-[#7C3AED]/20' : 'text-white/20 bg-white/5'
-                        )}>
-                          {quest.type}
-                        </span>
-                        {quest.type === 'daily' && (
-                          <span className="font-mono text-[8px] text-white/30 uppercase flex items-center gap-2">
-                            <span className={cn(
-                              "h-1 w-1 rounded-full animate-pulse capitalize",
-                              getExpiryColor(quest.expiresAt, quest.dueDate).replace('text-', 'bg-')
-                            )} />
-                            EXPIRING IN: <span className={cn("font-black", getExpiryColor(quest.expiresAt, quest.dueDate))}>
-                              {getExpiryTime(quest.expiresAt, quest.dueDate)}
+              {dailyQuests.filter(q => q.type === 'daily' && q.repeating).map(quest => {
+                const frame = IDENTITY_FRAMES[quest.statId];
+                return (
+                  <div key={quest.id} className={cn(
+                    "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 group",
+                    quest.completed ? 'bg-[var(--bg-primary)] border-[var(--border-subtle)] opacity-40' :
+                      quest.type === 'boss'
+                        ? 'bg-gradient-to-br from-[#111] to-[#222] border-[#7C3AED]/50 shadow-[0_0_30px_rgba(124,58,237,0.15)] ring-1 ring-[#7C3AED]/20'
+                        : 'bg-white/[0.03] border-white/[0.05] hover:border-white/20'
+                  )}>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => {
+                          setTargetQuestId(quest.id);
+                          setPendingActivity({
+                            statId: quest.statId,
+                            xp: quest.xpReward,
+                            questId: quest.id
+                          });
+                          setProofModalOpen(true);
+                        }}
+                        disabled={quest.completed || quest.failed}
+                        className={cn(
+                          "h-10 w-10 rounded-xl flex items-center justify-center transition-all",
+                          quest.completed ? 'bg-[var(--success)]/10 text-[var(--success)] shadow-[0_0_10px_var(--success)]' :
+                            quest.type === 'boss' ? 'bg-[#7C3AED]/20 text-[#7C3AED] border border-[#7C3AED]/30' : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10'
+                        )}
+                      >
+                        {quest.completed ? <CheckSquare size={18} /> : <Square size={18} />}
+                      </button>
+                      <div>
+                        {/* Identity framing */}
+                        {frame && !quest.completed && (
+                          <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mb-0.5">
+                            {frame.identity} {frame.question.split('.')[0].toLowerCase()}.
+                          </p>
+                        )}
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className={cn(
+                            "font-mono text-[9px] font-black tracking-widest uppercase px-1.5 rounded",
+                            quest.type === 'boss' ? 'text-[#7C3AED] bg-[#7C3AED]/20' : 'text-white/20 bg-white/5'
+                          )}>
+                            {quest.type}
+                          </span>
+                          {quest.type === 'daily' && (
+                            <span className="font-mono text-[8px] text-white/30 uppercase flex items-center gap-2">
+                              <span className={cn(
+                                "h-1 w-1 rounded-full animate-pulse capitalize",
+                                getExpiryColor(quest.expiresAt, quest.dueDate).replace('text-', 'bg-')
+                              )} />
+                              EXPIRING IN: <span className={cn("font-black", getExpiryColor(quest.expiresAt, quest.dueDate))}>
+                                {getExpiryTime(quest.expiresAt, quest.dueDate)}
+                              </span>
                             </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            "font-sans text-sm font-bold tracking-tight",
+                            quest.completed || quest.failed ? 'line-through text-white/20' : 'text-white'
+                          )}>
+                            {quest.title}
                           </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className={cn(
-                          "font-sans text-sm font-bold tracking-tight",
-                          quest.completed || quest.failed ? 'line-through text-white/20' : 'text-white'
-                        )}>
-                          {quest.title}
-                        </span>
-                        {quest.streak > 0 && (
-                          <span className="text-[10px] flex items-center gap-0.5 text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded border border-orange-400/20">
-                            🔥 {quest.streak}
-                          </span>
-                        )}
-                        {quest.repeating && <RefreshCcw size={12} className="text-[var(--success)]" />}
+                          {quest.streak > 0 && (
+                            <span className="text-[10px] flex items-center gap-0.5 text-orange-400 bg-orange-400/10 px-1.5 py-0.5 rounded border border-orange-400/20">
+                              🔥 {quest.streak}
+                            </span>
+                          )}
+                          {quest.repeating && <RefreshCcw size={12} className="text-[var(--success)]" />}
+                        </div>
                       </div>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <span className={cn(
+                          "font-mono text-xs font-black block",
+                          quest.type === 'boss' ? 'text-[#7C3AED]' : 'text-[var(--stat-code)]'
+                        )}>+{quest.xpReward} XP</span>
+                        <span className="font-mono text-[8px] text-white/10 uppercase font-black">UNLOCKED</span>
+                      </div>
+                      {/* Fail button with consequence chain */}
+                      {!quest.completed && !quest.failed && (
+                        <button
+                          onClick={() => handleQuestFail({ id: quest.id, statId: quest.statId, title: quest.title })}
+                          className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                          title="Mark as skipped"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className={cn(
-                      "font-mono text-xs font-black block",
-                      quest.type === 'boss' ? 'text-[#7C3AED]' : 'text-[var(--stat-code)]'
-                    )}>+{quest.xpReward} XP</span>
-                    <span className="font-mono text-[8px] text-white/10 uppercase font-black">UNLOCKED</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
+
+          {/* Honest Sentence */}
+          <HonestSentence />
 
           <div className="w-full">
             <InteractiveHeatmap entries={activityLog.map(log => ({ timestamp: log.timestamp, xp: log.xp }))} />
@@ -253,6 +382,8 @@ export default function Dashboard() {
           <div className="flex flex-col gap-4">
             <FocusTimer />
             <BioSync />
+            <EnergyDashboard />
+            <AntiWishlistCard />
             <StabilityMeter />
             <FreedomBreakdown />
             <ActivityHistory />
@@ -397,7 +528,6 @@ function FocusTimer() {
           setMode(nextMode);
           setMinutes(nextMode === 'focus' ? 25 : 5);
           setSeconds(0);
-
           if (mode === 'focus') {
             logActivity('mind', 15);
           }

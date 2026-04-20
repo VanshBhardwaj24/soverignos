@@ -3,6 +3,7 @@ import {
   BarChart, Bar, XAxis, Tooltip, 
   ResponsiveContainer, PieChart, Pie, Cell 
 } from 'recharts';
+import { motion } from 'framer-motion';
 import type { JobApp } from '../../store/sovereign';
 import { Target, TrendingUp, Zap, PieChart as PieIcon } from 'lucide-react';
 
@@ -35,6 +36,23 @@ export const JobAnalytics: React.FC<JobAnalyticsProps> = ({ jobs }) => {
     const conversion = applied > 0 ? (interviews / applied * 100).toFixed(1) : '0';
 
     return { total, applied, interviews, conversion };
+  }, [jobs]);
+
+  const responseData = useMemo(() => {
+    const highEffort = jobs.filter(j => j.effort === 'high' || (j.notes && j.notes.length > 200));
+    const lowEffort = jobs.filter(j => j.effort === 'low' || (!j.notes || j.notes.length <= 200));
+    
+    const getRate = (list: JobApp[]) => {
+      const active = list.filter(j => j.status !== 'RESEARCHING').length;
+      if (active === 0) return 0;
+      const responses = list.filter(j => ['INTERVIEWING', 'PENDING OFFER', 'ACCEPTED', 'REJECTED'].includes(j.status)).length;
+      return (responses / active * 100);
+    };
+
+    return [
+      { name: 'HIGH EFFORT', rate: getRate(highEffort), color: 'var(--stat-mind)' },
+      { name: 'SPRAY & PRAY', rate: getRate(lowEffort), color: 'var(--danger)' },
+    ];
   }, [jobs]);
 
   return (
@@ -105,6 +123,40 @@ export const JobAnalytics: React.FC<JobAnalyticsProps> = ({ jobs }) => {
                </div>
              ))}
           </div>
+        </div>
+
+        {/* Response Rate Wall of Shame */}
+        <div className="lg:col-span-12 bg-white/[0.03] border border-white/10 rounded-[40px] p-10">
+           <div className="flex items-center justify-between mb-10">
+              <div>
+                 <h3 className="font-mono text-[10px] tracking-[0.4em] text-[var(--stat-mind)] uppercase font-black mb-2">The Response Rate Wall</h3>
+                 <p className="font-mono text-2xl font-light text-white">EFFORT VS. RESPONSE</p>
+              </div>
+              <div className="text-right">
+                 <p className="font-mono text-[8px] text-white/20 uppercase tracking-[0.3em]">Calibration Insight</p>
+                 <p className="font-mono text-xs text-white/40 italic">Spray and Pray doesn't work. Focus does.</p>
+              </div>
+           </div>
+
+           <div className="space-y-8">
+              {responseData.map(d => (
+                 <div key={d.name} className="space-y-3">
+                    <div className="flex justify-between items-end font-mono">
+                       <span className="text-[10px] text-white/30 tracking-widest uppercase">{d.name}</span>
+                       <span className="text-2xl font-black italic" style={{ color: d.color }}>{d.rate.toFixed(1)}%</span>
+                    </div>
+                    <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                       <motion.div 
+                          className="h-full rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${d.rate}%` }}
+                          style={{ backgroundColor: d.color }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                       />
+                    </div>
+                 </div>
+              ))}
+           </div>
         </div>
       </div>
     </div>

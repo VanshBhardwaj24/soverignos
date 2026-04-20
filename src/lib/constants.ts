@@ -12,6 +12,7 @@ export const STATS: Record<string, StatDefinition> = {
   brand:   { id: 'brand',   name: 'BRAND',   colorVar: 'var(--stat-brand)'   },
   network: { id: 'network', name: 'NETWORK', colorVar: 'var(--stat-network)' },
   spirit:  { id: 'spirit',  name: 'SPIRIT',  colorVar: 'var(--stat-spirit)'  },
+  create:  { id: 'create',  name: 'CREATE',  colorVar: 'var(--stat-create)'  },
   sovereignty: { id: 'sovereignty', name: 'SOVEREIGNTY', colorVar: 'var(--stat-brand)' },
 };
 
@@ -130,6 +131,12 @@ export const SKILL_PERKS: Record<string, SkillPerk[]> = {
     { level: 25, name: 'Nexus',       desc: 'Network flywheel spinning. NETWORK XP +25%.', xpBonus: 0.25 },
     { level: 50, name: 'Sovereign',   desc: 'Network gravity achieved.', xpBonus: 0.5 },
   ],
+  create: [
+    { level: 5,  name: 'Maker',      desc: 'Creation habit forming. CREATE XP +5%.', xpBonus: 0.05 },
+    { level: 10, name: 'Producer',    desc: 'Output cadence locked. CREATE XP +12%.', xpBonus: 0.12 },
+    { level: 25, name: 'Architect',   desc: 'Build velocity maximized. CREATE XP +25%.', xpBonus: 0.25 },
+    { level: 50, name: 'Demiurge',    desc: 'Creation sovereignty achieved.', xpBonus: 0.5 },
+  ],
 };
 
 // F13: System Ranks based on Freedom Score
@@ -153,13 +160,14 @@ export function xpForLevel(level: number): number {
 
 export function computeFreedomScore(stats: Record<string, number>): number {
   const weights: Record<string, number> = {
-    code:    0.22,
-    wealth:  0.22,
-    body:    0.15,
-    mind:    0.12,
-    brand:   0.12,
-    network: 0.12,
-    spirit:  0.15,
+    code:    0.20,
+    wealth:  0.20,
+    body:    0.13,
+    mind:    0.10,
+    brand:   0.10,
+    network: 0.10,
+    spirit:  0.10,
+    create:  0.07,
   };
   return Object.entries(weights).reduce((score, [stat, weight]) => {
     const level = stats[stat] || 0;
@@ -194,3 +202,15 @@ export const PUNISHMENT_POOL: PunitiveTask[] = [
   { id: 'p5', type: 'financial', title: 'Wealth Sanction', description: 'System-wide gold deduction for operational negligence.', penalty: 100 },
   { id: 'p6', type: 'mental', title: 'Manual Transcription', description: 'Write "I will not fail the protocol" 20 times in the Mind Vault.' },
 ];
+
+// Identity-based task framing — used throughout the UI
+export const IDENTITY_FRAMES: Record<string, { identity: string; question: string }> = {
+  code:    { identity: 'Coders',      question: 'solve problems daily. Are you a coder today?' },
+  wealth:  { identity: 'Traders',     question: 'seek edge daily. Did you trade your edge today?' },
+  body:    { identity: 'Athletes',    question: 'train relentlessly. Did you train today?' },
+  mind:    { identity: 'Thinkers',    question: 'sharpen their minds daily. Did you think deeply today?' },
+  brand:   { identity: 'Influencers', question: 'amplify their signal daily. Did you amplify today?' },
+  network: { identity: 'Connectors',  question: 'reach out daily. Did you connect today?' },
+  spirit:  { identity: 'Seekers',     question: 'practice presence. Were you present today?' },
+  create:  { identity: 'Creators',    question: 'ship before they consume. Did you create today?' },
+};

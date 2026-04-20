@@ -12,8 +12,10 @@ import { cn } from '../lib/utils';
 import { KnowledgeCard } from '../components/mind/KnowledgeCard';
 import { useSearchParams } from 'react-router-dom';
 import { GrowthTab } from '../components/mind/GrowthTab';
+import { DecisionJournal } from '../components/psych/DecisionJournal';
+import { FutureLetters } from '../components/psych/FutureLetters';
 
-type MindTab = 'journal' | 'vault' | 'archives' | 'nexus';
+type MindTab = 'journal' | 'vault' | 'archives' | 'nexus' | 'decisions' | 'letters';
 
 export default function Mind() {
   const { 
@@ -153,6 +155,8 @@ export default function Mind() {
             <TabButton active={activeTab === 'vault'} onClick={() => setActiveTab('vault')} label="Vault" />
             <TabButton active={activeTab === 'archives'} onClick={() => setActiveTab('archives')} label="Archives" />
             <TabButton active={activeTab === 'nexus'} onClick={() => setActiveTab('nexus')} label="Nexus" />
+            <TabButton active={activeTab === 'decisions'} onClick={() => setActiveTab('decisions')} label="Decisions" />
+            <TabButton active={activeTab === 'letters'} onClick={() => setActiveTab('letters')} label="Future Letters" />
          </div>
       </div>
 
@@ -504,6 +508,26 @@ export default function Mind() {
                     ))
                   )}
                </div>
+            </motion.div>
+          ) : activeTab === 'decisions' ? (
+            <motion.div 
+               key="decisions"
+               initial={{ opacity: 0, scale: 0.98 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.98 }}
+               className="flex-1 p-12 overflow-y-auto no-scrollbar"
+            >
+               <DecisionJournal />
+            </motion.div>
+          ) : activeTab === 'letters' ? (
+            <motion.div 
+               key="letters"
+               initial={{ opacity: 0, scale: 0.98 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.98 }}
+               className="flex-1 p-12 overflow-y-auto no-scrollbar"
+            >
+               <FutureLetters />
             </motion.div>
           ) : (
             <motion.div 

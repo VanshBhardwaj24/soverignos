@@ -1,5 +1,6 @@
-import { useSovereignStore } from '../store/sovereign';
 import { User, Shield, LogOut, Bell, Eye, Database, Download, Upload } from 'lucide-react';
+import { useSovereignStore } from '../store/sovereign';
+import { DeadManSwitchConfig } from '../components/psych/DeadManSwitchConfig';
 
 export default function Settings() {
   const { user, logout, theme, setTheme } = useSovereignStore();
@@ -116,6 +117,11 @@ export default function Settings() {
               </label>
             </div>
           </div>
+        </section>
+
+        {/* Dead Man's Switch Section */}
+        <section className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-[32px] p-8 shadow-xl">
+          <DeadManSwitchConfig />
         </section>
 
         {/* Danger Zone */}
