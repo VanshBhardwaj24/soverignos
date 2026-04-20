@@ -411,6 +411,8 @@ export const useSovereignStore = create<SovereignStore>()(
         if (stats) {
           set({
             gold: stats.gold || 0,
+            accountabilityScore: stats.accountability_score !== undefined ? stats.accountability_score : get().accountabilityScore,
+            punishments: stats.punishments || get().punishments,
             inventory: stats.inventory || [],
             statLevels: {
               code: stats.code_level, wealth: stats.wealth_level, body: stats.body_level,
@@ -674,6 +676,30 @@ export const useSovereignStore = create<SovereignStore>()(
             return { ...q, failed: false };
           })
         }));
+
+        const { user } = get();
+        if (user && missedQuests.length > 0) {
+          const { statXP, statLevels, gold, accountabilityScore, punishments } = get();
+          try {
+            const updatePayload: any = {
+              gold,
+              accountability_score: accountabilityScore,
+              punishments
+            };
+            Object.keys(statXP).forEach(stat => {
+              updatePayload[`${stat}_xp`] = statXP[stat];
+              updatePayload[`${stat}_level`] = statLevels[stat];
+            });
+            const { error: statsError } = await supabase.from('user_stats').update(updatePayload).eq('id', user.id);
+            if (statsError) throw statsError;
+          } catch(err: any) {
+            console.error('[DB_ERROR] resetDailyQuests user_stats:', err);
+            // Non-blocking fallback if punishments missing
+            if (err?.message?.includes('punishments')) {
+              console.warn('The "punishments" column is missing from user_stats. Persisting locally as fallback.');
+            }
+          }
+        }
 
         get().addNotification({
           title: 'NEW DAY INITIALIZED',
@@ -1129,7 +1155,25 @@ export const useSovereignStore = create<SovereignStore>()(
             console.error('[DB_ERROR] failQuest:', upsertError);
             get().addNotification({ title: 'PERSISTENCE FAILED', description: 'Failed to sync failure state to cloud.', status: 'URGENT', iconType: 'alert' });
           }
-          await supabase.from('user_stats').update({ gold: get().gold }).eq('id', user.id);
+          
+          try {
+            const { error: statsError } = await supabase.from('user_stats').update({ 
+              gold: get().gold,
+              accountability_score: get().accountabilityScore,
+              punishments: get().punishments,
+              [`${questToFail.statId}_xp`]: get().statXP[questToFail.statId],
+              [`${questToFail.statId}_level`]: get().statLevels[questToFail.statId]
+            }).eq('id', user.id);
+            
+            if (statsError) throw statsError;
+          } catch (err: any) {
+            console.error('[DB_ERROR] failQuest user_stats sync:', err);
+            if (err?.message?.includes('punishments')) {
+              console.warn('The "punishments" column is missing from user_stats. Persisting locally as fallback.');
+            } else {
+              get().addNotification({ title: 'SYNC WARNING', description: 'Failed to sync stat penalty to cloud.', status: 'URGENT', iconType: 'alert' });
+            }
+          }
         }
 
         get().addNotification({
