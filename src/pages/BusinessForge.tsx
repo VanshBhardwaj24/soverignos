@@ -11,7 +11,7 @@ import { useSovereignStore } from '../store/sovereign';
 export default function BusinessForge() {
   const {
     ventures, addVenture, addVentureRevenue,
-    transactions
+    portfolios
   } = useSovereignStore();
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState('');
@@ -427,5 +427,15 @@ function TrendingUp(props: any) {
       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
       <polyline points="17 6 23 6 23 12" />
     </svg>
+  );
+}
+function VenturePnL() {
+  return (
+    <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 flex items-center justify-center min-h-[300px]">
+      <div className="text-center">
+        <LineChart size={48} className="text-[var(--stat-brand)] opacity-20 mx-auto mb-4" />
+        <p className="font-mono text-[10px] text-white/20 uppercase tracking-[0.3em]">Aggregate PnL Matrix // Awaiting More Data</p>
+      </div>
+    </div>
   );
 }

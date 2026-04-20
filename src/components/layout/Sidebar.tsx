@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, BarChart2, Target, Briefcase, Plane, Settings, PieChart, Shield, Zap, Brain, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useSovereignStore } from '../../store/sovereign';
 
 const NAV_ITEMS = [

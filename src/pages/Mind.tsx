@@ -3,7 +3,7 @@ import {
   Plus, Search, Book, Code, CreditCard, Activity, Brain, Target, Share2, 
   Bold, Italic, Underline, Type, AlignLeft, AlignCenter, AlignRight, 
   List, CheckSquare, Quote, Link as LinkIcon, Image as ImageIcon, 
-  Save, X, ArrowUpRight, Mic, Tag, Trash2, Heart, Smile, History
+  Save, X, ArrowUpRight, Mic, Tag, Trash2, Smile, History
 } from 'lucide-react';
 import { useSovereignStore } from '../store/sovereign';
 import type { JournalEntry } from '../store/sovereign';
@@ -18,7 +18,7 @@ type MindTab = 'journal' | 'vault' | 'archives' | 'nexus';
 export default function Mind() {
   const { 
     journalEntries, addJournalEntry, updateJournalEntry, 
-    knowledgeCards, addKnowledgeCard, addMoodEntry, moodHistory,
+    knowledgeCards, addKnowledgeCard, addMoodEntry,
     archiveJournalEntry, unarchiveJournalEntry
   } = useSovereignStore();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -114,6 +114,7 @@ export default function Mind() {
   const handleMoodSubmit = () => {
     addMoodEntry({
       mood,
+      energy: 5, // Default energy
       intensity,
       notes: '',
       gratitude: gratitude.filter(g => g.trim() !== ''),
@@ -577,9 +578,11 @@ function TabButton({ active, onClick, label }: { active: boolean, onClick: () =>
   );
 }
 
-function ToolbarButton({ icon, label, active = false }: { icon: React.ReactNode, label?: string, active?: boolean }) {
+function ToolbarButton({ icon, label, active = false, onClick }: { icon: React.ReactNode, label?: string, active?: boolean, onClick?: () => void }) {
   return (
-    <button className={cn(
+    <button 
+      onClick={onClick}
+      className={cn(
       "h-8 flex items-center gap-1.5 px-2 rounded-lg transition-all hover:bg-white/5",
       active ? "bg-white/10 text-[var(--stat-mind)]" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
     )}>

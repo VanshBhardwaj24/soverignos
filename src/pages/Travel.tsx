@@ -1,12 +1,12 @@
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Lock, Wind, Sun, Palmtree, Package, CheckSquare, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Lock, Wind, Sun, Palmtree, Package, CheckSquare, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSovereignStore } from '../store/sovereign';
 import { cn } from '../lib/utils';
 import { motion } from 'framer-motion';
 
 export default function Travel() {
-  const { freedomScore, statLevels, financialGoals, toggleTripChecklist, addTripChecklistItem } = useSovereignStore();
+  const { freedomScore, statLevels, financialGoals } = useSovereignStore();
   const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
 

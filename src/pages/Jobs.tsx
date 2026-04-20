@@ -3,8 +3,7 @@ import { useSovereignStore } from '../store/sovereign';
 import type { JobApp } from '../store/sovereign';
 import {
   Plus, X, Briefcase, LayoutGrid,
-  BarChart3, Settings2, Search,
-  Filter, AlertCircle
+  BarChart3, Settings2, Search, Target, Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -307,5 +306,3 @@ export default function Jobs() {
   );
 }
 
-// Helper to keep icons consistent
-import { Trash2 } from 'lucide-react';

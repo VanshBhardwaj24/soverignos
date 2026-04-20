@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, 
+  BarChart, Bar, XAxis, Tooltip, 
   ResponsiveContainer, PieChart, Pie, Cell 
 } from 'recharts';
 import type { JobApp } from '../../store/sovereign';
@@ -98,7 +98,7 @@ export const JobAnalytics: React.FC<JobAnalyticsProps> = ({ jobs }) => {
             </ResponsiveContainer>
           </div>
           <div className="mt-8 space-y-3">
-             {funnelData.map((d, i) => (
+             {funnelData.map((d, _i) => (
                <div key={d.full} className="flex justify-between items-center text-[10px] font-mono">
                  <span className="text-white/40">{d.full}</span>
                  <span className="text-white font-bold">{d.count}</span>

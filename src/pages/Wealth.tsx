@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, Cell, PieChart as ReChartsPieChart, Pie } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import {
-  Plane, Plus, ArrowDown, ArrowUp, Calendar, Briefcase, Search, X,
-  Settings, Bell, Repeat, Pencil, Trash2, TrendingUp, Target,
-  Shield, Wallet, PieChart as LucidePieChart, Check
+  Plane, Plus, Calendar, Briefcase, Search, X,
+  Settings, Bell, Repeat, Pencil, Trash2, Target,
+  Shield, Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSovereignStore } from '../store/sovereign';
@@ -13,7 +13,8 @@ export default function Wealth() {
   const {
     transactions, addTransaction, deleteTransaction,
     updateTransaction, budgetCap, recurringTransactions,
-    addRecurringTx, removeRecurringTx, financialGoals, allocateToGoal
+    addRecurringTx, removeRecurringTx, financialGoals, allocateToGoal,
+    setBudgetCap
   } = useSovereignStore();
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -21,7 +22,6 @@ export default function Wealth() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [timeFilter, setTimeFilter] = useState('ALL');
-  const [newBudget, setNewBudget] = useState(budgetCap.toString());
 
   const [formData, setFormData] = useState({
     amount: '',
@@ -36,7 +36,6 @@ export default function Wealth() {
   let currentBalance = 5000;
   let pnl = 0;
 
-  const formattedTransactions = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
   const totalExpense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
@@ -65,7 +64,6 @@ export default function Wealth() {
     let rollingBalance = currentBalance;
 
     // Sort transactions by date descending to walk backwards
-    const sortedTxs = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     for (let i = 0; i < 30; i++) {
       const date = new Date(now);
@@ -249,7 +247,7 @@ export default function Wealth() {
               onClick={() => {
                 const newCap = prompt('Enter new monthly budget cap:', budgetCap.toString());
                 if (newCap && !isNaN(Number(newCap))) {
-                  useSovereignStore.getState().set({ budgetCap: Number(newCap) });
+                  setBudgetCap(Number(newCap));
                 }
               }}
               className="p-2 text-white/20 hover:text-white transition-colors"
@@ -616,7 +614,7 @@ export default function Wealth() {
                           <div className="text-white font-bold text-sm">{tx.description}</div>
                           <div className="text-[10px] text-white/40 font-mono uppercase">{tx.frequency} • ${tx.amount}</div>
                         </div>
-                        <button onClick={() => deleteRecurringTx(tx.id)} className="text-red-500/50 hover:text-red-500"><Trash2 size={14} /></button>
+                        <button onClick={() => removeRecurringTx(tx.id)} className="text-red-500/50 hover:text-red-500"><Trash2 size={14} /></button>
                       </div>
                     ))}
                     <button

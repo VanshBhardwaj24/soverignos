@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useSovereignStore } from '../store/sovereign';
-import { Lock, Unlock, Zap, Target, Shield, Trophy, Activity, TrendingUp, Star, Award, ChevronRight, Terminal, DollarSign, Dumbbell, Brain, Users, Megaphone } from 'lucide-react';
-import { SKILL_PERKS as CENTRALIZED_PERKS, STATS, xpForLevel, computeFreedomScore, getRank } from '../lib/constants';
+import { Zap, Target, TrendingUp, Star, Award, Terminal, DollarSign, Dumbbell, Brain, Users, Megaphone } from 'lucide-react';
+import { SKILL_PERKS as CENTRALIZED_PERKS, STATS, getRank } from '../lib/constants';
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
-  PolarRadiusAxis, ResponsiveContainer, AreaChart, Area, Tooltip, XAxis, YAxis
+  ResponsiveContainer, AreaChart, Area, Tooltip, XAxis, YAxis
 } from 'recharts';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { InteractiveHeatmap } from '../components/stats/InteractiveHeatmap';
 
@@ -29,7 +29,6 @@ export default function Stats() {
   const perks = CENTRALIZED_PERKS[activeTab] || [];
   const ActiveIcon = STAT_ICONS[activeTab] || Target;
 
-  const statXP = useSovereignStore(state => state.statXP || {});
   const freedomScore = useSovereignStore(state => state.freedomScore || 0);
   const integrity = useSovereignStore(state => state.integrity || 100);
 

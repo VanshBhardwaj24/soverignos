@@ -1,5 +1,5 @@
 import { useSovereignStore } from '../store/sovereign';
-import { User, Shield, LogOut, Bell, Eye, Database, Download, Upload, Flame } from 'lucide-react';
+import { User, Shield, LogOut, Bell, Eye, Database, Download, Upload } from 'lucide-react';
 
 export default function Settings() {
   const { user, logout, theme, setTheme } = useSovereignStore();

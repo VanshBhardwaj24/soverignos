@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Lock, Unlock, Star, Zap, Shield, Target } from 'lucide-react';
+import { Lock, Unlock, Star } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { SKILL_PERKS } from '../../lib/constants';
 

@@ -1,10 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useSovereignStore } from '../store/sovereign';
 import { 
-  BarChart2, PieChart, TrendingUp, Target, 
-  Brain, Users, Zap, Coins, Activity,
-  Calendar, ArrowUpRight, ArrowDownRight,
-  Shield, AlertCircle
+  TrendingUp, Target, 
+  Brain, Users, Zap, Coins,
+  Shield
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, 
@@ -361,7 +360,7 @@ function FinancialTab({ store }: { store: any }) {
     });
 
     const data = [];
-    const sortedTxs = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(a.date).getTime());
+    const sortedTxs = [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     for (const date of last30Days) {
       const dayTxs = sortedTxs.filter(t => t.date.startsWith(date));

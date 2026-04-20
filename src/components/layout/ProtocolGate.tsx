@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Check, Lock, Zap, Target, Brain } from 'lucide-react';
 import { useSovereignStore } from '../../store/sovereign';
 import { cn } from '../../lib/utils';
 
 export const ProtocolGate = ({ children }: { children: React.ReactNode }) => {
-  const { lastDailyReset, onboardingComplete } = useSovereignStore();
+  useSovereignStore();
   
   // Logic: if today hasn't been "Initialized" via Protocol Gate, show the gate.
   // We'll use a local state tied to whether the user cleared the gate *this session*.

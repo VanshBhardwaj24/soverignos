@@ -1,5 +1,5 @@
 import { useSovereignStore } from '../store/sovereign';
-import { ShieldAlert, History, AlertTriangle, Scale, Zap, Ban } from 'lucide-react';
+import { ShieldAlert, History, AlertTriangle, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PunishmentCard } from '../components/punishments/PunishmentCard';
 import { AccountabilityMeter } from '../components/punishments/AccountabilityMeter';

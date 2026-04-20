@@ -14,7 +14,7 @@ import { cn } from '../lib/utils';
 export default function Dashboard() {
   const {
     freedomScore, dailyQuests, completeQuest, addQuest,
-    statLevels, statXP, gold, globalStreak, activityLog
+    statLevels, statXP, gold, activityLog
   } = useSovereignStore();
   const [now, setNow] = React.useState(new Date());
 
@@ -46,14 +46,15 @@ export default function Dashboard() {
       xpReward: 20,
       statId: 'code',
       difficulty: 'medium',
-      type: 'daily'
+      type: 'daily',
+      priority: 'P2'
     });
     setQuickQuest('');
   };
 
   const getExpiryTime = (expiresAt?: string, dueDate?: string) => {
     const targetDate = dueDate || expiresAt;
-    
+
     // If no explicit expiry, default to midnight today for daily missions
     let expiry: Date;
     if (!targetDate) {
@@ -65,10 +66,10 @@ export default function Dashboard() {
 
     const diff = expiry.getTime() - now.getTime();
     if (diff <= 0) return 'EXPIRED';
-    
+
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
-    
+
     if (h > 0) return `${h}h ${m}m`;
     if (m > 0) return `${m}m`;
     return '< 1m';
@@ -86,7 +87,7 @@ export default function Dashboard() {
 
     const diff = expiry.getTime() - now.getTime();
     if (diff <= 0) return 'text-red-500';
-    
+
     const hours = diff / 3600000;
     if (hours < 1) return 'text-red-500 animate-pulse';
     if (hours < 4) return 'text-orange-500';
@@ -187,13 +188,13 @@ export default function Dashboard() {
                         </span>
                         {quest.type === 'daily' && (
                           <span className="font-mono text-[8px] text-white/30 uppercase flex items-center gap-2">
-                             <span className={cn(
-                               "h-1 w-1 rounded-full animate-pulse capitalize",
-                               getExpiryColor(quest.expiresAt, quest.dueDate).replace('text-', 'bg-')
-                             )} />
-                             EXPIRING IN: <span className={cn("font-black", getExpiryColor(quest.expiresAt, quest.dueDate))}>
-                               {getExpiryTime(quest.expiresAt, quest.dueDate)}
-                             </span>
+                            <span className={cn(
+                              "h-1 w-1 rounded-full animate-pulse capitalize",
+                              getExpiryColor(quest.expiresAt, quest.dueDate).replace('text-', 'bg-')
+                            )} />
+                            EXPIRING IN: <span className={cn("font-black", getExpiryColor(quest.expiresAt, quest.dueDate))}>
+                              {getExpiryTime(quest.expiresAt, quest.dueDate)}
+                            </span>
                           </span>
                         )}
                       </div>
@@ -226,7 +227,7 @@ export default function Dashboard() {
           </div>
 
           <div className="w-full">
-            <InteractiveHeatmap />
+            <InteractiveHeatmap entries={activityLog.map(log => ({ timestamp: log.timestamp, xp: log.xp }))} />
           </div>
         </div>
 
@@ -355,7 +356,7 @@ function BioSync() {
         </div>
 
         <button
-          onClick={() => addMoodEntry({ mood, energy, notes: '', date: new Date().toISOString() })}
+          onClick={() => addMoodEntry({ mood, energy, intensity: 5, notes: '', date: new Date().toISOString() })}
           className="w-full py-3 bg-white text-black font-mono font-black tracking-widest uppercase rounded-xl hover:brightness-90 transition-all text-[9px] shadow-xl"
         >
           COMMIT BIO-METRICS

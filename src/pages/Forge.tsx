@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Zap, Hammer, Shield, Sparkles, Box, 
-  Cpu, Wallet, ArrowRight, CheckCircle2, Lock 
+  Cpu, Wallet, CheckCircle2, Lock 
 } from 'lucide-react';
 import { useSovereignStore } from '../store/sovereign';
 import { CRAFTING_RECIPES } from '../lib/constants';

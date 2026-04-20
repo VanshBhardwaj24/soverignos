@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Building2, Briefcase, Calendar, 
+  Building2, Calendar, 
   Trash2, ChevronRight, ChevronLeft,
-  FileText, ExternalLink, MoreVertical,
+  ExternalLink,
   Target
 } from 'lucide-react';
 import type { JobApp } from '../../store/sovereign';
@@ -26,7 +26,6 @@ export const JobCard: React.FC<JobCardProps> = ({
   isFirst,
   isLast
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.div
@@ -35,8 +34,6 @@ export const JobCard: React.FC<JobCardProps> = ({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover={{ y: -2 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
       className="group relative bg-white/[0.03] border border-white/10 rounded-xl p-3 transition-all hover:bg-white/[0.05] hover:border-white/20"
     >
       {/* Header */}

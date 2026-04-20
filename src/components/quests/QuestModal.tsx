@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSovereignStore } from '../../store/sovereign';
-import type { Quest } from '../../store/sovereign';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, RefreshCw, Milestone } from 'lucide-react';
+import { X, RefreshCw } from 'lucide-react';
 import { STATS } from '../../lib/constants';
 import { Select } from '../ui/Select';
 import { cn } from '../../lib/utils';

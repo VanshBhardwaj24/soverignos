@@ -26,6 +26,11 @@ export interface Quest {
   postponeCount?: number;
   postponeHistory?: { date: string; reason: string; penaltyApplied: number }[];
   reminded?: boolean;
+  archived?: boolean;
+  repeating?: boolean;
+  currentPhase?: number;
+  totalPhases?: number;
+  notes?: string;
 }
 
 export interface JobApp {
@@ -101,7 +106,7 @@ export interface Notification {
   id: string;
   title: string;
   description: string;
-  status: 'NOW' | 'RECENT' | 'OLD';
+  status: 'NOW' | 'RECENT' | 'OLD' | 'URGENT';
   iconType: 'time' | 'milestone' | 'alert' | 'xp' | 'rank';
   read: boolean;
   createdAt?: string;
@@ -135,11 +140,16 @@ export interface KnowledgeCard {
   folder: string;
   mastered: boolean;
   date: string;
+  interval?: number;
+  easiness?: number;
+  consecutiveSuccess?: number;
+  nextReview?: string;
 }
 
 export interface MoodEntry {
   id: string;
   mood: number;
+  energy: number;
   intensity: number;
   notes?: string;
   gratitude?: string[];
@@ -241,6 +251,7 @@ interface SovereignStore {
   setTheme: (theme: 'dark' | 'light') => void;
   setSelectedStat: (statId: string | null) => void;
   recomputeFreedom: () => void;
+  setBudgetCap: (cap: number) => void;
   setSidebarCollapsed: (v: boolean) => void;
   setDailyGoalXP: (xp: number) => void;
   setOnboardingComplete: () => void;
@@ -520,7 +531,6 @@ export const useSovereignStore = create<SovereignStore>()(
 
         // F1: Calculate Global Streak before resetting
         const completedYesterday = dailyQuests.filter(q => q.type === 'daily' && q.completed).length;
-        const totalDaily = dailyQuests.filter(q => q.type === 'daily').length;
 
         set(state => {
           const newGlobalStreak = completedYesterday > 0
@@ -800,19 +810,26 @@ export const useSovereignStore = create<SovereignStore>()(
       recomputeFreedom: () => {
         const { statLevels, globalStreak, accountabilityScore } = get();
 
-        const freedom = computeFreedomScore(statLevels);
+        let freedom = computeFreedomScore(statLevels);
+
+        // F15: Synergy bonus: if no stat is >40% of the total level sum
+        const totalLevels = Object.values(statLevels).reduce((a, b) => a + b, 0);
+        if (totalLevels > 0) {
+          const maxStat = Math.max(...Object.values(statLevels));
+          const synergyRatio = maxStat / totalLevels;
+          if (synergyRatio < 0.4) freedom *= 1.08; // 8% synergy bonus
+        }
 
         // F36: Integrity Calculation
-        // integrity = (accountability * 0.4) + (streakVitality * 0.3) + (statBalance * 0.3)
-        const totalLevels = Object.values(statLevels).reduce((a, b) => a + b, 0);
+        const streakVitality = Math.min(globalStreak.current / 30, 1) * 100;
+        
         let statIntegrity = 100;
         if (totalLevels > 0) {
           const avg = totalLevels / Object.keys(statLevels).length;
           const variance = Object.values(statLevels).reduce((acc, lvl) => acc + Math.abs(lvl - avg), 0) / totalLevels;
-          statIntegrity = Math.max(0, 100 - (variance * 200)); // Penalyze variance
+          statIntegrity = Math.max(0, 100 - (variance * 200)); 
         }
 
-        const streakVitality = Math.min(globalStreak.current / 30, 1) * 100;
         const integrity = (accountabilityScore * 0.4) + (streakVitality * 0.3) + (statIntegrity * 0.3);
 
         set({
@@ -823,7 +840,7 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
       prestigeStat: async (statId) => {
-        const { statLevels, prestige, user } = get();
+        const { statLevels, user } = get();
         if ((statLevels[statId] || 0) < 50) return; // Must be level 50
 
         set(state => ({
@@ -857,7 +874,7 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
       craftItem: async (recipeId) => {
-        const { gold, resources, inventory, user } = get();
+        const { gold, resources, user } = get();
         const { CRAFTING_RECIPES } = await import('../lib/constants');
         const recipe = CRAFTING_RECIPES.find(r => r.id === recipeId);
 
@@ -1244,7 +1261,7 @@ export const useSovereignStore = create<SovereignStore>()(
         if (user) await supabase.from('job_applications').update({ status }).eq('id', id).eq('user_id', user.id);
 
         // Auto-XP on status changes
-        if (status === 'interviewing') {
+        if (status === 'INTERVIEWING' || (status as string) === 'interviewing') {
           await get().logActivity('network', 25);
           get().addNotification({ title: 'INTERVIEW SECURED', description: '+25 NETWORK XP credited.', status: 'NOW', iconType: 'milestone' });
         }
@@ -1265,25 +1282,11 @@ export const useSovereignStore = create<SovereignStore>()(
         set({ snapshotHistory: [snapshot, ...snapshotHistory].slice(0, 90) });
       },
 
-      // F15: Synergy-aware freedom computation
-      recomputeFreedom: () => {
-        const { statLevels } = get();
-        let score = computeFreedomScore(statLevels);
-
-        // Synergy bonus: if no stat is >40% of the total level sum
-        const totalLevels = Object.values(statLevels).reduce((a, b) => a + b, 0);
-        if (totalLevels > 0) {
-          const maxStat = Math.max(...Object.values(statLevels));
-          const synergyRatio = maxStat / totalLevels;
-          if (synergyRatio < 0.4) score *= 1.08; // 8% synergy bonus
-        }
-
-        set({ freedomScore: Number(score.toFixed(1)) });
-      },
 
       setLogModalOpen: (open) => set({ logModalOpen: open }),
       setTheme: (theme) => set({ theme }),
       setSelectedStat: (statId) => set({ selectedStat: statId }),
+      setBudgetCap: (budgetCap) => set({ budgetCap }),
       setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
       setDailyGoalXP: (xp) => set({ dailyGoalXP: xp }),
       setOnboardingComplete: () => set({ onboardingComplete: true }),
@@ -1622,7 +1625,7 @@ export const useSovereignStore = create<SovereignStore>()(
         }));
       },
 
-      removeRecurringTx: (id) => {
+      removeRecurringTx: async (id) => {
         set(state => ({
           recurringTransactions: state.recurringTransactions.filter(r => r.id !== id)
         }));
@@ -1684,11 +1687,11 @@ export const useSovereignStore = create<SovereignStore>()(
         }));
       },
 
-      toggleTripChecklist: (tripId, itemId) => {
+      toggleTripChecklist: (_tripId, _itemId) => {
         // Implementation for trip checklist
       },
 
-      addTripChecklistItem: (tripId, text) => {
+      addTripChecklistItem: (_tripId, _text) => {
         // Implementation for trip checklist
       },
 

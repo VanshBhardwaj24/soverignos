@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSovereignStore } from '../store/sovereign';
 import {
   AlertTriangle, ChevronDown, ChevronUp, Trash2, CheckCircle, List, Pencil, RefreshCcw,
-  Plus, Search, Zap, Flame, CheckSquare, History, Bell
+  Plus, Search, Zap, Flame, CheckSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { STATS } from '../lib/constants';
@@ -21,7 +21,7 @@ export default function Quests() {
   const [postponeId, setPostponeId] = useState<string | null>(null);
 
   const {
-    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, statLevels, setQuestModalOpen, setTargetQuestId, setLogModalOpen, failQuest, bulkCompleteQuests
+    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setLogModalOpen, failQuest, bulkCompleteQuests
   } = useSovereignStore();
 
   useEffect(() => {
@@ -287,7 +287,7 @@ function TabButton({ active, onClick, label }: { active: boolean, onClick: () =>
 }
 
 function QuestEntry({
-  quest, onExecute, onFail, index, isSelected, onToggleSelect, isSelectMode, onUpdateNotes
+  quest, onExecute, onFail, index, isSelected, onToggleSelect, isSelectMode, onUpdateNotes, onPostpone
 }: {
   quest: any, onExecute: () => void, onFail: () => void, index: number,
   isSelected: boolean, onToggleSelect: () => void, isSelectMode: boolean,
@@ -298,7 +298,8 @@ function QuestEntry({
   const isWeekly = quest.type === 'weekly';
   const [expanded, setExpanded] = useState(false);
   const [notes, setNotes] = useState(quest.notes || '');
-  const { setTargetQuestId, setLogModalOpen } = useSovereignStore();
+  const setTargetQuestId = useSovereignStore(state => state.setTargetQuestId);
+  const setQuestModalOpen = useSovereignStore(state => state.setQuestModalOpen);
 
   return (
     <motion.div
@@ -448,8 +449,8 @@ function QuestEntry({
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => {
-                useSovereignStore.getState().setTargetQuestId(quest.id);
-                useSovereignStore.getState().setQuestModalOpen(true);
+                setTargetQuestId(quest.id);
+                setQuestModalOpen(true);
               }}
               className="p-2 text-white/20 hover:text-white transition-colors"
               title="Edit Protocol"
