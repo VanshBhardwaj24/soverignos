@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Backgrounds */
+    --bg-primary: #0A0A0A;
+    --bg-secondary: #111111;
+    --bg-card: #161616;
+    --bg-elevated: #1C1C1C;
+    --bg-hover: #222222;
+
+    /* Text */
+    --text-primary: #F5F5F5;
+    --text-secondary: #999999;
+    --text-muted: #555555;
+    --text-danger: #FF4444;
+
+    /* Borders */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.10);
+    --border-strong: rgba(255, 255, 255, 0.18);
+
+    /* Stat colors */
+    --stat-code: #00D4FF;
+    --stat-wealth: #FFD700;
+    --stat-body: #00FF88;
+    --stat-mind: #B57BFF;
+    --stat-brand: #FF6B35;
+    --stat-network: #FF3D8A;
+    --stat-spirit: #E11D48;
+    --stat-freedom: #FFFFFF;
+
+    /* Semantic */
+    --xp-bar-track: rgba(255,255,255,0.08);
+    --success: #00FF88;
+    --danger: #FF4444;
+    --warning: #FFB800;
+  }
+
+  :root.light {
+    /* Backgrounds */
+    --bg-primary: #F9F9F9;
+    --bg-secondary: #F0F0F0;
+    --bg-card: #FFFFFF;
+    --bg-elevated: #E5E5E5;
+    --bg-hover: #E0E0E0;
+
+    /* Text */
+    --text-primary: #0A0A0A;
+    --text-secondary: #555555;
+    --text-muted: #888888;
+    --text-danger: #D32F2F;
+
+    /* Borders */
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --border-default: rgba(0, 0, 0, 0.10);
+    --border-strong: rgba(0, 0, 0, 0.18);
+
+    --xp-bar-track: rgba(0,0,0,0.08);
+  }
+
+  body { 
+    font-family: 'Geist', sans-serif; 
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .mono { font-family: 'Geist Mono', monospace; }
+  .stat-value { font-family: 'Geist Mono'; font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; }
+  .stat-label { font-family: 'Geist Mono'; font-size: 0.625rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-secondary); }
+  .freedom-score { font-family: 'Geist Mono'; font-size: 4rem; font-weight: 300; letter-spacing: -0.04em; }
+
+  /* Sonner Customization */
+  [data-sonner-toast] {
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-strong) !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  [data-sonner-toast] [data-title] {
+    font-family: 'Geist Mono', monospace !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    color: var(--text-primary) !important;
+    margin-bottom: 4px !important;
+  }
+
+  [data-sonner-toast] [data-description] {
+    font-family: 'Geist', sans-serif !important;
+    font-size: 11px !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Progress Bar for Toasts (CSS-only implementation for .ts compatibility) */
+  [data-sonner-toast]::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--text-primary);
+    width: 100%;
+    transform-origin: left;
+    animation: toast-timer 4s linear forwards;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  @keyframes toast-timer {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+}
