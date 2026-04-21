@@ -11,6 +11,7 @@ import { PostponeModal } from '../components/quests/PostponeModal';
 import { ConsequenceChainModal } from '../components/psych/ConsequenceChainModal';
 import { StreakInsuranceModal } from '../components/psych/StreakInsuranceModal';
 import { usePsychStore } from '../store/sovereign-psych';
+import { useCadenceStore } from '../store/cadence';
 
 type QuestTab = 'strategic' | 'operational' | 'campaigns' | 'archived';
 
@@ -28,6 +29,7 @@ export default function Quests() {
   const {
     dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setPendingActivity, failQuest, bulkCompleteQuests, protectQuest
   } = useSovereignStore();
+  const { checkCadence } = useCadenceStore();
   const { logSkip } = usePsychStore();
 
   const handleQuestFail = (quest: { id: string; statId: string; title: string }) => {
@@ -44,9 +46,10 @@ export default function Quests() {
   useEffect(() => {
     const interval = setInterval(() => {
       tickQuests();
+      checkCadence();
     }, 1000);
     return () => clearInterval(interval);
-  }, [tickQuests]);
+  }, [tickQuests, checkCadence]);
 
   // Filter Logic
   const filteredQuests = useMemo(() => {
@@ -371,8 +374,11 @@ function QuestEntry({
         "relative rounded-xl border transition-all duration-300 group overflow-hidden",
         quest.completed ? "bg-white/[0.01] border-white/5 opacity-40" :
           quest.failed ? "bg-red-500/[0.05] border-red-500/20 grayscale-[0.5]" :
-            isBoss ? "bg-[var(--bg-elevated)] border-[#7649C9]/30 shadow-[0_0_20px_rgba(118,73,201,0.1)]" :
-              "bg-white/[0.03] border-white/5 hover:border-white/10 shadow-sm",
+            quest.failureStreak >= 6 ? "bg-red-950/20 border-red-600/60 shadow-[0_0_20px_rgba(220,38,38,0.2)]" :
+              quest.failureStreak >= 5 ? "bg-red-900/10 border-red-600/40" :
+                quest.failureStreak >= 3 ? "bg-red-500/[0.08] border-red-500/30" :
+                  isBoss ? "bg-[var(--bg-elevated)] border-[#7649C9]/30 shadow-[0_0_20px_rgba(118,73,201,0.1)]" :
+                    "bg-white/[0.03] border-white/5 hover:border-white/10 shadow-sm",
         isSelected && "border-white/40 ring-1 ring-white/20"
       )}
     >
@@ -446,10 +452,22 @@ function QuestEntry({
               )}
               {quest.postponeCount > 0 && (
                 <span className={cn(
-                  "flex items-center gap-1 font-mono text-[8px] font-bold border px-1.5 py-0.5 rounded animate-pulse",
+                  "flex items-center gap-1 font-mono text-[8px] font-bold border px-1.5 py-0.5 rounded",
                   isBoss ? "text-red-500 border-red-500/20" : "text-orange-500 border-orange-500/20"
                 )}>
                   {isBoss ? `STRIKE ${quest.postponeCount}/3` : `EXTENDED ${quest.postponeCount}/1`}
+                </span>
+              )}
+              {quest.failureStreak >= 3 && (
+                <span className={cn(
+                  "flex items-center gap-1 font-mono text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded border",
+                  quest.failureStreak >= 6 ? "bg-red-600 text-white border-red-600" :
+                    quest.failureStreak >= 5 ? "bg-red-500/20 text-red-500 border-red-500/40" :
+                      "bg-black/40 text-red-500 border-red-500/20"
+                )}>
+                  <AlertTriangle size={8} /> 
+                  {quest.failureStreak >= 6 ? "TERMINATION IMMINENT" : "REPEAT OFFENDER"} 
+                  {` — FAILURE #${quest.failureStreak}`}
                 </span>
               )}
             </div>

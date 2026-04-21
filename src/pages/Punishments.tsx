@@ -108,7 +108,7 @@ export default function Punishments() {
         <div className="space-y-1 text-center md:text-left">
           <h4 className="font-mono text-sm font-black text-white uppercase tracking-tight">System Policy</h4>
           <p className="text-[10px] text-white/30 font-medium uppercase tracking-tighter max-w-2xl">
-            Daily protocol missed at 00:00 IST results in -5 Accountability. Manual FAILURE results in -2. Clearing a physical penalty restores +1 Integrity.
+            Protocol missed at 00:00 results in -5 Accountability. Repeated failures (2+ days) trigger Domain-Specific Consequential Protocols. Resolve penalty quests to restore Integrity and clear violations.
           </p>
         </div>
       </div>

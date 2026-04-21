@@ -18,21 +18,22 @@ import { useEffect } from 'react';
 import { AuthOverlay } from './components/auth/AuthOverlay';
 import { Toaster, toast } from 'sonner';
 import { Calendar } from 'lucide-react';
+import { useCadenceStore } from './store/cadence';
 
 function App() {
-  const { resetDailyQuests } = useSovereignStore();
+  const { checkCadence } = useCadenceStore();
 
   useEffect(() => {
-    // Immediate check on mount
-    resetDailyQuests();
+    // Initial heartbeat
+    checkCadence();
 
-    // Check periodically for the midnight transition
+    // Protocol Heartbeat (60s)
     const interval = setInterval(() => {
-      resetDailyQuests();
-    }, 60000); // Every minute
+      checkCadence();
+    }, 60000);
 
     return () => clearInterval(interval);
-  }, [resetDailyQuests]);
+  }, [checkCadence]);
 
   // Sunday Protocol Reminder
   useEffect(() => {

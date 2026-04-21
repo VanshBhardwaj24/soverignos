@@ -5,14 +5,14 @@ export interface StatDefinition {
 }
 
 export const STATS: Record<string, StatDefinition> = {
-  code:    { id: 'code',    name: 'CODE',    colorVar: 'var(--stat-code)'    },
-  wealth:  { id: 'wealth',  name: 'WEALTH',  colorVar: 'var(--stat-wealth)'  },
-  body:    { id: 'body',    name: 'BODY',    colorVar: 'var(--stat-body)'    },
-  mind:    { id: 'mind',    name: 'MIND',    colorVar: 'var(--stat-mind)'    },
-  brand:   { id: 'brand',   name: 'BRAND',   colorVar: 'var(--stat-brand)'   },
+  code: { id: 'code', name: 'CODE', colorVar: 'var(--stat-code)' },
+  wealth: { id: 'wealth', name: 'WEALTH', colorVar: 'var(--stat-wealth)' },
+  body: { id: 'body', name: 'BODY', colorVar: 'var(--stat-body)' },
+  mind: { id: 'mind', name: 'MIND', colorVar: 'var(--stat-mind)' },
+  brand: { id: 'brand', name: 'BRAND', colorVar: 'var(--stat-brand)' },
   network: { id: 'network', name: 'NETWORK', colorVar: 'var(--stat-network)' },
-  spirit:  { id: 'spirit',  name: 'SPIRIT',  colorVar: 'var(--stat-spirit)'  },
-  create:  { id: 'create',  name: 'CREATE',  colorVar: 'var(--stat-create)'  },
+  spirit: { id: 'spirit', name: 'SPIRIT', colorVar: 'var(--stat-spirit)' },
+  create: { id: 'create', name: 'CREATE', colorVar: 'var(--stat-create)' },
   sovereignty: { id: 'sovereignty', name: 'SOVEREIGNTY', colorVar: 'var(--stat-brand)' },
 };
 
@@ -26,20 +26,20 @@ export const STAT_SYNERGIES = [
 export const PRESTIGE_XP_MULTIPLIER = 1.5; // Each prestige level adds 50% XP gain
 
 export const XP_TABLE: Record<string, number> = {
-  leetcode_easy:      20,
-  leetcode_medium:    40,
-  leetcode_hard:      80,
-  github_commit:      30,
-  job_application:    25,
-  open_source_pr:     60,
-  gym_session:        40,
-  sleep_logged:       15,
-  tweet_posted:       20,
-  linkedin_post:      35,
-  cold_outreach:      20,
-  forex_win:          50,
+  leetcode_easy: 20,
+  leetcode_medium: 40,
+  leetcode_hard: 80,
+  github_commit: 30,
+  job_application: 25,
+  open_source_pr: 60,
+  gym_session: 40,
+  sleep_logged: 15,
+  tweet_posted: 20,
+  linkedin_post: 35,
+  cold_outreach: 20,
+  forex_win: 50,
   philosophy_reading: 25,
-  journaling:         20,
+  journaling: 20,
 };
 
 export interface Recipe {
@@ -52,19 +52,19 @@ export interface Recipe {
 }
 
 export const CRAFTING_RECIPES: Recipe[] = [
-  { 
-    id: 'deep_work_focus', 
-    name: 'Neural Focus Lens', 
-    desc: 'Stat mastery shard. God Mode +15% XP gain.', 
-    cost: 500, 
+  {
+    id: 'deep_work_focus',
+    name: 'Neural Focus Lens',
+    desc: 'Stat mastery shard. God Mode +15% XP gain.',
+    cost: 500,
     ingredients: { neural_shard: 5 },
     resultItem: 'focus_lens'
   },
-  { 
-    id: 'wealth_magnet', 
-    name: 'Sovereign Sigil', 
-    desc: 'Wealth generation passive. +10% Gold from quests.', 
-    cost: 1000, 
+  {
+    id: 'wealth_magnet',
+    name: 'Sovereign Sigil',
+    desc: 'Wealth generation passive. +10% Gold from quests.',
+    cost: 1000,
     ingredients: { boss_soul: 1, neural_shard: 3 },
     resultItem: 'sovereign_sigil'
   },
@@ -72,16 +72,16 @@ export const CRAFTING_RECIPES: Recipe[] = [
 
 // F8: Quest Difficulty Multipliers
 export const DIFFICULTY_MULTIPLIERS: Record<string, number> = {
-  easy:      0.7,
-  medium:    1.0,
-  hard:      1.5,
+  easy: 0.7,
+  medium: 1.0,
+  hard: 1.5,
   legendary: 2.5,
 };
 
 export const DIFFICULTY_GOLD: Record<string, number> = {
-  easy:      0.3,
-  medium:    0.5,
-  hard:      0.8,
+  easy: 0.3,
+  medium: 0.5,
+  hard: 0.8,
   legendary: 1.5,
 };
 
@@ -96,58 +96,58 @@ export interface SkillPerk {
 
 export const SKILL_PERKS: Record<string, SkillPerk[]> = {
   code: [
-    { level: 5,  name: 'Trainee',     desc: 'Consistency forged. Base CODE XP rate +5%.', xpBonus: 0.05 },
-    { level: 10, name: 'Adept',       desc: 'Flow state unlocked. God Mode grants 1.2x XP.', xpBonus: 0.12 },
-    { level: 25, name: 'Sovereign',   desc: 'Elite status. Code XP +25%.', xpBonus: 0.25 },
+    { level: 5, name: 'Trainee', desc: 'Consistency forged. Base CODE XP rate +5%.', xpBonus: 0.05 },
+    { level: 10, name: 'Adept', desc: 'Flow state unlocked. God Mode grants 1.2x XP.', xpBonus: 0.12 },
+    { level: 25, name: 'Sovereign', desc: 'Elite status. Code XP +25%.', xpBonus: 0.25 },
     { level: 50, name: 'Grandmaster', desc: 'Stat mastery. Global Freedom Score weight increased.', xpBonus: 0.5 },
   ],
   wealth: [
-    { level: 5,  name: 'Analyst',     desc: 'Market awareness. WEALTH XP +5%.',  xpBonus: 0.05 },
-    { level: 10, name: 'Trader',      desc: 'Daily win rate improved. WEALTH XP +12%.', xpBonus: 0.12 },
-    { level: 25, name: 'Capitalist',  desc: 'Income stacks. WEALTH XP +25%.', xpBonus: 0.25 },
-    { level: 50, name: 'Tycoon',      desc: 'Full financial sovereignty. WEALTH XP +50%.', xpBonus: 0.5 },
+    { level: 5, name: 'Analyst', desc: 'Market awareness. WEALTH XP +5%.', xpBonus: 0.05 },
+    { level: 10, name: 'Trader', desc: 'Daily win rate improved. WEALTH XP +12%.', xpBonus: 0.12 },
+    { level: 25, name: 'Capitalist', desc: 'Income stacks. WEALTH XP +25%.', xpBonus: 0.25 },
+    { level: 50, name: 'Tycoon', desc: 'Full financial sovereignty. WEALTH XP +50%.', xpBonus: 0.5 },
   ],
   body: [
-    { level: 5,  name: 'Athlete',      desc: 'Conditioning optimized. BODY XP +5%.', xpBonus: 0.05 },
-    { level: 10, name: 'Warrior',      desc: 'Resilience unlocked. BODY XP +12%.', xpBonus: 0.12 },
-    { level: 25, name: 'Bio-Optimizer',desc: 'Peak performance state. BODY XP +25%.', xpBonus: 0.25 },
-    { level: 50, name: 'Apex',         desc: 'Physical sovereignty achieved.', xpBonus: 0.5 },
+    { level: 5, name: 'Athlete', desc: 'Conditioning optimized. BODY XP +5%.', xpBonus: 0.05 },
+    { level: 10, name: 'Warrior', desc: 'Resilience unlocked. BODY XP +12%.', xpBonus: 0.12 },
+    { level: 25, name: 'Bio-Optimizer', desc: 'Peak performance state. BODY XP +25%.', xpBonus: 0.25 },
+    { level: 50, name: 'Apex', desc: 'Physical sovereignty achieved.', xpBonus: 0.5 },
   ],
   mind: [
-    { level: 5,  name: 'Thinker',    desc: 'Mental acuity sharpened. MIND XP +5%.', xpBonus: 0.05 },
+    { level: 5, name: 'Thinker', desc: 'Mental acuity sharpened. MIND XP +5%.', xpBonus: 0.05 },
     { level: 10, name: 'Strategist', desc: 'Deeper pattern recognition. MIND XP +12%.', xpBonus: 0.12 },
     { level: 25, name: 'Stoic Sage', desc: 'Unshakable focus. MIND XP +25%.', xpBonus: 0.25 },
-    { level: 50, name: 'Oracle',     desc: 'Full mental sovereignty.', xpBonus: 0.5 },
+    { level: 50, name: 'Oracle', desc: 'Full mental sovereignty.', xpBonus: 0.5 },
   ],
   brand: [
-    { level: 5,  name: 'Creator',     desc: 'Content velocity increased. BRAND XP +5%.', xpBonus: 0.05 },
-    { level: 10, name: 'Influencer',  desc: 'Audience compounds. BRAND XP +12%.', xpBonus: 0.12 },
-    { level: 25, name: 'Viral Cat.',  desc: 'Viral loops activated. BRAND XP +25%.', xpBonus: 0.25 },
-    { level: 50, name: 'Icon',        desc: 'Brand sovereignty achieved.', xpBonus: 0.5 },
+    { level: 5, name: 'Creator', desc: 'Content velocity increased. BRAND XP +5%.', xpBonus: 0.05 },
+    { level: 10, name: 'Influencer', desc: 'Audience compounds. BRAND XP +12%.', xpBonus: 0.12 },
+    { level: 25, name: 'Viral Cat.', desc: 'Viral loops activated. BRAND XP +25%.', xpBonus: 0.25 },
+    { level: 50, name: 'Icon', desc: 'Brand sovereignty achieved.', xpBonus: 0.5 },
   ],
   network: [
-    { level: 5,  name: 'Connector',   desc: 'Outreach efficiency +5%.', xpBonus: 0.05 },
-    { level: 10, name: 'Networker',   desc: 'Relationship leverage active. NETWORK XP +12%.', xpBonus: 0.12 },
-    { level: 25, name: 'Nexus',       desc: 'Network flywheel spinning. NETWORK XP +25%.', xpBonus: 0.25 },
-    { level: 50, name: 'Sovereign',   desc: 'Network gravity achieved.', xpBonus: 0.5 },
+    { level: 5, name: 'Connector', desc: 'Outreach efficiency +5%.', xpBonus: 0.05 },
+    { level: 10, name: 'Networker', desc: 'Relationship leverage active. NETWORK XP +12%.', xpBonus: 0.12 },
+    { level: 25, name: 'Nexus', desc: 'Network flywheel spinning. NETWORK XP +25%.', xpBonus: 0.25 },
+    { level: 50, name: 'Sovereign', desc: 'Network gravity achieved.', xpBonus: 0.5 },
   ],
   create: [
-    { level: 5,  name: 'Maker',      desc: 'Creation habit forming. CREATE XP +5%.', xpBonus: 0.05 },
-    { level: 10, name: 'Producer',    desc: 'Output cadence locked. CREATE XP +12%.', xpBonus: 0.12 },
-    { level: 25, name: 'Architect',   desc: 'Build velocity maximized. CREATE XP +25%.', xpBonus: 0.25 },
-    { level: 50, name: 'Demiurge',    desc: 'Creation sovereignty achieved.', xpBonus: 0.5 },
+    { level: 5, name: 'Maker', desc: 'Creation habit forming. CREATE XP +5%.', xpBonus: 0.05 },
+    { level: 10, name: 'Producer', desc: 'Output cadence locked. CREATE XP +12%.', xpBonus: 0.12 },
+    { level: 25, name: 'Architect', desc: 'Build velocity maximized. CREATE XP +25%.', xpBonus: 0.25 },
+    { level: 50, name: 'Demiurge', desc: 'Creation sovereignty achieved.', xpBonus: 0.5 },
   ],
 };
 
 // F13: System Ranks based on Freedom Score
 export const SYSTEM_RANKS = [
-  { min: 0,    name: 'Rookie Initiate',  color: '#888888', tier: 0 },
-  { min: 5,    name: 'Junior Operative', color: '#22d3ee', tier: 1 },
-  { min: 15,   name: 'Senior Analyst',   color: '#3b82f6', tier: 2 },
-  { min: 30,   name: 'Field Commander',  color: '#8b5cf6', tier: 3 },
-  { min: 50,   name: 'Master Adaptor',   color: '#f59e0b', tier: 4 },
-  { min: 70,   name: 'Elite Sovereign',  color: '#ef4444', tier: 5 },
-  { min: 90,   name: 'APEX SOVEREIGN',   color: '#ffffff', tier: 6 },
+  { min: 0, name: 'Rookie Initiate', color: '#888888', tier: 0 },
+  { min: 5, name: 'Junior Operative', color: '#22d3ee', tier: 1 },
+  { min: 15, name: 'Senior Analyst', color: '#3b82f6', tier: 2 },
+  { min: 30, name: 'Field Commander', color: '#8b5cf6', tier: 3 },
+  { min: 50, name: 'Master Adaptor', color: '#f59e0b', tier: 4 },
+  { min: 70, name: 'Elite Sovereign', color: '#ef4444', tier: 5 },
+  { min: 90, name: 'APEX SOVEREIGN', color: '#ffffff', tier: 6 },
 ];
 
 export function getRank(freedomScore: number) {
@@ -160,14 +160,14 @@ export function xpForLevel(level: number): number {
 
 export function computeFreedomScore(stats: Record<string, number>): number {
   const weights: Record<string, number> = {
-    code:    0.20,
-    wealth:  0.20,
-    body:    0.13,
-    mind:    0.10,
-    brand:   0.10,
+    code: 0.20,
+    wealth: 0.20,
+    body: 0.13,
+    mind: 0.10,
+    brand: 0.10,
     network: 0.10,
-    spirit:  0.10,
-    create:  0.07,
+    spirit: 0.10,
+    create: 0.07,
   };
   return Object.entries(weights).reduce((score, [stat, weight]) => {
     const level = stats[stat] || 0;
@@ -181,36 +181,73 @@ export function computeSovereignty(stats: Record<string, number>, globalStreak: 
   const streakBonus = Math.min(globalStreak / 30, 1) * 20; // Max 20 points for 30 day streak
   const accountabilityPart = (accountabilityScore / 100) * 30; // Max 30 points
   const levelPart = (avgLevel / 50) * 50; // Max 50 points
-  
+
   return Math.min(100, streakBonus + accountabilityPart + levelPart);
 }
 
-// F30: Punitive Protocol Tasks
-export interface PunitiveTask {
+// F30: Punitive Protocol Matrix — Domain-Specific Consequential Tasks
+export interface PunitiveChoice {
   id: string;
-  type: 'physical' | 'financial' | 'mental';
   title: string;
   description: string;
-  penalty?: number;
+  xpReward: number;
 }
 
-export const PUNISHMENT_POOL: PunitiveTask[] = [
-  { id: 'p1', type: 'physical', title: 'Tactical Conditioning', description: 'Perform 50 explosive pushups to reinforce neural pathways.' },
-  { id: 'p2', type: 'physical', title: 'Cold Exposure', description: 'Immediate 3-minute cold immersion (full submergence).' },
-  { id: 'p3', type: 'physical', title: 'Metabolic Reset', description: 'Perform 30 burpees with maximal intensity.' },
-  { id: 'p4', type: 'mental', title: 'Neural Realignment', description: '15 minutes of silent, unmoving meditation. Focus on protocol adherence.' },
-  { id: 'p5', type: 'financial', title: 'Wealth Sanction', description: 'System-wide gold deduction for operational negligence.', penalty: 100 },
-  { id: 'p6', type: 'mental', title: 'Manual Transcription', description: 'Write "I will not fail the protocol" 20 times in the Mind Vault.' },
-];
+export const DOMAIN_PUNISHMENT_MATRIX: Record<string, PunitiveChoice[]> = {
+  code: [
+    { id: 'c1', title: 'LeetCode Recovery', description: 'Solve 2 Medium problems tonight + 1 Hard this week. No drafts allowed.', xpReward: 15 },
+    { id: 'c2', title: 'Technical Debt Clearance', description: 'Complete a 90-min deep refactor on the core engine. Priority: High.', xpReward: 12 },
+    { id: 'c3', title: 'Doc-String Protocol', description: 'Write technical documentation for 5 undocumented modules or APIs.', xpReward: 8 },
+  ],
+  wealth: [
+    { id: 'w1', title: 'Backtesting Marathon', description: '90 min of intensive backtesting on historical data. Focus: Failed entries.', xpReward: 15 },
+    { id: 'w2', title: 'Market Autopsy', description: 'Detailed post-mortem analysis of the last 10 trades, regardless of outcome.', xpReward: 10 },
+    { id: 'w3', title: 'Operational Lean', description: 'Full audit of business/personal expenses. Cut 2 non-essential costs.', xpReward: 5 },
+  ],
+  body: [
+    { id: 'b1', title: 'Volume Conditioning', description: '200 explosive pushups to be logged within 24 hours.', xpReward: 10 },
+    { id: 'b2', title: 'Metabolic Shock', description: '50 Burpees + 3-minute cold immersion (full submergence).', xpReward: 12 },
+    { id: 'b3', title: 'Peak VO2 Max', description: '25-min maximal intensity HIIT sprint protocol.', xpReward: 15 },
+  ],
+  network: [
+    { id: 'n1', title: 'Outreach Surge', description: 'Send 10 cold outreach messages today. Custom, high-personalization only.', xpReward: 10 },
+    { id: 'n2', title: 'Stretch Market Entry', description: 'Apply to 3 companies before midnight; one must be a reach role.', xpReward: 15 },
+    { id: 'n3', title: 'Nexus Expansion', description: 'Set up 1 high-value informational interview or strategic intro.', xpReward: 12 },
+  ],
+  brand: [
+    { id: 'br1', title: 'Signal Velocity', description: 'Write and post 3 tactical threads/tweets today. Zero drafts.', xpReward: 10 },
+    { id: 'br2', title: 'Social Gravity', description: 'Engage with 30 key industry nodes to restore signal visibility.', xpReward: 8 },
+    { id: 'br3', title: 'Profile Overhaul', description: 'Full profile/header audit and optimization for mission clarity.', xpReward: 5 },
+  ],
+  mind: [
+    { id: 'm1', title: 'Digital Blackout', description: '24hr social media/distraction blackout + 300-word terminal post-mortem.', xpReward: 15 },
+    { id: 'm2', title: 'Neural Realignment', description: '45 minutes of silent, unmoving meditation. Observe avoidance loops.', xpReward: 10 },
+    { id: 'm3', title: 'Critical Theory', description: 'Synthesize 20 pages of high-density technical or philosophical text.', xpReward: 8 },
+  ],
+  spirit: [
+    { id: 's1', title: 'Presence Mandate', description: '1 hour of full digital isolation (no tech) with pen & paper observation.', xpReward: 10 },
+    { id: 's2', title: 'Stoic Reflection', description: 'Morning and evening reflection on the dichotomy of control.', xpReward: 8 },
+    { id: 's3', title: 'Integrity Walk', description: '45-minute walk without audio/stimulants. Contemplate protocol.', xpReward: 5 },
+  ],
+  create: [
+    { id: 'cr1', title: 'Zero-Debt Ship', description: 'Push 1 functional feature or component to production/staging tonight.', xpReward: 15 },
+    { id: 'cr2', title: 'Feature Isolation', description: 'Solve 3 high-priority UI or logic bugs in the creation queue.', xpReward: 10 },
+    { id: 'cr3', title: 'Architecture Audit', description: 'Map out the next 3 phases of a core venture with component diagrams.', xpReward: 8 },
+  ],
+  general: [
+    { id: 'g1', title: 'Protocol Post-Mortem', description: 'Critical analysis of protocol failure. Identify root avoidance.', xpReward: 5 },
+    { id: 'g2', title: 'Financial Sanction', description: 'Immediate wealth tax of 100GC to reinforce core accountability.', xpReward: 0 },
+  ]
+};
 
 // Identity-based task framing — used throughout the UI
 export const IDENTITY_FRAMES: Record<string, { identity: string; question: string }> = {
-  code:    { identity: 'Coders',      question: 'solve problems daily. Are you a coder today?' },
-  wealth:  { identity: 'Traders',     question: 'seek edge daily. Did you trade your edge today?' },
-  body:    { identity: 'Athletes',    question: 'train relentlessly. Did you train today?' },
-  mind:    { identity: 'Thinkers',    question: 'sharpen their minds daily. Did you think deeply today?' },
-  brand:   { identity: 'Influencers', question: 'amplify their signal daily. Did you amplify today?' },
-  network: { identity: 'Connectors',  question: 'reach out daily. Did you connect today?' },
-  spirit:  { identity: 'Seekers',     question: 'practice presence. Were you present today?' },
-  create:  { identity: 'Creators',    question: 'ship before they consume. Did you create today?' },
+  code: { identity: 'Coders', question: 'solve problems daily. Are you a coder today?' },
+  wealth: { identity: 'Traders', question: 'seek edge daily. Did you trade your edge today?' },
+  body: { identity: 'Athletes', question: 'train relentlessly. Did you train today?' },
+  mind: { identity: 'Thinkers', question: 'sharpen their minds daily. Did you think deeply today?' },
+  brand: { identity: 'Influencers', question: 'amplify their signal daily. Did you amplify today?' },
+  network: { identity: 'Connectors', question: 'reach out daily. Did you connect today?' },
+  spirit: { identity: 'Seekers', question: 'practice presence. Were you present today?' },
+  create: { identity: 'Creators', question: 'ship before they consume. Did you create today?' },
 };

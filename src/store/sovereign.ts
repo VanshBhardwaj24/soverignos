@@ -2,7 +2,14 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
-import { xpForLevel, computeFreedomScore, computeSovereignty, SKILL_PERKS, DIFFICULTY_MULTIPLIERS } from '../lib/constants';
+import {
+  xpForLevel,
+  computeFreedomScore,
+  computeSovereignty,
+  SKILL_PERKS,
+  DIFFICULTY_MULTIPLIERS,
+} from '../lib/constants';
+import type { PunitiveChoice } from '../lib/constants';
 import { toast } from 'sonner';
 
 export interface Quest {
@@ -34,6 +41,7 @@ export interface Quest {
   notes?: string;
   dailyBriefingId?: string;
   dailyBriefingDate?: string;
+  failureStreak: number;
 }
 
 export interface JobApp {
@@ -179,13 +187,15 @@ export interface Contact {
 
 export interface Punishment {
   id: string;
-  type: 'physical' | 'financial' | 'mental' | 'debuff';
+  type: 'physical' | 'financial' | 'mental' | 'debuff' | 'consequential';
   title: string;
   description: string;
   penalty?: number;
-  status: 'active' | 'cleared' | 'failed';
+  status: 'active' | 'cleared' | 'failed' | 'awaiting_selection';
   date: string;
   questId?: string;
+  statId?: string;
+  options?: PunitiveChoice[];
 }
 
 interface SovereignStore {
@@ -207,6 +217,7 @@ interface SovereignStore {
   unlockedSkills: string[];
   integrity: number;
   consecutiveDaysFailed: number;
+  violationStreaks: Record<string, number>;
 
   dailyQuests: Quest[];
   notifications: Notification[];
@@ -226,16 +237,17 @@ interface SovereignStore {
   portfolios: Portfolio[];
   budgetCap: number;
   recurringTransactions: RecurringTx[];
+  failureStreakCache: Record<string, number>;
 
   // Actions
-  
+
   // Daily Briefing State
   briefingSeenDates: string[]; // Morning
   summarySeenDates: string[];  // Evening
   briefingTemplates: {
     id: string;
     title: string;
-    tasks: { title: string; statId: string; xpReward: number; priority: 'P0'|'P1'|'P2'|'P3' }[];
+    tasks: { title: string; statId: string; xpReward: number; priority: 'P0' | 'P1' | 'P2' | 'P3' }[];
   }[];
 
   // Actions
@@ -244,10 +256,11 @@ interface SovereignStore {
   applyDailyTemplate: (templateId: string) => void;
   finalizeDailyBriefing: (date: string) => { success: boolean; xpReward: number };
   saveTemplates: (templates: any[]) => void;
-  
+
   takeSnapshot: () => void;
   addContact: (c: Omit<Contact, 'id'>) => void;
   logOutreach: (id: string) => void;
+  acceptPunishmentOption: (punishmentId: string, optionId: string) => Promise<void>;
   lastDailyReset: string;
   lastWeeklyReset: string;
   dailyGoalXP: number;
@@ -496,6 +509,8 @@ export const useSovereignStore = create<SovereignStore>()(
         spirit: { current: 0, longest: 0 }
       },
       globalStreak: { current: 0, longest: 0 },
+      violationStreaks: {},
+      failureStreakCache: {},
 
       dailyQuests: [
         { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1' },
@@ -550,7 +565,7 @@ export const useSovereignStore = create<SovereignStore>()(
       targetQuestId: null,
       setTargetQuestId: (id) => set({ targetQuestId: id }),
       theme: 'dark',
-      
+
       // Daily Briefing State
       briefingSeenDates: [],
       summarySeenDates: [],
@@ -582,14 +597,14 @@ export const useSovereignStore = create<SovereignStore>()(
       ],
 
       setBriefingSeen: (date) => set(state => ({
-        briefingSeenDates: state.briefingSeenDates.includes(date) 
-          ? state.briefingSeenDates 
+        briefingSeenDates: state.briefingSeenDates.includes(date)
+          ? state.briefingSeenDates
           : [...state.briefingSeenDates, date]
       })),
 
       setSummarySeen: (date) => set(state => ({
-        summarySeenDates: state.summarySeenDates.includes(date) 
-          ? state.summarySeenDates 
+        summarySeenDates: state.summarySeenDates.includes(date)
+          ? state.summarySeenDates
           : [...state.summarySeenDates, date]
       })),
 
@@ -599,7 +614,7 @@ export const useSovereignStore = create<SovereignStore>()(
         if (!template) return;
 
         const dateString = new Date().toISOString().split('T')[0];
-        
+
         template.tasks.forEach(task => {
           addQuest({
             title: task.title,
@@ -682,13 +697,16 @@ export const useSovereignStore = create<SovereignStore>()(
           statLevels,
           globalStreak,
           consecutiveDaysFailed,
-          punishments
+          violationStreaks,
+          punishments,
+          failureStreakCache
         } = get();
 
         // 1. Calculate Global Streak (respects Streak Insurance protection)
-        const completedYesterday = dailyQuests.filter(q => q.type === 'daily' && q.completed).length;
-        const failedUnprotected = dailyQuests.filter(q => q.type === 'daily' && q.failed && !q.protected).length;
-        const totalDailyCount = dailyQuests.filter(q => q.type === 'daily').length;
+        const dailyQuestsFlat = dailyQuests.filter(q => q.type === 'daily');
+        const completedYesterday = dailyQuestsFlat.filter(q => q.completed).length;
+        const failedUnprotected = dailyQuestsFlat.filter(q => q.failed && !q.protected).length;
+        const totalDailyCount = dailyQuestsFlat.length;
 
         const newGlobalStreak = (completedYesterday > 0 && failedUnprotected === 0)
           ? {
@@ -699,22 +717,29 @@ export const useSovereignStore = create<SovereignStore>()(
             ? { current: 0, longest: globalStreak.longest }
             : globalStreak;
 
-        // 2. Handle Missed Quests & Punishments (only unprotected)
-        const { PUNISHMENT_POOL } = await import('../lib/constants');
+        // 2. Handle Missed Quests & Domain-Specific Punishments
+        const { DOMAIN_PUNISHMENT_MATRIX } = await import('../lib/constants');
         const missedQuests = dailyQuests.filter(q => q.type === 'daily' && !q.completed && !q.protected);
 
         let workingScore = accountabilityScore;
         let workingGold = gold;
         const workingStatXP = { ...statXP };
         const workingStatLevels = { ...statLevels };
+        const workingViolationStreaks = { ...violationStreaks };
+        const workingFailureCache = { ...failureStreakCache };
         const newPunishmentsList: Punishment[] = [];
         let newConsecutiveFailures = consecutiveDaysFailed;
 
         if (missedQuests.length > 0) {
           newConsecutiveFailures += 1;
           const escalationFactor = Math.min(2, 1 + (newConsecutiveFailures * 0.2));
-
+          const missedByStat: Record<string, number> = {};
           missedQuests.forEach(quest => {
+            missedByStat[quest.statId] = (missedByStat[quest.statId] || 0) + 1;
+
+            // Update Title-based failure streak
+            workingFailureCache[quest.title] = (workingFailureCache[quest.title] || 0) + 1;
+
             workingScore = Math.max(0, workingScore - (5 * escalationFactor));
             const penaltyAmount = Math.floor((quest.xpReward / 2) * escalationFactor);
             workingGold = Math.max(0, workingGold - penaltyAmount);
@@ -726,45 +751,71 @@ export const useSovereignStore = create<SovereignStore>()(
             let level = 1;
             while (xpForLevel(level) <= newXP) { level++; }
             workingStatLevels[quest.statId] = Math.max(1, level - 1);
-
-            const poolTask = PUNISHMENT_POOL[Math.floor(Math.random() * PUNISHMENT_POOL.length)];
-            if (poolTask.type === 'financial') workingGold = Math.max(0, workingGold - (poolTask.penalty || 0));
-
-            newPunishmentsList.push({
-              id: Math.random().toString(36).substr(2, 9),
-              type: poolTask.type as 'physical' | 'financial' | 'mental',
-              title: `VIOLATION: ${quest.title}${newConsecutiveFailures > 1 ? ` (ESC-${newConsecutiveFailures})` : ''}`,
-              description: poolTask.description,
-              penalty: poolTask.penalty,
-              status: 'active',
-              date: new Date().toISOString(),
-              questId: quest.id
-            });
           });
 
-          // Reality Wipe escalation at 7+ consecutive failures
-          if (newConsecutiveFailures >= 7) {
-            const stats = Object.keys(workingStatLevels);
-            const targetStat = stats[Math.floor(Math.random() * stats.length)];
-            workingStatLevels[targetStat] = 1;
-            workingStatXP[targetStat] = 0;
-            get().addNotification({
-              title: 'CRITICAL FAILURE: REALITY WIPE',
-              description: `Sustained protocol deviation detected. ${targetStat.toUpperCase()} level localized to baseline.`,
-              status: 'NOW', iconType: 'alert'
-            });
-          }
+          // Process aggregated punishments per domain
+          Object.entries(missedByStat).forEach(([statId, count]) => {
+            workingViolationStreaks[statId] = (workingViolationStreaks[statId] || 0) + 1;
+
+            const domainStreak = workingViolationStreaks[statId];
+            let multiplier = 1;
+            if (domainStreak >= 5) multiplier = 3;
+            else if (domainStreak >= 3) multiplier = 2;
+
+            // Trigger Penalty Quest selection if repeated failure (streak >= 2)
+            if (domainStreak >= 2) {
+              const matrix = DOMAIN_PUNISHMENT_MATRIX[statId] || DOMAIN_PUNISHMENT_MATRIX.general;
+              newPunishmentsList.push({
+                id: Math.random().toString(36).substr(2, 9),
+                type: 'consequential',
+                title: `DOMAIN VIOLATION: ${statId.toUpperCase()}`,
+                description: `Repeated failure detected in ${statId.toUpperCase()}. Choice required for resolution.`,
+                status: 'awaiting_selection',
+                date: new Date().toISOString(),
+                statId,
+                options: matrix,
+                penalty: domainStreak * 5 * multiplier
+              });
+            }
+          });
+
+          // Reality Wipe Triggered at 7+ per stat
+          Object.entries(workingViolationStreaks).forEach(([statId, streak]) => {
+            if (streak >= 7) {
+              workingStatLevels[statId] = 0;
+              workingStatXP[statId] = 0;
+              get().addNotification({
+                title: 'CRITICAL COLLAPSE: REALITY WIPE',
+                description: `Sustained protocol deviation in ${statId.toUpperCase()}. State reset to baseline level 0.`,
+                status: 'URGENT', iconType: 'alert'
+              });
+            }
+          });
         } else {
           newConsecutiveFailures = 0;
+          // Reset violation streaks for successfully executed domains
+          dailyQuests.filter(q => q.completed).forEach(q => {
+            workingViolationStreaks[q.statId] = 0;
+          });
+
+          // REHABILITATION: Bring any wiped stats (Level 0) back to Level 1 baseline
+          Object.entries(workingStatLevels).forEach(([statId, level]) => {
+            if (level === 0) {
+              workingStatLevels[statId] = 1;
+              workingStatXP[statId] = 0;
+              get().addNotification({
+                title: 'PROTOCOL REHABILITATION',
+                description: `${statId.toUpperCase()} has been restored to baseline level 1. Begin rebuilding.`,
+                status: 'NOW', iconType: 'milestone'
+              });
+            }
+          });
         }
 
-        // 3. Prepare quest reset + cloud sync payload
+        // 3. Prepare quest reset + cloud sync payload (UTC STABLE)
         const now = new Date();
-        const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-        const defaultExpiry = midnightToday.toISOString();
-
-        // Prepare cloud sync payload for quests
-        const questSyncPayload: any[] = [];
+        const midnightUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+        const defaultExpiry = midnightUTC.toISOString();
 
         const resetQuests = dailyQuests.map(q => {
           let shiftedExpiresAt = defaultExpiry;
@@ -772,34 +823,30 @@ export const useSovereignStore = create<SovereignStore>()(
 
           if (q.dueDate) {
             const prevDue = new Date(q.dueDate);
-            const shifted = new Date(now.getFullYear(), now.getMonth(), now.getDate(), prevDue.getHours(), prevDue.getMinutes(), prevDue.getSeconds());
+            // Stable UTC Shifting: Keep the SAME UTC Hour/Min, but on TODAY'S UTC Date
+            const shifted = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+              prevDue.getUTCHours(), prevDue.getUTCMinutes(), prevDue.getUTCSeconds()));
             shiftedExpiresAt = shifted.toISOString();
             shiftedDueDate = shiftedExpiresAt;
           }
 
+          const qFailureStreak = workingFailureCache[q.title] || 0;
+
           if (q.repeating && (q.type === 'daily' || (q.type === 'raid' && q.completed))) {
-            questSyncPayload.push({
-              id: q.id,
-              user_id: get().user?.id,
-              completed: false,
-              failed: false,
-              expires_at: shiftedExpiresAt,
-              due_date: shiftedDueDate,
-              streak: q.streak
-            });
             return {
               ...q,
               completed: false,
               failed: false,
               protected: false,
+              failureStreak: qFailureStreak,
               currentPhase: q.type === 'raid' ? 1 : undefined,
               expiresAt: shiftedExpiresAt,
               dueDate: shiftedDueDate,
               subtasks: q.subtasks?.map(s => ({ ...s, completed: false }))
             };
           }
-          if (!q.repeating && q.completed) return { ...q, archived: true, failed: false, protected: false };
-          return { ...q, failed: false, protected: false };
+          if (!q.repeating && q.completed) return { ...q, archived: true, failed: false, protected: false, failureStreak: 0 };
+          return { ...q, failed: false, protected: false, failureStreak: qFailureStreak };
         });
 
         // 4. SINGLE ATOMIC STATE UPDATE
@@ -807,6 +854,8 @@ export const useSovereignStore = create<SovereignStore>()(
           lastDailyReset: today,
           globalStreak: newGlobalStreak,
           consecutiveDaysFailed: newConsecutiveFailures,
+          violationStreaks: workingViolationStreaks,
+          failureStreakCache: workingFailureCache,
           accountabilityScore: workingScore,
           gold: workingGold,
           statXP: workingStatXP,
@@ -1240,15 +1289,39 @@ export const useSovereignStore = create<SovereignStore>()(
         const finalXP = Math.floor(questToComplete.xpReward * diffMult * streakBonus);
         const goldEarned = Math.floor(finalXP / 2);
 
-        set((state) => ({
-          dailyQuests: state.dailyQuests.map(q => q.id === questId ? {
+        set((state) => {
+          const updatedQuests = state.dailyQuests.map(q => q.id === questId ? {
             ...q,
             completed: true,
             streak: newStreak,
+            failureStreak: 0,
             lastCompletedAt: now.toISOString()
-          } : q),
-          gold: state.gold + goldEarned
-        }));
+          } : q);
+
+          // Reset title-based failure cache
+          const newFailureCache = { ...state.failureStreakCache };
+          if (newFailureCache[questToComplete.title]) {
+            newFailureCache[questToComplete.title] = 0;
+          }
+
+          // If this was a penalty quest, clear the associated punishment
+          let updatedPunishments = state.punishments;
+          let integrityBonus = 0;
+          if ((questToComplete as any).isPenalty) {
+            updatedPunishments = state.punishments.map(p =>
+              p.questId === questId ? { ...p, status: 'cleared' as const } : p
+            );
+            integrityBonus = 1;
+          }
+
+          return {
+            dailyQuests: updatedQuests,
+            failureStreakCache: newFailureCache,
+            gold: state.gold + goldEarned,
+            punishments: updatedPunishments,
+            integrity: Math.min(100, state.integrity + integrityBonus)
+          };
+        });
 
         const { user } = get();
         if (user) {
@@ -1331,47 +1404,115 @@ export const useSovereignStore = create<SovereignStore>()(
         const questToFail = get().dailyQuests.find(q => q.id === questId);
         if (!questToFail || questToFail.completed || questToFail.failed) return;
 
-        const { PUNISHMENT_POOL } = await import('../lib/constants');
-        const poolTask = PUNISHMENT_POOL[Math.floor(Math.random() * PUNISHMENT_POOL.length)];
+        const { DOMAIN_PUNISHMENT_MATRIX } = await import('../lib/constants');
         const punishmentId = Math.random().toString(36).substr(2, 9);
+        const { violationStreaks, accountabilityScore, gold, statXP, statLevels, failureStreakCache, integrity } = get();
+
+        // 1. Update Failure Streak Cache (Title-based)
+        const currentTitleStreak = (failureStreakCache[questToFail.title] || 0) + 1;
+        const newFailureStreakCache = { ...failureStreakCache, [questToFail.title]: currentTitleStreak };
+
+        // 2. Penalty Scaling
+        let penaltyMultiplier = 1;
+        let integrityLoss = 5;
+
+        if (currentTitleStreak >= 7) {
+          // Reality Wipe Triggered (deferred level 1 reset)
+          get().addNotification({
+            title: 'PROTOCOL COLLAPSE: REALITY WIPE',
+            description: `7th consecutive failure of "${questToFail.title}". ${questToFail.statId.toUpperCase()} has been localized to level 0.`,
+            status: 'URGENT', iconType: 'alert'
+          });
+          // Immediate set to 0, next cycle set to 1
+          set(state => ({
+            statLevels: { ...state.statLevels, [questToFail.statId]: 0 },
+            statXP: { ...state.statXP, [questToFail.statId]: 0 }
+          }));
+        } else if (currentTitleStreak >= 6) {
+          get().addNotification({
+            title: 'TERMINATION WARNING #2',
+            description: `FAILURE #6 DETECTED. ONE STRIKE REMAINING BEFORE TOTAL REALITY WIPE.`,
+            status: 'URGENT', iconType: 'alert'
+          });
+          penaltyMultiplier = 3;
+          integrityLoss = 20;
+        } else if (currentTitleStreak >= 5) {
+          penaltyMultiplier = 3;
+          integrityLoss = 15;
+        } else if (currentTitleStreak >= 3) {
+          penaltyMultiplier = 2;
+          integrityLoss = 10;
+        }
 
         let xpPenalty = 0;
-        set((state) => {
-          // F41: Priority-weighted Accountability loss
-          // P0 = 6 points, P1 = 4 points, P2 = 2 points, P3 = 1 point
-          const priorityWeights = { P0: 3, P1: 2, P2: 1, P3: 0.5 };
-          const penaltyWeight = priorityWeights[questToFail.priority] || 1;
-          const scoreLoss = 2 * penaltyWeight;
+        const newViolationStreaks = { ...violationStreaks };
+        newViolationStreaks[questToFail.statId] = (newViolationStreaks[questToFail.statId] || 0) + 1;
 
-          xpPenalty = Math.floor((questToFail.xpReward / 2) * penaltyWeight);
-          const currentXP = state.statXP[questToFail.statId] || 0;
-          const newXP = Math.max(0, currentXP - xpPenalty);
+        const priorityWeights = { P0: 3, P1: 2, P2: 1, P3: 0.5 };
+        const penaltyWeight = (priorityWeights[questToFail.priority] || 1) * penaltyMultiplier;
+        const scoreLoss = 2 * penaltyWeight;
 
-          let level = 1;
-          while (xpForLevel(level) <= newXP) { level++; }
-          level = Math.max(1, level - 1);
+        xpPenalty = Math.floor((questToFail.xpReward / 2) * penaltyWeight);
+        const currentStatXP = statXP[questToFail.statId] || 0;
+        const newXP = Math.max(0, currentStatXP - xpPenalty);
 
-          return {
-            dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, failed: true, streak: 0 } : q),
-            gold: Math.max(0, state.gold - (Math.floor(questToFail.xpReward / 2) * penaltyWeight) - (poolTask.type === 'financial' ? poolTask.penalty || 0 : 0)),
-            accountabilityScore: Math.max(0, state.accountabilityScore - scoreLoss),
-            statXP: { ...state.statXP, [questToFail.statId]: newXP },
-            statLevels: { ...state.statLevels, [questToFail.statId]: level },
-            punishments: [{
-              id: punishmentId,
-              type: poolTask.type as 'physical' | 'financial' | 'mental',
-              title: `FAILURE [${questToFail.priority}]: ${questToFail.title}`,
-              description: poolTask.description,
-              penalty: poolTask.penalty,
-              status: 'active' as const,
-              date: new Date().toISOString(),
-              questId: questId
-            }, ...state.punishments].slice(0, 100)
+        let finalLevel = 1;
+        while (xpForLevel(finalLevel) <= newXP) { finalLevel++; }
+        finalLevel = Math.max(1, finalLevel - 1);
+
+        // If Reality Wipe was triggered, override level to 0
+        const statLevelToSet = currentTitleStreak >= 7 ? 0 : finalLevel;
+
+        const isRepeated = newViolationStreaks[questToFail.statId] >= 2;
+        let newPunishment: Punishment;
+
+        if (isRepeated) {
+          const matrix = DOMAIN_PUNISHMENT_MATRIX[questToFail.statId] || DOMAIN_PUNISHMENT_MATRIX.general;
+          newPunishment = {
+            id: punishmentId,
+            type: 'consequential',
+            title: `DOMAIN VIOLATION: ${questToFail.statId.toUpperCase()}`,
+            description: `Repeated failure detected. Choice required for protocol resolution.`,
+            status: 'awaiting_selection',
+            date: new Date().toISOString(),
+            statId: questToFail.statId,
+            options: matrix,
+            penalty: (newViolationStreaks[questToFail.statId] || 1) * 5 * penaltyMultiplier
           };
-        });
+        } else {
+          newPunishment = {
+            id: punishmentId,
+            type: 'mental',
+            title: `FAILURE [${questToFail.priority}]: ${questToFail.title}`,
+            description: `Violation logged. Accountability degraded. Recovery mandate pending repeated breach.`,
+            status: 'active' as const,
+            date: new Date().toISOString(),
+            questId: questId
+          };
+        }
+
+        set((state) => ({
+          dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, failed: true, streak: 0, failureStreak: currentTitleStreak } : q),
+          gold: Math.max(0, state.gold - (Math.floor(questToFail.xpReward / 2) * penaltyWeight)),
+          accountabilityScore: Math.max(0, state.accountabilityScore - scoreLoss),
+          integrity: Math.max(0, state.integrity - integrityLoss),
+          statXP: { ...state.statXP, [questToFail.statId]: currentTitleStreak >= 7 ? 0 : newXP },
+          statLevels: { ...state.statLevels, [questToFail.statId]: statLevelToSet },
+          violationStreaks: newViolationStreaks,
+          failureStreakCache: newFailureStreakCache,
+          punishments: [newPunishment, ...state.punishments].slice(0, 100)
+        }));
 
         const { user } = get();
         if (user) {
+          // Double Warning #1 at streak 6
+          if (currentTitleStreak === 6) {
+            get().addNotification({
+              title: 'TERMINATION WARNING #1',
+              description: `Protocol violation critical. 24h window before data localized to level 1.`,
+              status: 'URGENT', iconType: 'alert'
+            });
+          }
           const { error: upsertError } = await supabase.from('quests').upsert({
             id: questId,
             user_id: user.id,
@@ -1639,6 +1780,48 @@ export const useSovereignStore = create<SovereignStore>()(
         });
 
         logActivity('network', 15, `Outreach: ${contact.name}`);
+      },
+
+      acceptPunishmentOption: async (punishmentId, optionId) => {
+        const { punishments, addQuest } = get();
+        const punishment = punishments.find(p => p.id === punishmentId);
+        if (!punishment || !punishment.options) return;
+
+        const choice = (punishment.options as any[]).find(o => o.id === optionId);
+        if (!choice) return;
+
+        // Convert the choice into a Quest
+        const penaltyQuest: any = {
+          title: `PENALTY: ${choice.title}`,
+          description: choice.description,
+          xpReward: choice.xpReward || 10,
+          statId: punishment.statId || 'mind',
+          type: 'daily',
+          streak: 0,
+          priority: 'P1',
+          isPenalty: true,
+          notes: `Resolution protocol for: ${punishment.title}`
+        };
+
+        const questId = await addQuest(penaltyQuest);
+
+        set(state => ({
+          punishments: state.punishments.map(p =>
+            p.id === punishmentId
+              ? {
+                ...p,
+                status: 'active',
+                questId: (questId as unknown as string),
+                description: choice.description,
+                title: `RESOLVING: ${choice.title}`
+              }
+              : p
+          )
+        }));
+
+        toast.success('PENAL PROTOCOL ACTIVATED', {
+          description: 'Recovery quest injected into dashboard.'
+        });
       },
 
       addJobApp: async (app) => {
@@ -2050,18 +2233,9 @@ export const useSovereignStore = create<SovereignStore>()(
         const nextQuests = dailyQuests.map(q => {
           const now = new Date().getTime();
           const hasDeadline = q.dueDate ? new Date(q.dueDate).getTime() : (q.expiresAt ? new Date(q.expiresAt).getTime() : null);
-          const isOverdue = hasDeadline && !q.completed && !q.failed && hasDeadline <= now;
 
-          if (isOverdue) {
-            changed = true;
-            setTimeout(() => failQuest(q.id), 0);
-
-            // If it's a one-off that failed, we might want to archive it or just leave it failed
-            if (!q.repeating) {
-              return { ...q, failed: true, archived: true };
-            }
-            return { ...q, failed: true };
-          }
+          // Note: Hard auto-expiry failure is now handled by CadenceStore for timezone stability.
+          // This loop now handles transient UI states like reminders and sub-minute timers.
 
           // Daily Reminder (< 1h)
           if (!q.completed && !q.failed && !q.reminded && hasDeadline) {
