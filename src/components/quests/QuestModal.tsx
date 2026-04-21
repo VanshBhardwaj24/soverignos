@@ -24,7 +24,8 @@ export const QuestModal = () => {
     xpReward: 50,
     priority: 'P2' as any,
     dueDate: '',
-    repeating: true
+    repeating: true,
+    failureStreak: 0
   });
 
   const [isEditingTemplates, setIsEditingTemplates] = useState(false);
@@ -45,7 +46,8 @@ export const QuestModal = () => {
           xpReward: currentQuest.xpReward,
           priority: currentQuest.priority || 'P2',
           dueDate: currentQuest.dueDate || '',
-          repeating: currentQuest.repeating !== undefined ? currentQuest.repeating : true
+          repeating: currentQuest.repeating !== undefined ? currentQuest.repeating : true,
+          failureStreak: currentQuest.failureStreak || 0
         });
       }
     } else if (isOpen) {
@@ -57,7 +59,8 @@ export const QuestModal = () => {
         xpReward: 50,
         priority: 'P2',
         dueDate: '',
-        repeating: true
+        repeating: true,
+        failureStreak: 0
       });
     }
   }, [targetQuestId, isOpen, quests, isEditMode, currentQuest]);

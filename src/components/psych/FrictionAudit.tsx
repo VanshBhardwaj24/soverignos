@@ -39,6 +39,7 @@ export function FrictionAudit({ onComplete }: Props) {
         difficulty: 'easy',
         type: 'daily',
         priority: 'P1',
+        failureStreak: 0
       });
     }
     setSubmitted(true);

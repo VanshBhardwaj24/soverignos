@@ -70,7 +70,8 @@ export default function Dashboard() {
       statId: 'code',
       difficulty: 'medium',
       type: 'daily',
-      priority: 'P2'
+      priority: 'P2',
+      failureStreak: 0
     });
     setQuickQuest('');
   };

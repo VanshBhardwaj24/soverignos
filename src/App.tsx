@@ -13,7 +13,6 @@ import BusinessForge from './pages/BusinessForge';
 import Punishments from './pages/Punishments';
 import Analytics from './pages/Analytics';
 import SundayProtocol from './pages/SundayProtocol';
-import { useSovereignStore } from './store/sovereign';
 import { useEffect } from 'react';
 import { AuthOverlay } from './components/auth/AuthOverlay';
 import { Toaster, toast } from 'sonner';

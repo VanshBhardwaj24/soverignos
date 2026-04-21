@@ -441,6 +441,7 @@ export const useSovereignStore = create<SovereignStore>()(
               archived: q.archived || false,
               postponeCount: q.postpone_count || 0,
               postponeHistory: q.postpone_history || [],
+              failureStreak: q.failure_streak || 0
             }))
           });
         }
@@ -513,10 +514,10 @@ export const useSovereignStore = create<SovereignStore>()(
       failureStreakCache: {},
 
       dailyQuests: [
-        { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1' },
-        { id: 'q2', title: 'Backtest XAU/USD Strategy', xpReward: 40, statId: 'wealth', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P1' },
-        { id: 'q3', title: 'Gym Session (60 min)', xpReward: 40, statId: 'body', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P2' },
-        { id: 'boss_1', title: 'DEFEAT: Market Volatility', xpReward: 500, statId: 'wealth', completed: false, type: 'boss', streak: 0, difficulty: 'legendary', priority: 'P0' },
+        { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1', failureStreak: 0 },
+        { id: 'q2', title: 'Backtest XAU/USD Strategy', xpReward: 40, statId: 'wealth', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P1', failureStreak: 0 },
+        { id: 'q3', title: 'Gym Session (60 min)', xpReward: 40, statId: 'body', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P2', failureStreak: 0 },
+        { id: 'boss_1', title: 'DEFEAT: Market Volatility', xpReward: 500, statId: 'wealth', completed: false, type: 'boss', streak: 0, difficulty: 'legendary', priority: 'P0', failureStreak: 0 },
       ],
 
       notifications: [],
@@ -624,7 +625,8 @@ export const useSovereignStore = create<SovereignStore>()(
             type: 'daily',
             repeating: false,
             dailyBriefingId: template.id,
-            dailyBriefingDate: dateString
+            dailyBriefingDate: dateString,
+            failureStreak: 0
           });
         });
 
@@ -754,7 +756,7 @@ export const useSovereignStore = create<SovereignStore>()(
           });
 
           // Process aggregated punishments per domain
-          Object.entries(missedByStat).forEach(([statId, count]) => {
+          Object.entries(missedByStat).forEach(([statId]) => {
             workingViolationStreaks[statId] = (workingViolationStreaks[statId] || 0) + 1;
 
             const domainStreak = workingViolationStreaks[statId];
@@ -817,6 +819,8 @@ export const useSovereignStore = create<SovereignStore>()(
         const midnightUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
         const defaultExpiry = midnightUTC.toISOString();
 
+        const questSyncPayload: any[] = [];
+
         const resetQuests = dailyQuests.map(q => {
           let shiftedExpiresAt = defaultExpiry;
           let shiftedDueDate = q.dueDate;
@@ -833,6 +837,15 @@ export const useSovereignStore = create<SovereignStore>()(
           const qFailureStreak = workingFailureCache[q.title] || 0;
 
           if (q.repeating && (q.type === 'daily' || (q.type === 'raid' && q.completed))) {
+            questSyncPayload.push({
+              id: q.id,
+              user_id: get().user?.id,
+              completed: false,
+              failed: false,
+              expires_at: shiftedExpiresAt,
+              due_date: shiftedDueDate,
+              streak: q.streak
+            });
             return {
               ...q,
               completed: false,
@@ -1406,7 +1419,7 @@ export const useSovereignStore = create<SovereignStore>()(
 
         const { DOMAIN_PUNISHMENT_MATRIX } = await import('../lib/constants');
         const punishmentId = Math.random().toString(36).substr(2, 9);
-        const { violationStreaks, accountabilityScore, gold, statXP, statLevels, failureStreakCache, integrity } = get();
+        const { violationStreaks, statXP, failureStreakCache } = get();
 
         // 1. Update Failure Streak Cache (Title-based)
         const currentTitleStreak = (failureStreakCache[questToFail.title] || 0) + 1;
@@ -1661,7 +1674,8 @@ export const useSovereignStore = create<SovereignStore>()(
           priority: quest.priority || 'P2',
           repeating: quest.repeating !== undefined ? quest.repeating : true,
           postponeCount: 0,
-          postponeHistory: []
+          postponeHistory: [],
+          failureStreak: 0
         };
 
         set((state) => ({ dailyQuests: [...state.dailyQuests, newQuest] }));
@@ -1800,7 +1814,8 @@ export const useSovereignStore = create<SovereignStore>()(
           streak: 0,
           priority: 'P1',
           isPenalty: true,
-          notes: `Resolution protocol for: ${punishment.title}`
+          notes: `Resolution protocol for: ${punishment.title}`,
+          failureStreak: 0
         };
 
         const questId = await addQuest(penaltyQuest);
