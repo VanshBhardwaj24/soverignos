@@ -2306,6 +2306,33 @@ export const useSovereignStore = create<SovereignStore>()(
         ventures: state.ventures,
         punishments: state.punishments,
         accountabilityScore: state.accountabilityScore,
+        // Added for persistent progress & briefing fix
+        statLevels: state.statLevels,
+        statXP: state.statXP,
+        statTodayXP: state.statTodayXP,
+        gold: state.gold,
+        inventory: state.inventory,
+        resources: state.resources,
+        freedomScore: state.freedomScore,
+        sovereignty: state.sovereignty,
+        prestige: state.prestige,
+        streaks: state.streaks,
+        globalStreak: state.globalStreak,
+        violationStreaks: state.violationStreaks,
+        integrity: state.integrity,
+        consecutiveDaysFailed: state.consecutiveDaysFailed,
+        jobApplications: state.jobApplications,
+        transactions: state.transactions,
+        journalEntries: state.journalEntries,
+        nexusContacts: state.nexusContacts,
+        financialGoals: state.financialGoals,
+        portfolios: state.portfolios,
+        budgetCap: state.budgetCap,
+        recurringTransactions: state.recurringTransactions,
+        failureStreakCache: state.failureStreakCache,
+        briefingSeenDates: state.briefingSeenDates,
+        summarySeenDates: state.summarySeenDates,
+        briefingTemplates: state.briefingTemplates
       })
     }
   )
