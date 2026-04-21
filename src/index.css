@@ -37,7 +37,7 @@
     --stat-freedom: #FFFFFF;
 
     /* Semantic */
-    --xp-bar-track: rgba(255,255,255,0.08);
+    --xp-bar-track: rgba(255, 255, 255, 0.08);
     --success: #00FF88;
     --danger: #FF4444;
     --warning: #FFB800;
@@ -62,11 +62,11 @@
     --border-default: rgba(0, 0, 0, 0.10);
     --border-strong: rgba(0, 0, 0, 0.18);
 
-    --xp-bar-track: rgba(0,0,0,0.08);
+    --xp-bar-track: rgba(0, 0, 0, 0.08);
   }
 
-  body { 
-    font-family: 'Geist', sans-serif; 
+  body {
+    font-family: 'Geist', sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
@@ -74,10 +74,31 @@
 }
 
 @layer utilities {
-  .mono { font-family: 'Geist Mono', monospace; }
-  .stat-value { font-family: 'Geist Mono'; font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; }
-  .stat-label { font-family: 'Geist Mono'; font-size: 0.625rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-secondary); }
-  .freedom-score { font-family: 'Geist Mono'; font-size: 4rem; font-weight: 300; letter-spacing: -0.04em; }
+  .mono {
+    font-family: 'Geist Mono', monospace;
+  }
+
+  .stat-value {
+    font-family: 'Geist Mono';
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-family: 'Geist Mono';
+    font-size: 0.625rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .freedom-score {
+    font-family: 'Geist Mono';
+    font-size: 4rem;
+    font-weight: 300;
+    letter-spacing: -0.04em;
+  }
 
   /* Sonner Customization */
   [data-sonner-toast] {
@@ -85,7 +106,7 @@
     border: 1px solid var(--border-strong) !important;
     border-radius: 12px !important;
     padding: 16px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
     backdrop-filter: blur(12px) !important;
   }
 
@@ -122,7 +143,12 @@
   }
 
   @keyframes toast-timer {
-    from { transform: scaleX(1); }
-    to { transform: scaleX(0); }
+    from {
+      transform: scaleX(1);
+    }
+
+    to {
+      transform: scaleX(0);
+    }
   }
 }

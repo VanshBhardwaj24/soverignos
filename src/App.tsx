@@ -13,6 +13,7 @@ import BusinessForge from './pages/BusinessForge';
 import Punishments from './pages/Punishments';
 import Analytics from './pages/Analytics';
 import SundayProtocol from './pages/SundayProtocol';
+import Profile from './pages/Profile';
 import { useEffect } from 'react';
 import { AuthOverlay } from './components/auth/AuthOverlay';
 import { Toaster, toast } from 'sonner';
@@ -65,6 +66,7 @@ function App() {
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/sunday" element={<SundayProtocol />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Dashboard />} />
           </Route>
         </Routes>

@@ -150,6 +150,33 @@ export const SYSTEM_RANKS = [
   { min: 90, name: 'APEX SOVEREIGN', color: '#ffffff', tier: 6 },
 ];
 
+export const SOVEREIGNTY_RANKS = [
+  { lv: 1, name: 'INITIATE', color: '#94a3b8' },
+  { lv: 6, name: 'RECRUIT', color: '#22d3ee' },
+  { lv: 11, name: 'OPERATIVE', color: '#8b5cf6' },
+  { lv: 21, name: 'AGENT', color: '#f59e0b' },
+  { lv: 36, name: 'COMMANDER', color: '#ef4444' },
+  { lv: 51, name: 'SOVEREIGN', color: '#ffffff' },
+  { lv: 76, name: 'ASCENDANT', color: '#fbbf24' },
+];
+
+export function getSovereigntyRank(level: number) {
+  return [...SOVEREIGNTY_RANKS].reverse().find(r => level >= r.lv) || SOVEREIGNTY_RANKS[0];
+}
+
+export function totalXPForSovereigntyLevel(level: number): number {
+  // Exponential curve: 93 * Level^1.2 hits ~2400 at level 15
+  return Math.floor(93 * Math.pow(level, 1.2));
+}
+
+export function computeSovereigntyLevel(totalXP: number): number {
+  let level = 1;
+  while (totalXPForSovereigntyLevel(level + 1) <= totalXP) {
+    level++;
+  }
+  return level;
+}
+
 export function getRank(freedomScore: number) {
   return [...SYSTEM_RANKS].reverse().find(r => freedomScore >= r.min) || SYSTEM_RANKS[0];
 }

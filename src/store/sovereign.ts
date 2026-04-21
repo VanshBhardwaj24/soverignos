@@ -139,12 +139,99 @@ export interface ActivityLogEntry {
 export interface Venture {
   id: string;
   name: string;
-  type: 'aiaa' | 'aiwa' | 'trademin' | 'lab';
+  type: 'SAAS' | 'E-COMM' | 'CONTENT' | 'SERVICE' | 'TRADING';
+  status: 'active' | 'passive' | 'ideation' | 'paused';
   revenue: number;
   expenses: number;
-  description: string;
-  status: 'active' | 'paused' | 'completed';
+  description?: string;
   date: string;
+  history?: { date: string, amount: number, memo: string }[];
+}
+
+export interface LifeEvent {
+  id: string;
+  date: string;
+  title: string;
+  description: string;
+  type: 'past' | 'future';
+  category: 'career' | 'personal' | 'financial' | 'travel';
+}
+
+export interface DelusionEntry {
+  week: string;
+  perceivedRating: number;
+  actualRating: number;
+}
+
+export interface HistoricalQuest {
+  id: string;
+  title: string;
+  statId: string;
+  status: 'completed' | 'failed';
+  timestamp: string;
+  xpReward: number;
+  difficulty?: string;
+  excuse?: string;
+}
+
+export interface StreakCemeteryEntry {
+  id: string;
+  statId: string;
+  days: number;
+  diedAt: string;
+  cause: string;
+}
+
+export interface Destination {
+  id: string;
+  name: string;
+  country: string;
+  context: string;
+  status: 'dream' | 'planned' | 'visited';
+  unlockRequirement: string;
+}
+
+export interface FreedomMilestone {
+  id: string;
+  label: string;
+  timeframe: string;
+  dependencyStatus: string;
+  isUnlocked: boolean;
+}
+
+export interface IntegrationStatus {
+  github: { connected: boolean, lastSync: string, commitsWeek: number };
+  leetcode: { connected: boolean, lastSync: string, solvedTotal: number, easy: number, medium: number, hard: number };
+  twitter: { connected: boolean, followers: number, postsMonth: number };
+  trademind: { connected: boolean, lastSync: string, winRate: number };
+}
+
+export interface StatDossiers {
+  code: {
+    leetCode: { easy: number, medium: number, hard: number, avgTimeMedium: number, mastered: string[], weak: string[] };
+    github: { longestStreak: number, currentStreak: number, prsMerged: number, commits: number };
+    jobApps: { sent: number, responseRate: number };
+  };
+  wealth: {
+    trading: { accountPhase: string; primaryPairs: string[]; drawdown: number; drawdownLimit: number };
+    income: { activeStreams: number; targetIncome: number };
+  };
+  body: {
+    gym: { sessionsMonth: number, targetSessions: number, longestStreak: number };
+    sleep: { avgHours: number, targetHours: number, currentStreak: number, bestStreak: number };
+    restDays: number;
+  };
+  brand: {
+    twitter: { engagementRate: number; articlesPublished: number; lastPostDate: string };
+    linkedin: { connections: number };
+    githubStars: number;
+  };
+  network: {
+    coldOutreach: { sent: number, responseRate: number };
+    warmConnections: number;
+    referrals: { asked: number, received: number };
+    staleContactsCount: number;
+  };
 }
 
 export interface KnowledgeCard {
@@ -238,6 +325,23 @@ interface SovereignStore {
   budgetCap: number;
   recurringTransactions: RecurringTx[];
   failureStreakCache: Record<string, number>;
+  alias: string;
+  username: string;
+  joinedAt: string;
+  bio: string;
+  foundingStatement: string;
+  foundingStatementDate: string | null;
+  graduationDate: string | null;
+  lifeEvents: LifeEvent[];
+  delusionHistory: DelusionEntry[];
+  streakCemetery: StreakCemeteryEntry[];
+  antiWishlist: string[];
+  obituaryTest: string;
+  destinationBoard: Destination[];
+  freedomRoadmap: FreedomMilestone[];
+  integrationStatus: IntegrationStatus;
+  dossiers: StatDossiers;
+  questHistory: HistoricalQuest[];
 
   // Actions
 
@@ -301,6 +405,14 @@ interface SovereignStore {
   setOnboardingComplete: () => void;
   logout: () => Promise<void>;
   clearPunishment: (id: string) => Promise<void>;
+  updateProfile: (data: Partial<{ alias: string, username: string, bio: string }>) => Promise<void>;
+  setFoundingStatement: (statement: string) => Promise<{ success: boolean; error?: string }>;
+  updateDossier: (statId: keyof StatDossiers, data: any) => void;
+  addLifeEvent: (event: Omit<LifeEvent, 'id'>) => void;
+  buryStreak: (statId: string, days: number, cause: string) => void;
+  backfillQuestHistory: () => void;
+  updateVisionBoard: (data: Partial<{ antiWishlist: string[], obituaryTest: string }>) => void;
+  updateGraduationDate: (date: string) => void;
 
   toggleNotifications: (open?: boolean) => void;
   addNotification: (n: Omit<Notification, 'id' | 'read'>) => void;
@@ -466,7 +578,13 @@ export const useSovereignStore = create<SovereignStore>()(
               code: stats.code_xp, wealth: stats.wealth_xp, body: stats.body_xp,
               mind: stats.mind_xp, brand: stats.brand_xp, network: stats.network_xp,
               spirit: stats.spirit_xp || 0, create: stats.create_xp || 0
-            }
+            },
+            alias: stats.alias || get().alias,
+            username: stats.username || user.email?.split('@')[0] || get().username,
+            joinedAt: stats.joined_at || user.created_at || get().joinedAt,
+            bio: stats.bio || get().bio,
+            foundingStatement: stats.founding_statement || get().foundingStatement,
+            foundingStatementDate: stats.founding_statement_date || get().foundingStatementDate,
           });
           get().recomputeFreedom();
         }
@@ -482,6 +600,9 @@ export const useSovereignStore = create<SovereignStore>()(
         if (lastResetFromDB !== today) {
           get().resetDailyQuests();
         }
+
+        // F-HIST: One-time backfill of quest history
+        get().backfillQuestHistory();
 
         // Initialize cadence monitor
         get().checkMissionExpiries();
@@ -541,6 +662,63 @@ export const useSovereignStore = create<SovereignStore>()(
       ],
       budgetCap: 2000,
       recurringTransactions: [],
+      alias: 'Sovereign Agent',
+      username: 'agent_alpha',
+      joinedAt: new Date().toISOString(),
+      bio: 'Building towards success.',
+      foundingStatement: '',
+      foundingStatementDate: null,
+      graduationDate: null,
+      lifeEvents: [],
+      delusionHistory: [],
+      streakCemetery: [],
+      antiWishlist: [],
+      obituaryTest: '',
+      destinationBoard: [
+        { id: '1', name: 'Bali', country: 'Indonesia', context: 'First solo international', status: 'dream', unlockRequirement: 'First job offer' },
+        { id: '2', name: 'Tokyo', country: 'Japan', context: 'When I have real money', status: 'dream', unlockRequirement: 'Net worth > $50k' },
+        { id: '3', name: 'Goa', country: 'India', context: 'Next 6 months', status: 'planned', unlockRequirement: 'Clear Phase 2' },
+      ],
+      freedomRoadmap: [
+        { id: '1', label: 'Graduated', timeframe: 'NOW', dependencyStatus: 'COMPLETED', isUnlocked: true },
+        { id: '2', label: 'First Job', timeframe: '3 Months', dependencyStatus: 'In Progress', isUnlocked: false },
+        { id: '3', label: 'TradeMind Profit', timeframe: '8 Months', dependencyStatus: 'Pending', isUnlocked: false },
+        { id: '4', label: 'Financial Independence', timeframe: '18 Months', dependencyStatus: 'Pending', isUnlocked: false },
+      ],
+      integrationStatus: {
+        github: { connected: false, lastSync: '', commitsWeek: 0 },
+        leetcode: { connected: false, lastSync: '', solvedTotal: 0, easy: 0, medium: 0, hard: 0 },
+        twitter: { connected: false, followers: 0, postsMonth: 0 },
+        trademind: { connected: false, lastSync: '', winRate: 0 }
+      },
+      questHistory: [],
+      dossiers: {
+        code: {
+          leetCode: { easy: 0, medium: 0, hard: 0, avgTimeMedium: 0, mastered: [], weak: [] },
+          github: { longestStreak: 0, currentStreak: 0, prsMerged: 0, commits: 0 },
+          jobApps: { sent: 0, responseRate: 0 }
+        },
+        wealth: {
+          trading: { accountPhase: 'PHASE 1', primaryPairs: [], drawdown: 0, drawdownLimit: 4 },
+          income: { activeStreams: 0, targetIncome: 0 }
+        },
+        body: {
+          gym: { sessionsMonth: 0, targetSessions: 30, longestStreak: 0 },
+          sleep: { avgHours: 0, targetHours: 8, currentStreak: 0, bestStreak: 0 },
+          restDays: 0
+        },
+        brand: {
+          twitter: { engagementRate: 0, articlesPublished: 0, lastPostDate: '' },
+          linkedin: { connections: 0 },
+          githubStars: 0
+        },
+        network: {
+          coldOutreach: { sent: 0, responseRate: 0 },
+          warmConnections: 0,
+          referrals: { asked: 0, received: 0 },
+          staleContactsCount: 0
+        }
+      },
       lastDailyReset: new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()),
       lastWeeklyReset: (() => {
         const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
@@ -1359,6 +1537,18 @@ export const useSovereignStore = create<SovereignStore>()(
           await supabase.from('user_stats').update({ gold: get().gold }).eq('id', user.id);
         }
 
+        // F-HIST: Log to Quest History
+        const historyEntry: HistoricalQuest = {
+          id: Math.random().toString(36).substr(2, 9),
+          title: questToComplete.title,
+          statId: questToComplete.statId,
+          status: 'completed',
+          timestamp: now.toISOString(),
+          xpReward: finalXP,
+          difficulty: questToComplete.difficulty
+        };
+        set(state => ({ questHistory: [historyEntry, ...state.questHistory].slice(0, 1000) }));
+
         if (!skipLog) {
           await get().logActivity(questToComplete.statId, finalXP, questId);
         }
@@ -1562,6 +1752,19 @@ export const useSovereignStore = create<SovereignStore>()(
             }
           }
         }
+
+        // F-HIST: Log to Quest History
+        const historyEntry: HistoricalQuest = {
+          id: Math.random().toString(36).substr(2, 9),
+          title: questToFail.title,
+          statId: questToFail.statId,
+          status: 'failed',
+          timestamp: new Date().toISOString(),
+          xpReward: 0,
+          difficulty: questToFail.difficulty,
+          excuse: currentTitleStreak >= 3 ? 'REPEATED PROTOCOL VIOLATION' : 'TIME_EXPIRED'
+        };
+        set(state => ({ questHistory: [historyEntry, ...state.questHistory].slice(0, 1000) }));
 
         get().addNotification({
           title: 'PROTOCOL FAILED',
@@ -2287,6 +2490,121 @@ export const useSovereignStore = create<SovereignStore>()(
       logout: async () => {
         await supabase.auth.signOut();
         set({ user: null, jobApplications: [], transactions: [], journalEntries: [] });
+      },
+
+      updateProfile: async (data) => {
+        const { user } = get();
+        set((state) => ({ ...state, ...data }));
+
+        if (user) {
+          const { error } = await supabase.from('user_stats').update(data).eq('id', user.id);
+          if (error) {
+            console.error('[PROFILE_ERROR] Update failed:', error);
+            toast.error('DATABASE_SYNC_FAILURE', { description: 'Profile update failed in cloud.' });
+          }
+        }
+      },
+
+      setFoundingStatement: async (statement) => {
+        const { user, foundingStatementDate } = get();
+
+        // Check 90-day lock logic
+        if (foundingStatementDate) {
+          const lastDate = new Date(foundingStatementDate);
+          const ninetyDaysLater = new Date(lastDate);
+          ninetyDaysLater.setDate(ninetyDaysLater.getDate() + 90);
+
+          if (new Date() < ninetyDaysLater) {
+            const diff = Math.ceil((ninetyDaysLater.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            return {
+              success: false,
+              error: `PROTOCOL_LOCKED: Founding statement immutable for another ${diff} days.`
+            };
+          }
+        }
+
+        const now = new Date().toISOString();
+        set({ foundingStatement: statement, foundingStatementDate: now });
+
+        if (user) {
+          const { error } = await supabase.from('user_stats').update({
+            founding_statement: statement,
+            founding_statement_date: now
+          }).eq('id', user.id);
+
+          if (error) {
+            console.error('[FOUNDING_ERROR] Sync failed:', error);
+            return { success: false, error: 'DATABASE_REJECTION: Failed to persist statement.' };
+          }
+        }
+
+        return { success: true };
+      },
+
+      updateDossier: (statId, data) => {
+        set((state) => ({
+          dossiers: {
+            ...state.dossiers,
+            [statId]: { ...state.dossiers[statId], ...data }
+          }
+        }));
+      },
+
+      addLifeEvent: (event) => {
+        set((state) => ({
+          lifeEvents: [...state.lifeEvents, { ...event, id: crypto.randomUUID() }]
+        }));
+      },
+
+      buryStreak: (statId, days, cause) => {
+        set((state) => ({
+          streakCemetery: [...state.streakCemetery, { id: crypto.randomUUID(), statId, days, diedAt: new Date().toISOString(), cause }]
+        }));
+      },
+
+      updateVisionBoard: (data) => {
+        set((state) => ({ ...state, ...data }));
+      },
+
+      updateGraduationDate: (date) => {
+        set({ graduationDate: date });
+      },
+
+      backfillQuestHistory: () => {
+        const { activityLog, streakCemetery, questHistory } = get();
+        if (questHistory.length > 0) return; // Only backfill once
+
+        const backfilled: HistoricalQuest[] = [];
+
+        // Backfill from activityLog (successes)
+        activityLog.forEach(log => {
+          if (log.questId) {
+            backfilled.push({
+              id: log.id,
+              title: log.metadata?.title || 'Unknown Objective',
+              statId: log.statId,
+              status: 'completed',
+              timestamp: log.timestamp,
+              xpReward: log.xp,
+              difficulty: log.metadata?.difficulty
+            });
+          }
+        });
+
+        // Backfill from streakCemetery (failures)
+        streakCemetery.forEach(death => {
+          backfilled.push({
+            id: death.id,
+            title: death.cause || 'Unknown Failure',
+            statId: death.statId,
+            status: 'failed',
+            timestamp: death.diedAt,
+            xpReward: 0,
+            excuse: death.cause
+          });
+        });
+
+        set({ questHistory: backfilled.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) });
       }
     }),
     {
@@ -2332,7 +2650,24 @@ export const useSovereignStore = create<SovereignStore>()(
         failureStreakCache: state.failureStreakCache,
         briefingSeenDates: state.briefingSeenDates,
         summarySeenDates: state.summarySeenDates,
-        briefingTemplates: state.briefingTemplates
+        briefingTemplates: state.briefingTemplates,
+        alias: state.alias,
+        username: state.username,
+        joinedAt: state.joinedAt,
+        bio: state.bio,
+        foundingStatement: state.foundingStatement,
+        foundingStatementDate: state.foundingStatementDate,
+        graduationDate: state.graduationDate,
+        lifeEvents: state.lifeEvents,
+        delusionHistory: state.delusionHistory,
+        streakCemetery: state.streakCemetery,
+        antiWishlist: state.antiWishlist,
+        obituaryTest: state.obituaryTest,
+        destinationBoard: state.destinationBoard,
+        freedomRoadmap: state.freedomRoadmap,
+        integrationStatus: state.integrationStatus,
+        dossiers: state.dossiers,
+        questHistory: state.questHistory
       })
     }
   )

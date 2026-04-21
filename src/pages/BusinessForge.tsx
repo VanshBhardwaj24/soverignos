@@ -6,7 +6,7 @@ import {
   DollarSign, Filter, Wallet, Target
 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useSovereignStore } from '../store/sovereign';
+import { useSovereignStore, type Venture } from '../store/sovereign';
 
 export default function BusinessForge() {
   const {
@@ -16,7 +16,7 @@ export default function BusinessForge() {
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
-  const [newType, setNewType] = useState<'aiaa' | 'aiwa' | 'trademin' | 'lab'>('aiaa');
+  const [newType, setNewType] = useState<Venture['type']>('SAAS');
 
   const aggregateRevenue = ventures.reduce((sum, v) => sum + v.revenue, 0) || 12450;
   const activeCount = ventures.length || 4;
@@ -108,10 +108,11 @@ export default function BusinessForge() {
                     onChange={e => setNewType(e.target.value as any)}
                     className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[var(--stat-brand)] appearance-none"
                   >
-                    <option value="aiaa">AI AUTOMATION AGENCY</option>
-                    <option value="aiwa">AI WEBSITE FOUNDRY</option>
-                    <option value="trademin">FINANCIAL TRADING DESK</option>
-                    <option value="lab">R&D EXPERIMENT</option>
+                    <option value="SAAS">SOFTWARE AS A SERVICE</option>
+                    <option value="E-COMM">E-COMMERCE</option>
+                    <option value="TRADING">TACTICAL TRADING</option>
+                    <option value="CONTENT">CONTENT / BRAND</option>
+                    <option value="SERVICE">SERVICE / AGENCY</option>
                   </select>
                 </div>
 
@@ -152,8 +153,8 @@ export default function BusinessForge() {
                 key={v.id}
                 title={v.name}
                 tag={v.type.toUpperCase()}
-                icon={v.type === 'aiaa' ? <Cpu size={24} /> : v.type === 'aiwa' ? <Layout size={24} /> : v.type === 'trademin' ? <LineChart size={24} /> : <Sparkles size={24} />}
-                color={v.type === 'aiaa' ? 'var(--stat-code)' : v.type === 'aiwa' ? 'var(--stat-brand)' : v.type === 'trademin' ? 'var(--stat-wealth)' : '#A855F7'}
+                icon={v.type === 'SAAS' ? <Cpu size={24} /> : v.type === 'SERVICE' ? <Layout size={24} /> : v.type === 'TRADING' ? <LineChart size={24} /> : <Sparkles size={24} />}
+                color={v.type === 'SAAS' ? 'var(--stat-code)' : v.type === 'SERVICE' ? 'var(--stat-brand)' : v.type === 'TRADING' ? 'var(--stat-wealth)' : '#A855F7'}
                 description={v.description}
               >
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

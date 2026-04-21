@@ -7,8 +7,20 @@ import { cn } from '../../lib/utils';
 export const Header = () => {
   const {
     freedomScore, setQuestModalOpen, theme, setTheme,
-    toggleNotifications, notifications, gold, statTodayXP, dailyGoalXP
+    toggleNotifications, notifications, gold, statTodayXP, dailyGoalXP,
+    alias
   } = useSovereignStore();
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    if (hour >= 17 && hour < 24) return 'Good Evening';
+    return 'Good Night';
+  };
+
+  const displayName = alias || 'Operative';
+  const greeting = `${getGreeting()}, ${displayName}`;
 
   const totalTodayXP = Object.values(statTodayXP).reduce((a, b) => a + b, 0);
   const goalProgress = Math.min((totalTodayXP / dailyGoalXP) * 100, 100);
@@ -20,8 +32,10 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 h-16 border-b border-[var(--border-default)] bg-[var(--bg-primary)]/80 backdrop-blur-md z-50 px-4 md:px-8 flex items-center justify-between transition-colors">
       <div className="flex-1 flex items-center gap-6">
         <span className="font-mono text-xl tracking-[0.15em] font-semibold text-[var(--text-primary)]">SOVEREIGN</span>
-        <div className="hidden xl:flex flex-col border-l border-white/10 pl-6">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] font-medium">Standard Protocol Time</span>
+        <div className="hidden xl:flex flex-col border-l border-white/10 pl-6 group cursor-default">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent-primary)] font-black ">
+            {greeting}
+          </span>
           <span className="text-xs font-mono text-[var(--text-primary)] opacity-90 uppercase tracking-widest whitespace-nowrap">
             {new Intl.DateTimeFormat('en-US', {
               weekday: 'long',
@@ -111,7 +125,7 @@ export const Header = () => {
           {unreadCount > 0 && <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--danger)] border border-[var(--bg-primary)]" />}
         </button>
         <button
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate('/profile')}
           className="h-8 w-8 rounded-full border border-[var(--border-default)] flex items-center justify-center text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
         >
           <User size={16} />

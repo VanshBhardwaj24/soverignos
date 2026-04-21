@@ -74,7 +74,7 @@ export const Sidebar = () => {
                 />
               )}
               <Icon size={18} className={cn(
-                "shrink-0 transition-colors", 
+                "shrink-0 transition-colors",
                 isActive ? "text-[var(--text-primary)]" : "group-hover:text-[var(--text-primary)]",
                 isSundayPath && isSunday && !isActive && "animate-pulse text-[var(--stat-mind)]"
               )} />
