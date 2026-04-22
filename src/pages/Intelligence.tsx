@@ -28,7 +28,7 @@ const Intelligence = () => {
 
   const handleRecalibrate = () => {
     updateSurveillance();
-    runCausalityAnalysis();
+    runCausalityAnalysis(true);
   };
 
   return (

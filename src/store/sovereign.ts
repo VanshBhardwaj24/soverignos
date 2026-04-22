@@ -529,7 +529,7 @@ interface SovereignStore {
   reviewKnowledgeCard: (id: string, quality: number) => void;
   checkMissionExpiries: () => Promise<void>;
   tickQuests: () => void;
-  runCausalityAnalysis: () => void;
+  runCausalityAnalysis: (isManual?: boolean) => void;
   updateSurveillance: () => void;
 }
 
@@ -2927,7 +2927,7 @@ export const useSovereignStore = create<SovereignStore>()(
         });
       },
 
-      runCausalityAnalysis: () => {
+      runCausalityAnalysis: (isManual = false) => {
         const { moodHistory, activityLog } = get();
         const psych = usePsychStore.getState();
         const logs: IntelligenceLog[] = [];
@@ -2940,7 +2940,9 @@ export const useSovereignStore = create<SovereignStore>()(
         });
 
         if (moodHistory.length < 5 || activityLog.length < 5) {
-          toast.info('INSUFFICIENT DATA', { description: 'Engine requires 5+ days of mood and activity logs.' });
+          if (isManual) {
+            toast.info('INSUFFICIENT DATA', { description: 'Engine requires 5+ days of mood and activity logs.' });
+          }
           return;
         }
 
@@ -3038,7 +3040,9 @@ export const useSovereignStore = create<SovereignStore>()(
 
         // Update logs in state
         set(state => ({ intelligenceLogs: [...logs, ...state.intelligenceLogs].slice(0, 100) }));
-        toast.info('CALIBRATION COMPLETE', { description: 'All causal variables synchronized.' });
+        if (isManual) {
+          toast.info('CALIBRATION COMPLETE', { description: 'All causal variables synchronized.' });
+        }
       }
     }),
     {
