@@ -12,6 +12,7 @@ import Marketplace from './pages/Marketplace';
 import BusinessForge from './pages/BusinessForge';
 import Punishments from './pages/Punishments';
 import Analytics from './pages/Analytics';
+import Intelligence from './pages/Intelligence';
 import SundayProtocol from './pages/SundayProtocol';
 import Profile from './pages/Profile';
 import { useEffect } from 'react';
@@ -64,6 +65,7 @@ function App() {
             <Route path="/forge" element={<BusinessForge />} />
             <Route path="/punishments" element={<Punishments />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/intelligence" element={<Intelligence />} />
             <Route path="/sunday" element={<SundayProtocol />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />

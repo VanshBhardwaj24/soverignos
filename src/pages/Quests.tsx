@@ -460,19 +460,7 @@ function QuestEntry({
                   {isBoss ? `STRIKE ${quest.postponeCount}/3` : `EXTENDED ${quest.postponeCount}/1`}
                 </span>
               )}
-              {/* {quest.failureStreak >= 3 && (
-                <span className={cn(
-                  "flex items-center gap-1 font-mono text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded border",
-                  quest.failureStreak >= 6 ? "bg-red-600 text-white border-red-600" :
-                    quest.failureStreak >= 5 ? "bg-red-500/20 text-red-500 border-red-500/40" :
-                      "bg-black/40 text-red-500 border-red-500/20"
-                )}>
-                  <AlertTriangle size={8} /> 
-                  {quest.failureStreak >= 6 ? "TERMINATION IMMINENT" : "REPEAT OFFENDER"} 
-                  {` — FAILURE #${quest.failureStreak}`}
-                </span>
-              )}
-              )} */}
+
             </div>
             <div className="flex items-center gap-3">
               <h3 className={cn(

@@ -11,6 +11,31 @@ import {
 } from '../lib/constants';
 import type { PunitiveChoice, ShopItem } from '../lib/constants';
 import { toast } from 'sonner';
+import {
+  calculateCorrelation,
+  getDiscoveryInsight,
+  mapImpact,
+  calculateResistanceFactor,
+  calculateCognitiveEntropy,
+  calculateWillpowerReserve,
+  calculateThroughput,
+  calculateFocusBalance,
+  calculateMomentum,
+  calculateConsistency,
+  analyzeSentiment,
+  calculateEnvironmentImpact,
+  calculateConsistentYouProjection,
+  calculateVelocityAndAcceleration,
+  calculateResilienceScore,
+  calculateThroughputBreakdown,
+  calculateAttentionAudit,
+  calculateCausalGraph,
+  calculateFlywheels,
+  generateSystemPredictions,
+  calculateEnvironmentSynergy,
+  calculateComparativeBenchmarks
+} from '../lib/intelligence';
+import { usePsychStore } from './sovereign-psych';
 
 export interface Quest {
   id: string;
@@ -251,6 +276,7 @@ export interface MoodEntry {
   mood: number;
   energy: number;
   intensity: number;
+  sleep?: number;
   notes?: string;
   gratitude?: string[];
   date: string;
@@ -282,6 +308,26 @@ export interface Punishment {
   questId?: string;
   statId?: string;
   options?: PunitiveChoice[];
+}
+
+export interface CausalityDiscovery {
+  id: string;
+  title: string;
+  description: string;
+  correlationStrength: number; // 0 to 1
+  impactLevel: 'Low' | 'Medium' | 'High' | 'EXTREME';
+  variables: [string, string];
+  trend: 'up' | 'down' | 'stable';
+  insight: string;
+  dataPoints: { x: any, y: any }[];
+  updatedAt: string;
+  status?: 'hypothesis' | 'verified';
+}
+
+export interface IntelligenceLog {
+  timestamp: string;
+  event: string;
+  impact: number;
 }
 
 interface SovereignStore {
@@ -338,6 +384,11 @@ interface SovereignStore {
   integrationStatus: IntegrationStatus;
   dossiers: StatDossiers;
   questHistory: HistoricalQuest[];
+
+  causalityDiscoveries: CausalityDiscovery[];
+  surveillanceMetrics: any;
+  intelligenceLogs: IntelligenceLog[];
+  projections: { name: number, xp: number }[];
 
   // F27: Marketplace & Economy
   inventory: string[];
@@ -399,7 +450,7 @@ interface SovereignStore {
   logActivity: (statId: string, xp: number, questId?: string, metadata?: Record<string, any>) => Promise<void>;
   completeQuest: (questId: string, skipLog?: boolean) => Promise<void>;
   failQuest: (questId: string) => Promise<void>;
-  addQuest: (quest: Omit<Quest, 'id' | 'completed' | 'streak'>) => Promise<void>;
+  addQuest: (quest: Omit<Quest, 'id' | 'completed' | 'streak'>) => Promise<string>;
   protectQuest: (questId: string) => Promise<void>;
   resetDailyQuests: () => Promise<void>;
   resetWeeklyQuests: () => Promise<void>;
@@ -478,6 +529,8 @@ interface SovereignStore {
   reviewKnowledgeCard: (id: string, quality: number) => void;
   checkMissionExpiries: () => Promise<void>;
   tickQuests: () => void;
+  runCausalityAnalysis: () => void;
+  updateSurveillance: () => void;
 }
 
 export const useSovereignStore = create<SovereignStore>()(
@@ -577,8 +630,9 @@ export const useSovereignStore = create<SovereignStore>()(
         if (stats) {
           set({
             gold: stats.gold || 0,
-            accountabilityScore: stats.accountability_score !== undefined ? stats.accountability_score : get().accountabilityScore,
-            punishments: stats.punishments || get().punishments,
+            accountabilityScore: stats.accountability_score ?? get().accountabilityScore,
+            integrity: stats.accountability_score ?? get().integrity,
+            punishments: stats.punishments ?? get().punishments,
             inventory: stats.inventory || [],
             statLevels: {
               code: stats.code_level, wealth: stats.wealth_level, body: stats.body_level,
@@ -626,9 +680,16 @@ export const useSovereignStore = create<SovereignStore>()(
         // F-HIST: One-time backfill of quest history
         get().backfillQuestHistory();
 
+        // Initialize intelligence engine
+        get().updateSurveillance();
+        get().runCausalityAnalysis();
+
         // Initialize cadence monitor
         get().checkMissionExpiries();
-        setInterval(() => get().checkMissionExpiries(), 60000);
+        setInterval(() => {
+          get().checkMissionExpiries();
+          get().updateSurveillance();
+        }, 60000);
       },
 
       statLevels: { code: 1, wealth: 1, body: 1, mind: 1, brand: 1, network: 1, spirit: 1, create: 1 },
@@ -660,10 +721,11 @@ export const useSovereignStore = create<SovereignStore>()(
       violationStreaks: {},
 
       dailyQuests: [
-        { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1', failureStreak: 0 },
-        { id: 'q2', title: 'Backtest XAU/USD Strategy', xpReward: 40, statId: 'wealth', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P1', failureStreak: 0 },
-        { id: 'q3', title: 'Gym Session (60 min)', xpReward: 40, statId: 'body', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P2', failureStreak: 0 },
-        { id: 'boss_1', title: 'DEFEAT: Market Volatility', xpReward: 500, statId: 'wealth', completed: false, type: 'boss', streak: 0, difficulty: 'legendary', priority: 'P0', failureStreak: 0 },
+        { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1' },
+        { id: 'q2', title: 'Backtest XAU/USD Strategy', xpReward: 40, statId: 'wealth', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P1' },
+        { id: 'q3', title: 'Gym Session (60 min)', xpReward: 40, statId: 'body', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P2' },
+        { id: 'q4', title: 'Meditate (20 min)', xpReward: 20, statId: 'mind', completed: false, type: 'daily', streak: 0, difficulty: 'easy', priority: 'P3' },
+        { id: 'boss_1', title: 'DEFEAT: Market Volatility', xpReward: 500, statId: 'wealth', completed: false, type: 'boss', streak: 0, difficulty: 'legendary', priority: 'P0' },
       ],
 
       notifications: [],
@@ -744,6 +806,21 @@ export const useSovereignStore = create<SovereignStore>()(
           staleContactsCount: 0
         }
       },
+      causalityDiscoveries: [],
+      surveillanceMetrics: {
+        resistanceFactor: 100,
+        cognitiveEntropy: 0,
+        willpowerReserve: 100,
+        throughput: 0,
+        focusBalance: 100,
+        consistency: 0,
+        momentum: 0,
+        resilienceScore: 100,
+        breakdown: { byStat: {}, byHour: {}, byDay: {} },
+        trajectoryData: { velocity: 0, acceleration: 0, trend: 'stable' }
+      },
+      intelligenceLogs: [],
+      projections: [],
       lastDailyReset: '', // Don't pre-set to today - let DB determine if reset is needed
       lastWeeklyReset: (() => {
         const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
@@ -1028,7 +1105,7 @@ export const useSovereignStore = create<SovereignStore>()(
             // Stable UTC Shifting: Keep the SAME UTC Hour/Min, but on TODAY'S UTC Date
             let shifted = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
               prevDue.getUTCHours(), prevDue.getUTCMinutes(), prevDue.getUTCSeconds()));
-            
+
             // If the shifted time has already passed TODAY, set it to TOMORROW
             // This prevents immediate failure if the user resets late in the day.
             if (shifted < now) {
@@ -1593,14 +1670,15 @@ export const useSovereignStore = create<SovereignStore>()(
             updatedPunishments = state.punishments.map(p =>
               p.questId === questId ? { ...p, status: 'cleared' as const } : p
             );
-            integrityBonus = 1;
+            integrityBonus = 1; // Increased bonus for resolving violations
           }
 
           return {
             dailyQuests: updatedQuests,
             gold: state.gold + goldEarned,
             punishments: updatedPunishments,
-            integrity: Math.min(100, state.integrity + integrityBonus)
+            integrity: Math.min(100, state.integrity + integrityBonus),
+            accountabilityScore: Math.min(100, state.accountabilityScore + integrityBonus)
           };
         });
 
@@ -1624,7 +1702,11 @@ export const useSovereignStore = create<SovereignStore>()(
             console.error('[DB_ERROR] completeQuest:', upsertError);
             get().addNotification({ title: 'PERSISTENCE FAILED', description: 'Failed to save mission completion to cloud.', status: 'URGENT', iconType: 'alert' });
           }
-          await supabase.from('user_stats').update({ gold: get().gold }).eq('id', user.id);
+          await supabase.from('user_stats').update({
+            gold: get().gold,
+            accountability_score: get().accountabilityScore,
+            punishments: get().punishments
+          }).eq('id', user.id);
         }
 
         // F-HIST: Log to Quest History
@@ -1974,6 +2056,7 @@ export const useSovereignStore = create<SovereignStore>()(
             });
           }
         }
+        return newId;
       },
 
       protectQuest: async (questId: string) => {
@@ -2082,6 +2165,7 @@ export const useSovereignStore = create<SovereignStore>()(
           streak: 0,
           priority: 'P1',
           isPenalty: true,
+          repeating: false, // Penalty quests are one-off
           notes: `Resolution protocol for: ${punishment.title}`
         };
 
@@ -2100,6 +2184,13 @@ export const useSovereignStore = create<SovereignStore>()(
               : p
           )
         }));
+
+        const { user } = get();
+        if (user) {
+          await supabase.from('user_stats').update({
+            punishments: get().punishments
+          }).eq('id', user.id);
+        }
 
         toast.success('PENAL PROTOCOL ACTIVATED', {
           description: 'Recovery quest injected into dashboard.'
@@ -2802,6 +2893,152 @@ export const useSovereignStore = create<SovereignStore>()(
         });
 
         set({ questHistory: backfilled.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) });
+      },
+
+      updateSurveillance: () => {
+        const { activityLog, snapshotHistory, statXP, moodHistory } = get();
+        const baseMetrics = {
+          resistanceFactor: calculateResistanceFactor(get().dailyQuests),
+          cognitiveEntropy: calculateCognitiveEntropy(activityLog),
+          willpowerReserve: calculateWillpowerReserve(activityLog),
+          throughput: calculateThroughput(activityLog),
+          focusBalance: calculateFocusBalance(statXP),
+          momentum: calculateMomentum(activityLog),
+          consistency: calculateConsistency(activityLog),
+          environmentImpact: calculateEnvironmentImpact(activityLog),
+          resilienceScore: calculateResilienceScore(activityLog),
+          breakdown: calculateThroughputBreakdown(activityLog),
+          trajectoryData: calculateVelocityAndAcceleration(snapshotHistory)
+        };
+
+        const metrics = {
+          ...baseMetrics,
+          attentionAudit: calculateAttentionAudit(activityLog, moodHistory),
+          causalGraph: calculateCausalGraph(activityLog),
+          predictions: generateSystemPredictions(activityLog),
+          flywheels: calculateFlywheels(activityLog),
+          environmentSynergy: calculateEnvironmentSynergy(activityLog),
+          benchmarks: calculateComparativeBenchmarks(baseMetrics, get().statLevels)
+        };
+
+        set({
+          surveillanceMetrics: metrics,
+          projections: calculateConsistentYouProjection(activityLog)
+        });
+      },
+
+      runCausalityAnalysis: () => {
+        const { moodHistory, activityLog } = get();
+        const psych = usePsychStore.getState();
+        const logs: IntelligenceLog[] = [];
+
+        // 1. Initial Scan Log
+        logs.push({
+          timestamp: new Date().toISOString(),
+          event: "Causality calibration sequence initiated. Scanning behavioral stream...",
+          impact: 0
+        });
+
+        if (moodHistory.length < 5 || activityLog.length < 5) {
+          toast.info('INSUFFICIENT DATA', { description: 'Engine requires 5+ days of mood and activity logs.' });
+          return;
+        }
+
+        // 2. Sunday Collapse Detection
+        const sundayXP = activityLog.filter(l => new Date(l.timestamp).getDay() === 0)
+          .reduce((sum, l) => sum + l.xp, 0);
+        if (sundayXP < 50) {
+          logs.push({
+            timestamp: new Date().toISOString(),
+            event: "PATTERN: Sunday collapse detected — 0 XP logged. Consistent inactivity cycle identified.",
+            impact: 45
+          });
+        }
+
+        // 3. Sleep Debt Analysis
+        const recentMood = moodHistory.slice(-3);
+        const sleepDebt = recentMood.filter(m => (m.sleep || 0) < 6).length;
+        if (sleepDebt >= 2) {
+          logs.push({
+            timestamp: new Date().toISOString(),
+            event: `ALERT: CODE session quality below baseline (sleep debt detected: ${sleepDebt} days).`,
+            impact: 60
+          });
+        }
+
+        // 4. Energy vs Output
+        const energyLevels = moodHistory.map(m => m.energy);
+        const dailyXP = moodHistory.map(m => {
+          const day = m.date.split('T')[0];
+          return activityLog
+            .filter(log => log.timestamp.startsWith(day))
+            .reduce((sum, log) => sum + log.xp, 0);
+        });
+
+        const energyCorr = calculateCorrelation(energyLevels, dailyXP);
+        if (Math.abs(energyCorr) > 0.4) {
+          const discovery: CausalityDiscovery = {
+            id: `energy_${Date.now()}`,
+            title: energyCorr > 0 ? "ENERGY → OUTPUT SYNERGY" : "ENERGY → OUTPUT INVERSION",
+            description: `Energy levels correlate ${Math.abs(energyCorr) > 0.7 ? 'strongly' : 'moderately'} with daily throughput.`,
+            correlationStrength: Math.abs(energyCorr),
+            impactLevel: mapImpact(energyCorr),
+            variables: ['Energy', 'XP Output'],
+            trend: energyCorr > 0 ? 'up' : 'down',
+            insight: getDiscoveryInsight("Energy vs Output", energyCorr),
+            dataPoints: energyLevels.map((e, i) => ({ x: e, y: dailyXP[i] })),
+            updatedAt: new Date().toISOString(),
+            status: moodHistory.length > 21 ? 'verified' : 'hypothesis'
+          };
+
+          logs.push({
+            timestamp: new Date().toISOString(),
+            event: `CAUSALITY: ${discovery.title} identified with ${(discovery.correlationStrength * 100).toFixed(0)}% confidence.`,
+            impact: Math.round(discovery.correlationStrength * 100)
+          });
+
+          set(state => ({ causalityDiscoveries: [discovery, ...state.causalityDiscoveries.filter(d => d.title !== discovery.title)].slice(0, 10) }));
+        }
+
+        // 5. Sentiment vs Output
+        if (psych.dailySentences.length >= 5) {
+          const sentiments = psych.dailySentences.slice(-10).map(s => analyzeSentiment(s.text));
+          const sentimentScores = sentiments.map(s => s === 'positive' ? 1 : s === 'negative' ? -1 : 0);
+          const sentimentDailyXP = psych.dailySentences.slice(-10).map(s => {
+            return activityLog
+              .filter(log => log.timestamp.startsWith(s.date))
+              .reduce((sum, log) => sum + log.xp, 0);
+          });
+
+          const sentCorr = calculateCorrelation(sentimentScores, sentimentDailyXP);
+          if (Math.abs(sentCorr) > 0.4) {
+            const discovery: CausalityDiscovery = {
+              id: `sent_${Date.now()}`,
+              title: sentCorr > 0 ? "MINDSET → EXECUTION" : "MINDSET → FRICTION",
+              description: `Your "One Honest Sentence" sentiment correlates with your daily execution.`,
+              correlationStrength: Math.abs(sentCorr),
+              impactLevel: mapImpact(sentCorr),
+              variables: ['Sentiment', 'Daily XP'],
+              trend: sentCorr > 0 ? 'up' : 'down',
+              insight: sentCorr > 0 ? "Positive framing leads to higher throughput. Maintain protocol." : "Negative sentiment detected as a leading indicator of friction.",
+              dataPoints: sentimentScores.map((s, i) => ({ x: s, y: sentimentDailyXP[i] })),
+              updatedAt: new Date().toISOString(),
+              status: psych.dailySentences.length > 14 ? 'verified' : 'hypothesis'
+            };
+
+            logs.push({
+              timestamp: new Date().toISOString(),
+              event: `CAUSALITY: ${discovery.title} detected in mindset-execution loop.`,
+              impact: Math.round(discovery.correlationStrength * 100)
+            });
+
+            set(state => ({ causalityDiscoveries: [discovery, ...state.causalityDiscoveries.filter(d => d.title !== discovery.title)].slice(0, 10) }));
+          }
+        }
+
+        // Update logs in state
+        set(state => ({ intelligenceLogs: [...logs, ...state.intelligenceLogs].slice(0, 100) }));
+        toast.info('CALIBRATION COMPLETE', { description: 'All causal variables synchronized.' });
       }
     }),
     {
@@ -2866,7 +3103,11 @@ export const useSovereignStore = create<SovereignStore>()(
         integrationStatus: state.integrationStatus,
         dossiers: state.dossiers,
         questHistory: state.questHistory,
-        customRewards: state.customRewards
+        customRewards: state.customRewards,
+        causalityDiscoveries: state.causalityDiscoveries,
+        surveillanceMetrics: state.surveillanceMetrics,
+        intelligenceLogs: state.intelligenceLogs,
+        projections: state.projections
       })
     }
   )

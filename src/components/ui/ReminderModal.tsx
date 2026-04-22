@@ -26,8 +26,17 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
     briefingTemplates,
     dailyQuests,
     applyDailyTemplate,
-    finalizeDailyBriefing
+    finalizeDailyBriefing,
+    causalityDiscoveries,
+    surveillanceMetrics
   } = useSovereignStore();
+
+  const recentDiscovery = causalityDiscoveries.find(d => d.status === 'verified') || causalityDiscoveries[0];
+  const intelligenceTip = surveillanceMetrics.resistanceFactor < 50 
+    ? "Low Resistance detected. Prioritize P0 tasks to restore throughput."
+    : surveillanceMetrics.lateNightRisk > 30 
+    ? "High Late-Night Risk. Avoid creating missions after 11 PM."
+    : "System operating at nominal capacity. Maintain current trajectory.";
 
   const [selectedTemplateId, setSelectedTemplateId] = useState(briefingTemplates[0].id);
   const [isFinalized, setIsFinalized] = useState(false);
@@ -140,6 +149,26 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
                         <span className="ml-auto font-mono text-[10px] text-white/20 uppercase">{task.statId}</span>
                       </div>
                     ))}
+                  </div>
+
+                  {/* Intelligence Integration (Phase 2) */}
+                  <div className="p-6 rounded-2xl bg-blue-500/5 border border-blue-500/10 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Zap size={14} className="text-blue-400" />
+                      <h3 className="font-mono text-[9px] tracking-widest text-blue-400 uppercase font-black">Intelligence Briefing</h3>
+                    </div>
+                    {recentDiscovery && (
+                      <div className="space-y-1">
+                        <p className="font-mono text-[10px] text-white/80 uppercase leading-tight">Verified Insight: {recentDiscovery.title}</p>
+                        <p className="text-[10px] text-white/40 leading-relaxed italic">"{recentDiscovery.insight}"</p>
+                      </div>
+                    )}
+                    <div className="pt-2 border-t border-blue-500/10">
+                      <p className="font-mono text-[9px] text-blue-300 uppercase leading-tight flex items-center gap-2">
+                        <ArrowRight size={10} />
+                        {intelligenceTip}
+                      </p>
+                    </div>
                   </div>
                 </>
               ) : (
