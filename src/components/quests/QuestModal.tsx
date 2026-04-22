@@ -24,8 +24,7 @@ export const QuestModal = () => {
     xpReward: 50,
     priority: 'P2' as any,
     dueDate: '',
-    repeating: true,
-    failureStreak: 0
+    repeating: true
   });
 
   const [isEditingTemplates, setIsEditingTemplates] = useState(false);
@@ -46,8 +45,7 @@ export const QuestModal = () => {
           xpReward: currentQuest.xpReward,
           priority: currentQuest.priority || 'P2',
           dueDate: currentQuest.dueDate || '',
-          repeating: currentQuest.repeating !== undefined ? currentQuest.repeating : true,
-          failureStreak: currentQuest.failureStreak || 0
+          repeating: currentQuest.repeating !== undefined ? currentQuest.repeating : true
         });
       }
     } else if (isOpen) {
@@ -59,8 +57,7 @@ export const QuestModal = () => {
         xpReward: 50,
         priority: 'P2',
         dueDate: '',
-        repeating: true,
-        failureStreak: 0
+        repeating: true
       });
     }
   }, [targetQuestId, isOpen, quests, isEditMode, currentQuest]);
@@ -260,7 +257,7 @@ export const QuestModal = () => {
                   <Select
                     value={formData.statId}
                     onChange={(val) => setFormData(prev => ({ ...prev, statId: val }))}
-                    options={Object.values(STATS).filter(s => s.id !== 'freedom').map(s => ({ value: s.id, label: s.name }))}
+                    options={Object.values(STATS).filter(s => s.id !== 'freedom' && s.id !== 'sovereignty').map(s => ({ value: s.id, label: s.name }))}
                     disabled={isLocked}
                   />
                 </div>

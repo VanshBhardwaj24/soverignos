@@ -59,14 +59,15 @@ export default function Quests() {
       const isArchived = q.archived === true;
       const isCompleted = q.completed === true;
 
-      // Filter logic: Done missions go to archive, Failed missions stay as reminders.
+      // Filter logic: Repeating missions stay in active tabs even if completed. 
+      // Non-repeating done missions go to archive.
       const matchesTab =
         (activeTab === 'archived')
-          ? (isArchived || isCompleted)
-          : (!isArchived && !isCompleted) && (
+          ? (isArchived || (isCompleted && !q.repeating))
+          : (!isArchived && (!isCompleted || q.repeating)) && (
             (activeTab === 'strategic' && q.type === 'daily') ||
             (activeTab === 'operational' && q.type === 'weekly') ||
-            (activeTab === 'campaigns' && q.type === 'boss')
+            (activeTab === 'campaigns' && (q.type === 'boss' || q.type === 'raid'))
           );
       return matchesPillar && matchesSearch && matchesTab;
     });
@@ -268,10 +269,10 @@ export default function Quests() {
                     isSelectMode={isSelectMode}
                     onExecute={() => {
                       setTargetQuestId(quest.id);
-                      setPendingActivity({ 
-                        statId: quest.statId, 
-                        xp: quest.xpReward, 
-                        questId: quest.id 
+                      setPendingActivity({
+                        statId: quest.statId,
+                        xp: quest.xpReward,
+                        questId: quest.id
                       });
                       useSovereignStore.getState().setProofModalOpen(true);
                     }}
@@ -327,9 +328,9 @@ export default function Quests() {
         )}
       </AnimatePresence>
 
-      <PostponeModal 
-        questId={postponeId} 
-        onClose={() => setPostponeId(null)} 
+      <PostponeModal
+        questId={postponeId}
+        onClose={() => setPostponeId(null)}
       />
 
     </div>
@@ -372,13 +373,10 @@ function QuestEntry({
       exit={{ opacity: 0, scale: 0.98 }}
       className={cn(
         "relative rounded-xl border transition-all duration-300 group overflow-hidden",
-        quest.completed ? "bg-white/[0.01] border-white/5 opacity-40" :
+        quest.completed ? (quest.repeating ? "bg-[var(--success)]/[0.03] border-[var(--success)]/10 opacity-70" : "bg-white/[0.01] border-white/5 opacity-40") :
           quest.failed ? "bg-red-500/[0.05] border-red-500/20 grayscale-[0.5]" :
-            quest.failureStreak >= 6 ? "bg-red-950/20 border-red-600/60 shadow-[0_0_20px_rgba(220,38,38,0.2)]" :
-              quest.failureStreak >= 5 ? "bg-red-900/10 border-red-600/40" :
-                quest.failureStreak >= 3 ? "bg-red-500/[0.08] border-red-500/30" :
-                  isBoss ? "bg-[var(--bg-elevated)] border-[#7649C9]/30 shadow-[0_0_20px_rgba(118,73,201,0.1)]" :
-                    "bg-white/[0.03] border-white/5 hover:border-white/10 shadow-sm",
+            isBoss ? "bg-[var(--bg-elevated)] border-[#7649C9]/30 shadow-[0_0_20px_rgba(118,73,201,0.1)]" :
+              "bg-white/[0.03] border-white/5 hover:border-white/10 shadow-sm",
         isSelected && "border-white/40 ring-1 ring-white/20"
       )}
     >
@@ -411,8 +409,10 @@ function QuestEntry({
                 quest.completed ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20 shadow-[0_0_10px_var(--success)]" :
                   isBoss ? "bg-[#7649C9]/20 text-[#7649C9] border-[#7649C9]/30" :
                     quest.failed ? "bg-red-500/20 text-red-500 border-red-500/30" :
-                      "bg-white/5 text-white/20 border-white/10 hover:text-white hover:border-white/30"
+                      "bg-white/5 text-white/20 border-white/10 hover:text-white hover:border-white/30",
+                quest.completed && quest.repeating && "opacity-50 grayscale-[0.5]"
               )}
+              title={quest.completed && quest.repeating ? "Protocol successfully executed for today." : "Execute protocol"}
             >
               {quest.completed ? <CheckSquare size={16} /> : <Zap size={16} strokeWidth={1.5} />}
             </button>
@@ -420,11 +420,13 @@ function QuestEntry({
 
           <div>
             {/* Identity framing */}
-            {(() => { const frame = IDENTITY_FRAMES[quest.statId]; return frame && !quest.completed && !quest.failed ? (
-              <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mb-0.5">
-                {frame.identity} {frame.question.split('.')[0].toLowerCase()}.
-              </p>
-            ) : null; })()}
+            {(() => {
+              const frame = IDENTITY_FRAMES[quest.statId]; return frame && !quest.completed && !quest.failed ? (
+                <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mb-0.5">
+                  {frame.identity} {frame.question.split('.')[0].toLowerCase()}.
+                </p>
+              ) : null;
+            })()}
             <div className="flex items-center gap-1.5 mb-1">
               <span className={cn(
                 "font-mono text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm uppercase text-white/50 border border-white/5 bg-white/[0.02]",
@@ -458,7 +460,7 @@ function QuestEntry({
                   {isBoss ? `STRIKE ${quest.postponeCount}/3` : `EXTENDED ${quest.postponeCount}/1`}
                 </span>
               )}
-              {quest.failureStreak >= 3 && (
+              {/* {quest.failureStreak >= 3 && (
                 <span className={cn(
                   "flex items-center gap-1 font-mono text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded border",
                   quest.failureStreak >= 6 ? "bg-red-600 text-white border-red-600" :
@@ -470,11 +472,12 @@ function QuestEntry({
                   {` — FAILURE #${quest.failureStreak}`}
                 </span>
               )}
+              )} */}
             </div>
             <div className="flex items-center gap-3">
               <h3 className={cn(
                 "font-sans text-sm font-bold tracking-tight uppercase",
-                quest.completed ? "text-white/20 line-through" : 
+                quest.completed ? "text-white/20 line-through" :
                   quest.failed ? "text-red-500/40" : "text-white"
               )}>
                 {quest.failed && <span className="mr-2 text-red-500 font-black">[FAILED]</span>}
@@ -557,7 +560,7 @@ function QuestEntry({
             >
               <Pencil size={14} />
             </button>
-            
+
             <button
               onClick={() => deleteQuest(quest.id)}
               className="p-2 text-white/10 hover:text-red-500 transition-colors"

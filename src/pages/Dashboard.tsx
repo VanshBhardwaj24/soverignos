@@ -9,7 +9,7 @@ import { SystemRank } from '../components/stats/SystemRank';
 import { StabilityMeter } from '../components/stats/StabilityMeter';
 import { FreedomBreakdown } from '../components/stats/FreedomBreakdown';
 import { ActivityHistory } from '../components/stats/ActivityHistory';
-import { STATS, IDENTITY_FRAMES } from '../lib/constants';
+import { STATS, IDENTITY_FRAMES, computeSovereigntyLevel } from '../lib/constants';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SalaryClockWidget } from '../components/psych/SalaryClockWidget';
@@ -70,8 +70,7 @@ export default function Dashboard() {
       statId: 'code',
       difficulty: 'medium',
       type: 'daily',
-      priority: 'P2',
-      failureStreak: 0
+      priority: 'P2'
     });
     setQuickQuest('');
   };
@@ -156,7 +155,13 @@ export default function Dashboard() {
         {/* Left Column (Stats Panel) */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           <div>
-            <h1 className="font-mono text-[11px] tracking-[0.2em] text-[#999999] opacity-80 uppercase mb-2">SOVEREIGN HQ</h1>
+            <div className="flex items-center gap-2 mb-1">
+              {/* <div className="px-2 py-0.5 bg-[var(--stat-brand)]/20 border border-[var(--stat-brand)]/30 rounded-md">
+                <span className="font-mono text-[9px] font-black tracking-widest text-[var(--stat-brand)] uppercase">Sovereignty Level {computeSovereigntyLevel(Object.values(statXP).reduce((a, b) => a + b, 0))}</span>
+              </div>
+              <div className="h-1 w-1 rounded-full bg-white/20" />
+              <span className="font-mono text-[9px] text-white/30 uppercase tracking-widest">Protocol V2.4</span> */}
+            </div>
             <div className="font-mono text-5xl md:text-6xl font-light tracking-tight text-white glow-text">
               {freedomScore.toFixed(1)}
             </div>
@@ -171,16 +176,27 @@ export default function Dashboard() {
           <div className="space-y-4 p-4 bg-white/[0.02] border border-white/[0.05] rounded-3xl">
             <h2 className="font-mono text-[10px] tracking-[0.2em] text-white opacity-40 uppercase mb-2">Capabilities Progression</h2>
             <div className="space-y-4">
-              {Object.values(STATS).filter(s => s.id !== 'sovereignty').map(stat => (
-                <XPBar
-                  key={stat.id}
-                  statId={stat.id}
-                  name={stat.name}
-                  level={statLevels[stat.id] || 1}
-                  xp={statXP[stat.id] || 0}
-                  color={stat.colorVar}
-                />
-              ))}
+              {Object.values(STATS).map(stat => {
+                const isSovereignty = stat.id === 'sovereignty';
+                const currentXP = isSovereignty
+                  ? Object.values(statXP).reduce((a, b) => a + b, 0)
+                  : (statXP[stat.id] || 0);
+                const currentLevel = isSovereignty
+                  ? computeSovereigntyLevel(currentXP)
+                  : (statLevels[stat.id] || 1);
+
+                return (
+                  <div key={stat.id} className={isSovereignty ? "border border-[var(--stat-brand)]/20 bg-[var(--stat-brand)]/5 p-2 rounded-xl" : ""}>
+                    <XPBar
+                      statId={stat.id}
+                      name={stat.name}
+                      level={currentLevel}
+                      xp={currentXP}
+                      color={stat.colorVar}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -205,7 +221,7 @@ export default function Dashboard() {
 
           {/* Sunday Protocol Banner */}
           {isSunday && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               className="p-6 bg-[var(--stat-mind)]/10 border border-[var(--stat-mind)]/20 rounded-[32px] flex items-center justify-between group cursor-pointer hover:border-[var(--stat-mind)]/40 transition-all"
@@ -270,7 +286,7 @@ export default function Dashboard() {
                 return (
                   <div key={quest.id} className={cn(
                     "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 group",
-                    quest.completed ? 'bg-[var(--bg-primary)] border-[var(--border-subtle)] opacity-40' :
+                    quest.completed ? (quest.repeating ? 'bg-[var(--success)]/[0.03] border-[var(--success)]/10 opacity-70' : 'bg-[var(--bg-primary)] border-[var(--border-subtle)] opacity-40') :
                       quest.type === 'boss'
                         ? 'bg-gradient-to-br from-[#111] to-[#222] border-[#7C3AED]/50 shadow-[0_0_30px_rgba(124,58,237,0.15)] ring-1 ring-[#7C3AED]/20'
                         : 'bg-white/[0.03] border-white/[0.05] hover:border-white/20'

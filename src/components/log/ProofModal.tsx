@@ -52,6 +52,7 @@ export const ProofModal = () => {
         pendingActivity.xp,
         pendingActivity.questId,
         { 
+          ...pendingActivity.metadata,
           learnings: learnings.trim(),
           achievement: achievement,
           speed: speed,
@@ -158,6 +159,13 @@ export const ProofModal = () => {
                     )}
                   </div>
                 </div>
+
+                {pendingActivity?.metadata?.hours && (
+                  <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-center justify-between mt-2">
+                    <span className="font-mono text-[9px] text-blue-400 uppercase tracking-widest font-black">Sleep Duration Recorded</span>
+                    <span className="font-mono text-xl font-black text-white italic">{pendingActivity.metadata.hours} <span className="text-[10px] opacity-30">HRS</span></span>
+                  </div>
+                )}
 
                 <div>
                   <div className="flex items-center justify-between mb-3">

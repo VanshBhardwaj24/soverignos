@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { xpForLevel } from '../../lib/constants';
+import { xpForLevel, totalXPForSovereigntyLevel } from '../../lib/constants';
 
 interface XPBarProps {
   statId: string;
@@ -9,9 +9,12 @@ interface XPBarProps {
   color: string;
 }
 
-export function XPBar({ name, level, xp, color }: XPBarProps) {
-  const currentLevelXP = xpForLevel(level);
-  const nextLevelXP = xpForLevel(level + 1);
+export function XPBar({ statId, name, level, xp, color }: XPBarProps) {
+  const isSovereignty = statId === 'sovereignty';
+  
+  const currentLevelXP = isSovereignty ? totalXPForSovereigntyLevel(level) : xpForLevel(level);
+  const nextLevelXP = isSovereignty ? totalXPForSovereigntyLevel(level + 1) : xpForLevel(level + 1);
+  
   const progressXP = Math.max(0, xp - currentLevelXP);
   const totalNeeded = Math.max(1, nextLevelXP - currentLevelXP);
   const percentage = Math.min(Math.max((progressXP / totalNeeded) * 100, 0), 100);

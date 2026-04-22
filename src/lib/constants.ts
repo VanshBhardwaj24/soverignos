@@ -278,3 +278,133 @@ export const IDENTITY_FRAMES: Record<string, { identity: string; question: strin
   spirit: { identity: 'Seekers', question: 'practice presence. Were you present today?' },
   create: { identity: 'Creators', question: 'ship before they consume. Did you create today?' },
 };
+
+// F27: Marketplace & Economy
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+export type ItemType = 'equipment' | 'booster' | 'special' | 'consumable' | 'permanent';
+
+export interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+  rarity: Rarity;
+  type: ItemType;
+  duration?: number; // in hours
+  cooldown?: number; // in hours
+  multiplier?: number; // e.g. 1.5, 2.0
+  penaltyReduction?: number; // e.g. 0.5 for 50%
+  stat?: string;
+  isRealWorld?: boolean;
+  iconName: string;
+}
+
+export const SHOP_ITEMS: ShopItem[] = [
+  // --- EQUIPMENT (Permanent) ---
+  { 
+    id: 'dev_desk', 
+    name: 'Tactical Workspace', 
+    description: 'Precision engineered environment. +10% CODE XP gain multiplier permanently.', 
+    cost: 500, 
+    rarity: 'uncommon',
+    type: 'permanent',
+    stat: 'CODE',
+    multiplier: 1.1,
+    iconName: 'Shield'
+  },
+  { 
+    id: 'black_card', 
+    name: 'Sovereign Black Card', 
+    description: 'High-altitude clearance. Reduced mission failure penalties by 50%.', 
+    cost: 2500, 
+    rarity: 'legendary',
+    type: 'permanent',
+    stat: 'WEALTH',
+    penaltyReduction: 0.5,
+    iconName: 'CreditCard'
+  },
+
+  // --- BOOSTERS (Consumable) ---
+  { 
+    id: 'energy_drink', 
+    name: 'Adrenaline Surge', 
+    description: 'Neural stimulant. Double XP gains for all stats for 4 hours.', 
+    cost: 200, 
+    rarity: 'rare',
+    type: 'consumable',
+    duration: 4,
+    cooldown: 72,
+    multiplier: 2.0,
+    iconName: 'Zap' 
+  },
+  { 
+    id: 'focus_mind', 
+    name: 'Neural Focus Lens', 
+    description: 'Deep work amplifier. 1.5x XP for 2 hours.', 
+    cost: 150, 
+    rarity: 'epic',
+    type: 'consumable',
+    duration: 2,
+    cooldown: 24,
+    multiplier: 1.5,
+    iconName: 'Brain' 
+  },
+
+  // --- SPECIAL ---
+  { 
+    id: 'philosophy_tome', 
+    name: 'Ancient Codex', 
+    description: 'Ontological unlock. Reveals special "Lore" archives in the notebook.', 
+    cost: 1000, 
+    rarity: 'rare',
+    type: 'special',
+    stat: 'MIND',
+    iconName: 'Brain'
+  },
+
+  // --- REAL WORLD REWARDS ---
+  {
+    id: 'trip_fund',
+    name: 'The Trip Fund Deposit',
+    description: 'Transfer ₹500 from Vault to travel fund. Requires: 7-day perfect week.',
+    cost: 500,
+    rarity: 'legendary',
+    type: 'consumable',
+    isRealWorld: true,
+    stat: 'FREEDOM',
+    iconName: 'Coins'
+  },
+  {
+    id: 'gaming_session',
+    name: 'Guilt-Free Gaming',
+    description: 'One unlimited session. No Sovereign Override used. Req: 4/5 daily tasks.',
+    cost: 50,
+    rarity: 'common',
+    type: 'consumable',
+    isRealWorld: true,
+    stat: 'BODY',
+    iconName: 'Zap'
+  },
+  {
+    id: 'guilt_free_buy',
+    name: 'Guilt-Free Purchase',
+    description: 'Budget ₹1,000 for any single purchase. No Vault deduction.',
+    cost: 800,
+    rarity: 'rare',
+    type: 'consumable',
+    isRealWorld: true,
+    stat: 'WEALTH',
+    iconName: 'ShoppingBag'
+  },
+  {
+    id: 'skip_day',
+    name: 'Skip Day Protocol',
+    description: 'Full day off. No violations. Streak preserved. Req: 14-day perfect record.',
+    cost: 1500,
+    rarity: 'epic',
+    type: 'consumable',
+    isRealWorld: true,
+    stat: 'ALL',
+    iconName: 'RefreshCw'
+  }
+];

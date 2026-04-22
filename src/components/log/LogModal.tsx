@@ -52,35 +52,50 @@ export const LogModal = () => {
   const setProofOpen = useSovereignStore(state => state.setProofModalOpen);
   const setPendingActivity = useSovereignStore(state => state.setPendingActivity);
 
+  const preselectedStat = useSovereignStore(state => state.preselectedStat);
+  const preselectedActivity = useSovereignStore(state => state.preselectedActivity);
+  const statLevels = useSovereignStore(state => state.statLevels);
+  const quests = useSovereignStore(state => state.dailyQuests);
+  const targetQuestId = useSovereignStore(state => state.targetQuestId);
+  const inventory = useSovereignStore(state => state.inventory);
+
   const [selectedStat, setSelectedStat] = useState<string>('code');
   const [selectedActivity, setSelectedActivity] = useState<string>('');
   const [xp, setXp] = useState<number>(0);
-  const targetQuestId = useSovereignStore(state => state.targetQuestId);
-  const quests = useSovereignStore(state => state.dailyQuests);
-  const inventory = useSovereignStore(state => state.inventory);
-  const statLevels = useSovereignStore(state => state.statLevels);
+  const [sleepHours, setSleepHours] = useState<number>(7.5);
 
   const targetQuest = targetQuestId ? quests.find(q => q.id === targetQuestId) : null;
   const activities = getActivities(selectedStat);
 
   useEffect(() => {
-    if (targetQuest) {
-      if (selectedStat !== targetQuest.statId) setSelectedStat(targetQuest.statId);
-      if (xp !== targetQuest.xpReward) setXp(targetQuest.xpReward);
-      return;
+    if (isOpen) {
+      if (targetQuest) {
+        setSelectedStat(targetQuest.statId);
+        setXp(targetQuest.xpReward);
+      } else if (preselectedStat) {
+        setSelectedStat(preselectedStat);
+        if (preselectedActivity) {
+          setSelectedActivity(preselectedActivity);
+          const act = getActivities(preselectedStat).find(a => a.id === preselectedActivity);
+          if (act) setXp(act.xp);
+        }
+      }
     }
+  }, [isOpen, targetQuest, preselectedStat, preselectedActivity]);
 
-    if (activities.length > 0) {
-      const defaultActivity = activities[0];
-      if (selectedActivity !== defaultActivity.id) {
+  useEffect(() => {
+    if (targetQuest) return;
+
+    const currentActivities = getActivities(selectedStat);
+    if (currentActivities.length > 0) {
+      // Only set default if not already set by pre-selection
+      if (!selectedActivity || !currentActivities.find(a => a.id === selectedActivity)) {
+        const defaultActivity = currentActivities[0];
         setSelectedActivity(defaultActivity.id);
         setXp(defaultActivity.xp);
       }
-    } else {
-      setSelectedActivity('');
-      setXp(0);
     }
-  }, [selectedStat, targetQuest, activities, selectedActivity, xp]);
+  }, [selectedStat, targetQuest]);
 
   const getMultiplierBreakdown = () => {
     let mult = 1;
@@ -114,12 +129,22 @@ export const LogModal = () => {
     e.preventDefault();
     if (!selectedStat) return;
 
+    const metadata: any = { activityId: selectedActivity };
+    if (selectedActivity === 'sleep_logged') {
+      metadata.hours = sleepHours;
+    }
+
     if (targetQuest) {
-      setPendingActivity({ statId: selectedStat, xp, questId: targetQuestId || undefined });
+      setPendingActivity({ 
+        statId: selectedStat, 
+        xp, 
+        questId: targetQuestId || undefined,
+        metadata 
+      });
       setOpen(false);
       setProofOpen(true);
     } else {
-      logActivity(selectedStat, xp);
+      logActivity(selectedStat, xp, undefined, metadata);
       setOpen(false);
     }
   }
@@ -226,7 +251,7 @@ export const LogModal = () => {
                 <div>
                   <label className="font-mono text-[10px] tracking-[0.3em] text-[var(--text-muted)] mb-4 block uppercase opacity-60 font-bold">SELECT CHANNEL (1-6)</label>
                   <div className="grid grid-cols-6 gap-3">
-                    {Object.values(STATS).filter(s => s.id !== 'freedom').map((stat, i) => (
+                    {Object.values(STATS).filter(s => s.id !== 'freedom' && s.id !== 'sovereignty').map((stat, i) => (
                       <button
                         key={stat.id}
                         type="button"
@@ -278,6 +303,28 @@ export const LogModal = () => {
                     </select>
                   </div>
                 </div>
+
+                {selectedActivity === 'sleep_logged' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-3"
+                  >
+                    <div className="flex justify-between items-center text-[10px] font-mono font-black uppercase tracking-widest text-[var(--text-muted)]">
+                      <label>Sleep Duration</label>
+                      <span className="text-white">{sleepHours.toFixed(1)} <span className="opacity-50">HOURS</span></span>
+                    </div>
+                    <input
+                      type="range"
+                      min="4"
+                      max="12"
+                      step="0.5"
+                      value={sleepHours}
+                      onChange={(e) => setSleepHours(parseFloat(e.target.value))}
+                      className="w-full accent-blue-400 h-1.5 rounded-full appearance-none bg-[var(--bg-primary)] cursor-pointer"
+                    />
+                  </motion.div>
+                )}
 
                 <div>
                   <div className="flex justify-between items-center mb-3 text-[10px] tracking-widest uppercase font-bold text-[var(--text-muted)] opacity-60">

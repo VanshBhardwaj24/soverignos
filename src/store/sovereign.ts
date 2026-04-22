@@ -9,7 +9,7 @@ import {
   SKILL_PERKS,
   DIFFICULTY_MULTIPLIERS,
 } from '../lib/constants';
-import type { PunitiveChoice } from '../lib/constants';
+import type { PunitiveChoice, ShopItem } from '../lib/constants';
 import { toast } from 'sonner';
 
 export interface Quest {
@@ -41,7 +41,6 @@ export interface Quest {
   notes?: string;
   dailyBriefingId?: string;
   dailyBriefingDate?: string;
-  failureStreak: number;
 }
 
 export interface JobApp {
@@ -293,8 +292,6 @@ interface SovereignStore {
   statLevels: Record<string, number>;
   statXP: Record<string, number>;
   statTodayXP: Record<string, number>;
-  gold: number;
-  inventory: string[];
   resources: Record<string, number>;
   freedomScore: number;
   sovereignty: number;
@@ -324,7 +321,6 @@ interface SovereignStore {
   portfolios: Portfolio[];
   budgetCap: number;
   recurringTransactions: RecurringTx[];
-  failureStreakCache: Record<string, number>;
   alias: string;
   username: string;
   joinedAt: string;
@@ -342,6 +338,19 @@ interface SovereignStore {
   integrationStatus: IntegrationStatus;
   dossiers: StatDossiers;
   questHistory: HistoricalQuest[];
+
+  // F27: Marketplace & Economy
+  inventory: string[];
+  wishlist: string[];
+  customRewards: ShopItem[];
+  activeLoadout: {
+    itemId: string;
+    deployedAt: string;
+    expiresAt: string;
+    currentROI: number;
+  }[];
+  itemCooldowns: Record<string, string>; // itemId -> ISO Timestamp
+  gold: number;
 
   // Actions
 
@@ -375,12 +384,14 @@ interface SovereignStore {
   lastLeveledStat: { statId: string; oldLevel: number; newLevel: number } | null;
   setLastLeveledStat: (stat: { statId: string; oldLevel: number; newLevel: number } | null) => void;
   logModalOpen: boolean;
+  preselectedStat: string | null;
+  preselectedActivity: string | null;
   questModalOpen: boolean;
   setQuestModalOpen: (open: boolean) => void;
   proofModalOpen: boolean;
   setProofModalOpen: (open: boolean) => void;
-  pendingActivity: { statId: string; xp: number; questId?: string } | null;
-  setPendingActivity: (data: { statId: string; xp: number; questId?: string } | null) => void;
+  pendingActivity: { statId: string; xp: number; questId?: string; metadata?: Record<string, any> } | null;
+  setPendingActivity: (data: { statId: string; xp: number; questId?: string; metadata?: Record<string, any> } | null) => void;
   targetQuestId: string | null;
   setTargetQuestId: (id: string | null) => void;
   theme: 'dark' | 'light';
@@ -395,7 +406,7 @@ interface SovereignStore {
   archiveQuest: (id: string) => Promise<void>;
   restoreQuest: (id: string) => Promise<void>;
   deleteQuest: (id: string) => Promise<void>;
-  setLogModalOpen: (open: boolean) => void;
+  setLogModalOpen: (open: boolean, statId?: string, activityId?: string) => void;
   setTheme: (theme: 'dark' | 'light') => void;
   setSelectedStat: (statId: string | null) => void;
   recomputeFreedom: () => void;
@@ -430,7 +441,12 @@ interface SovereignStore {
   updatePortfolioBalance: (id: string, amount: number) => Promise<void>;
   addJournalEntry: (entry: Omit<JournalEntry, 'id'>) => Promise<void>;
   updateJournalEntry: (id: string, entry: Partial<Omit<JournalEntry, 'id'>>) => Promise<void>;
-  buyItem: (itemId: string, cost: number) => Promise<void>;
+  buyItem: (itemId: string, cost: number) => Promise<{ success: boolean; error?: string }>;
+  deployItem: (itemId: string) => Promise<{ success: boolean; error?: string }>;
+  toggleWishlist: (itemId: string) => void;
+  addReward: (reward: Omit<ShopItem, 'id'>) => Promise<void>;
+  updateReward: (id: string, reward: Partial<ShopItem>) => Promise<void>;
+  deleteReward: (id: string) => Promise<void>;
 
   addVenture: (v: Omit<Venture, 'id' | 'date'>) => void;
   addKnowledgeCard: (card: Omit<KnowledgeCard, 'id' | 'date' | 'mastered'>) => void;
@@ -552,8 +568,7 @@ export const useSovereignStore = create<SovereignStore>()(
               repeating: q.repeating !== null ? q.repeating : true,
               archived: q.archived || false,
               postponeCount: q.postpone_count || 0,
-              postponeHistory: q.postpone_history || [],
-              failureStreak: q.failure_streak || 0
+              postponeHistory: q.postpone_history || []
             }))
           });
         }
@@ -585,20 +600,27 @@ export const useSovereignStore = create<SovereignStore>()(
             bio: stats.bio || get().bio,
             foundingStatement: stats.founding_statement || get().foundingStatement,
             foundingStatementDate: stats.founding_statement_date || get().foundingStatementDate,
+            wishlist: stats.wishlist || [],
+            activeLoadout: stats.active_loadout || [],
+            itemCooldowns: stats.item_cooldowns || {},
+            lastDailyReset: stats.last_daily_reset || get().lastDailyReset,
+            lastWeeklyReset: stats.last_weekly_reset || get().lastWeeklyReset
           });
           get().recomputeFreedom();
         }
 
-        const formatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: 'Asia/Kolkata',
-          year: 'numeric', month: '2-digit', day: '2-digit'
-        });
-        const today = formatter.format(new Date());
+        const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        const year = istNow.getFullYear();
+        const month = String(istNow.getMonth() + 1).padStart(2, '0');
+        const day = String(istNow.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`; // ISO format: 2026-04-22
 
-        // Check if daily reset is needed - Sync reset date from column
-        const lastResetFromDB = stats?.last_daily_reset || get().lastDailyReset;
-        if (lastResetFromDB !== today) {
-          get().resetDailyQuests();
+        // Check if daily reset is needed
+        // Use DB value as source of truth - if DB has today's date, skip reset
+        const lastResetFromDB = stats?.last_daily_reset;
+        if (!lastResetFromDB || lastResetFromDB !== today) {
+          console.log(`[RESET] DB marker: "${lastResetFromDB}" vs today: "${today}"`);
+          await get().resetDailyQuests();
         }
 
         // F-HIST: One-time backfill of quest history
@@ -614,6 +636,10 @@ export const useSovereignStore = create<SovereignStore>()(
       statTodayXP: { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0, create: 0 },
       gold: 0,
       inventory: [],
+      wishlist: [],
+      customRewards: [],
+      activeLoadout: [],
+      itemCooldowns: {},
       resources: {},
       freedomScore: 0,
       sovereignty: 0,
@@ -632,7 +658,6 @@ export const useSovereignStore = create<SovereignStore>()(
       },
       globalStreak: { current: 0, longest: 0 },
       violationStreaks: {},
-      failureStreakCache: {},
 
       dailyQuests: [
         { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1', failureStreak: 0 },
@@ -719,7 +744,7 @@ export const useSovereignStore = create<SovereignStore>()(
           staleContactsCount: 0
         }
       },
-      lastDailyReset: new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()),
+      lastDailyReset: '', // Don't pre-set to today - let DB determine if reset is needed
       lastWeeklyReset: (() => {
         const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
         const day = istNow.getDay();
@@ -735,6 +760,8 @@ export const useSovereignStore = create<SovereignStore>()(
       lastLeveledStat: null,
       setLastLeveledStat: (stat) => set({ lastLeveledStat: stat }),
       logModalOpen: false,
+      preselectedStat: null,
+      preselectedActivity: null,
       questModalOpen: false,
       setQuestModalOpen: (open) => set({ questModalOpen: open }),
       proofModalOpen: false,
@@ -803,8 +830,7 @@ export const useSovereignStore = create<SovereignStore>()(
             type: 'daily',
             repeating: false,
             dailyBriefingId: template.id,
-            dailyBriefingDate: dateString,
-            failureStreak: 0
+            dailyBriefingDate: dateString
           });
         });
 
@@ -837,17 +863,21 @@ export const useSovereignStore = create<SovereignStore>()(
 
       // F1: Daily Reset
       resetDailyQuests: async () => {
-        const formatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: 'Asia/Kolkata',
-          year: 'numeric', month: '2-digit', day: '2-digit'
-        });
-        const today = formatter.format(new Date());
+        const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        const year = istNow.getFullYear();
+        const month = String(istNow.getMonth() + 1).padStart(2, '0');
+        const day = String(istNow.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`; // ISO format: 2026-04-22
         const { lastDailyReset } = get();
 
         // Trigger weekly reset check
         get().resetWeeklyQuests();
 
-        if (lastDailyReset === today) return;
+        if (lastDailyReset === today) {
+          console.log('[RESET] Already reset today:', today);
+          return;
+        }
+        console.log('[RESET] Starting daily reset for', today);
 
         // F11: Process recurring transactions
         const { recurringTransactions } = get();
@@ -878,8 +908,7 @@ export const useSovereignStore = create<SovereignStore>()(
           globalStreak,
           consecutiveDaysFailed,
           violationStreaks,
-          punishments,
-          failureStreakCache
+          punishments
         } = get();
 
         // 1. Calculate Global Streak (respects Streak Insurance protection)
@@ -899,14 +928,21 @@ export const useSovereignStore = create<SovereignStore>()(
 
         // 2. Handle Missed Quests & Domain-Specific Punishments
         const { DOMAIN_PUNISHMENT_MATRIX } = await import('../lib/constants');
-        const missedQuests = dailyQuests.filter(q => q.type === 'daily' && !q.completed && !q.protected);
+
+        // 2a. Log quest state breakdown (for debugging reset issues)
+        const completedCount = dailyQuestsFlat.filter(q => q.completed).length;
+        const failedCount = dailyQuestsFlat.filter(q => q.failed).length;
+        const incompleteCount = dailyQuestsFlat.filter(q => !q.completed && !q.failed).length;
+        console.log(`[RESET] Yesterday's quest states: Total=${dailyQuestsFlat.length}, Completed=${completedCount}, Failed=${failedCount}, Incomplete=${incompleteCount}`);
+
+        // 2b. Fix: explicitly include both incomplete AND failed quests
+        const missedQuests = dailyQuests.filter(q => q.type === 'daily' && !q.protected && (!q.completed || q.failed));
 
         let workingScore = accountabilityScore;
         let workingGold = gold;
         const workingStatXP = { ...statXP };
         const workingStatLevels = { ...statLevels };
         const workingViolationStreaks = { ...violationStreaks };
-        const workingFailureCache = { ...failureStreakCache };
         const newPunishmentsList: Punishment[] = [];
         let newConsecutiveFailures = consecutiveDaysFailed;
 
@@ -916,9 +952,6 @@ export const useSovereignStore = create<SovereignStore>()(
           const missedByStat: Record<string, number> = {};
           missedQuests.forEach(quest => {
             missedByStat[quest.statId] = (missedByStat[quest.statId] || 0) + 1;
-
-            // Update Title-based failure streak
-            workingFailureCache[quest.title] = (workingFailureCache[quest.title] || 0) + 1;
 
             workingScore = Math.max(0, workingScore - (5 * escalationFactor));
             const penaltyAmount = Math.floor((quest.xpReward / 2) * escalationFactor);
@@ -958,19 +991,6 @@ export const useSovereignStore = create<SovereignStore>()(
               });
             }
           });
-
-          // Reality Wipe Triggered at 7+ per stat
-          Object.entries(workingViolationStreaks).forEach(([statId, streak]) => {
-            if (streak >= 7) {
-              workingStatLevels[statId] = 0;
-              workingStatXP[statId] = 0;
-              get().addNotification({
-                title: 'CRITICAL COLLAPSE: REALITY WIPE',
-                description: `Sustained protocol deviation in ${statId.toUpperCase()}. State reset to baseline level 0.`,
-                status: 'URGENT', iconType: 'alert'
-              });
-            }
-          });
         } else {
           newConsecutiveFailures = 0;
           // Reset violation streaks for successfully executed domains
@@ -1006,47 +1026,60 @@ export const useSovereignStore = create<SovereignStore>()(
           if (q.dueDate) {
             const prevDue = new Date(q.dueDate);
             // Stable UTC Shifting: Keep the SAME UTC Hour/Min, but on TODAY'S UTC Date
-            const shifted = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+            let shifted = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
               prevDue.getUTCHours(), prevDue.getUTCMinutes(), prevDue.getUTCSeconds()));
+            
+            // If the shifted time has already passed TODAY, set it to TOMORROW
+            // This prevents immediate failure if the user resets late in the day.
+            if (shifted < now) {
+              shifted.setUTCDate(shifted.getUTCDate() + 1);
+            }
+
             shiftedExpiresAt = shifted.toISOString();
             shiftedDueDate = shiftedExpiresAt;
           }
 
-          const qFailureStreak = workingFailureCache[q.title] || 0;
-
           if (q.repeating && (q.type === 'daily' || (q.type === 'raid' && q.completed))) {
+            // Repeating quests reset to completed: false so they appear as fresh tasks next day.
+            // Non-repeating quests are archived instead. This keeps habits visible on the board
+            // but marks them as "done today" with visual cues (opacity-40, strikethrough).
             questSyncPayload.push({
               id: q.id,
               user_id: get().user?.id,
+              title: q.title,
+              xp_reward: q.xpReward,
+              stat_id: q.statId,
+              type: q.type,
+              difficulty: q.difficulty || 'medium',
+              priority: q.priority || 'P2',
               completed: false,
               failed: false,
               expires_at: shiftedExpiresAt,
               due_date: shiftedDueDate,
-              streak: q.streak
+              streak: q.streak,
+              repeating: true,
+              archived: false
             });
             return {
               ...q,
               completed: false,
               failed: false,
               protected: false,
-              failureStreak: qFailureStreak,
               currentPhase: q.type === 'raid' ? 1 : undefined,
               expiresAt: shiftedExpiresAt,
               dueDate: shiftedDueDate,
               subtasks: q.subtasks?.map(s => ({ ...s, completed: false }))
             };
           }
-          if (!q.repeating && q.completed) return { ...q, archived: true, failed: false, protected: false, failureStreak: 0 };
-          return { ...q, failed: false, protected: false, failureStreak: qFailureStreak };
+          if (!q.repeating && q.completed) return { ...q, archived: true, failed: false, protected: false };
+          return { ...q, failed: false, protected: false };
         });
 
-        // 4. SINGLE ATOMIC STATE UPDATE
+        // 4. RESET QUEST STATE FIRST (defer lastDailyReset until sync succeeds)
         set({
-          lastDailyReset: today,
           globalStreak: newGlobalStreak,
           consecutiveDaysFailed: newConsecutiveFailures,
           violationStreaks: workingViolationStreaks,
-          failureStreakCache: workingFailureCache,
           accountabilityScore: workingScore,
           gold: workingGold,
           statXP: workingStatXP,
@@ -1055,6 +1088,7 @@ export const useSovereignStore = create<SovereignStore>()(
           punishments: [...newPunishmentsList, ...punishments].slice(0, 100),
           dailyQuests: resetQuests
         });
+        console.log('[RESET] State updated - repeating quests reset to completed: false');
 
         // 5. Side effects AFTER state is settled
         get().takeSnapshot();
@@ -1074,25 +1108,55 @@ export const useSovereignStore = create<SovereignStore>()(
             if (questError) console.error('[SYNC_ERROR] Reset Quests:', questError);
           }
 
-          // F31: Update stats and reset timestamp in cloud
+          // F31: Update stats and reset timestamp in cloud with RETRY LOGIC
           const { statXP, statLevels, gold, accountabilityScore, punishments, globalStreak } = get();
-          try {
-            const updatePayload: any = {
-              gold,
-              accountability_score: accountabilityScore,
-              punishments,
-              global_streak_current: globalStreak.current,
-              global_streak_longest: globalStreak.longest,
-              last_daily_reset: today // Persist reset date to cloud
-            };
-            Object.keys(statXP).forEach(stat => {
-              updatePayload[`${stat}_xp`] = statXP[stat];
-              updatePayload[`${stat}_level`] = statLevels[stat];
-            });
-            const { error: statsError } = await supabase.from('user_stats').update(updatePayload).eq('id', user.id);
-            if (statsError) throw statsError;
-          } catch (err) {
-            console.error('[SYNC_ERROR] User Stats Reset:', err);
+
+          let syncSuccess = false;
+          let syncAttempt = 0;
+          const maxAttempts = 3;
+
+          while (!syncSuccess && syncAttempt < maxAttempts) {
+            try {
+              syncAttempt++;
+              console.log(`[RESET] Syncing to Supabase (attempt ${syncAttempt}/${maxAttempts})...`);
+
+              const updatePayload: any = {
+                gold,
+                accountability_score: accountabilityScore,
+                punishments,
+                global_streak_current: globalStreak.current,
+                global_streak_longest: globalStreak.longest,
+                last_daily_reset: today, // Persist reset date to cloud
+                last_weekly_reset: get().lastWeeklyReset
+              };
+              Object.keys(statXP).forEach(stat => {
+                updatePayload[`${stat}_xp`] = statXP[stat];
+                updatePayload[`${stat}_level`] = statLevels[stat];
+              });
+
+              const { error: statsError } = await supabase.from('user_stats').update(updatePayload).eq('id', user.id);
+              if (statsError) throw statsError;
+
+              syncSuccess = true;
+              console.log('[RESET] Supabase sync succeeded!');
+
+              // Only mark reset complete after successful sync
+              set({ lastDailyReset: today });
+
+            } catch (err) {
+              console.error(`[SYNC_ERROR] User Stats Reset (attempt ${syncAttempt}):`, err);
+
+              if (syncAttempt < maxAttempts) {
+                const backoffMs = Math.pow(2, syncAttempt - 1) * 100; // 100ms, 200ms, 400ms
+                console.log(`[RESET] Retrying in ${backoffMs}ms...`);
+                await new Promise(resolve => setTimeout(resolve, backoffMs));
+              }
+            }
+          }
+
+          if (!syncSuccess) {
+            console.error('[RESET] CRITICAL: Failed to sync reset after 3 attempts. Quests remain reset locally but will retry next load.');
+            // Do NOT set lastDailyReset - allow retry on next load
           }
         }
 
@@ -1136,6 +1200,13 @@ export const useSovereignStore = create<SovereignStore>()(
           status: 'NOW',
           iconType: 'milestone'
         });
+
+        const { user } = get();
+        if (user) {
+          await supabase.from('user_stats').update({
+            last_weekly_reset: currentWeekString
+          }).eq('id', user.id);
+        }
       },
 
       // F42: Real-time Cadence Monitor - Background Expiry Check
@@ -1167,12 +1238,11 @@ export const useSovereignStore = create<SovereignStore>()(
 
       // F2 + F3: logActivity with real multipliers and perk effects
       logActivity: async (statId, xp, questId?, metadata?) => {
-        const { inventory, user, statLevels, prestige } = get();
+        const { inventory, user, statLevels, prestige, activeLoadout } = get();
+        const { SHOP_ITEMS } = await import('../lib/constants');
 
-        // F2: Real XP multiplier from inventory
+        // 1. Calculate Base Multipliers (Legacy + Percs)
         let multiplier = 1;
-        if (inventory.includes('energy_drink')) multiplier *= 2;
-        if (inventory.includes('dev_desk') && statId === 'code') multiplier *= 1.1;
 
         // F3: Skill perk XP bonus based on level
         const level = statLevels[statId] || 1;
@@ -1189,10 +1259,40 @@ export const useSovereignStore = create<SovereignStore>()(
         // F40: Compound Streak Multiplier
         const { globalStreak } = get();
         if (globalStreak.current > 0) {
-          // 30 day streak gives approx 2x multiplier: 1 + (30/30) = 2
           const streakMultiplier = 1 + (globalStreak.current / 30);
           multiplier *= streakMultiplier;
         }
+
+        // 2. Active Booster Engine (Stacking Rules)
+        const currentActiveItems = activeLoadout
+          .filter(l => new Date(l.expiresAt) > new Date())
+          .map(l => SHOP_ITEMS.find(i => i.id === l.itemId))
+          .filter(Boolean);
+
+        const multipliers = currentActiveItems
+          .filter(i => i!.multiplier && (!i!.stat || i!.stat === statId))
+          .map(i => i!.multiplier || 1.0);
+
+        if (multipliers.length > 0) {
+          const maxMult = Math.max(...multipliers);
+          const maxCount = multipliers.filter(m => m === maxMult).length;
+
+          let boosterMultiplier = maxMult;
+          // Rule: If multiple max boosters are active, add 50% of the effect of the second one
+          if (maxCount > 1) {
+            boosterMultiplier += (maxMult - 1) * 0.5;
+          }
+
+          multiplier *= boosterMultiplier;
+        }
+
+        // PERMANENT EQUIPMENT
+        inventory.forEach(itemId => {
+          const item = SHOP_ITEMS.find(i => i.id === itemId);
+          if (item?.type === 'permanent' && item.multiplier && (!item.stat || item.stat === statId)) {
+            multiplier *= item.multiplier;
+          }
+        });
 
         // Synergy Bonuses
         const { STAT_SYNERGIES } = await import('../lib/constants');
@@ -1200,43 +1300,41 @@ export const useSovereignStore = create<SovereignStore>()(
           if (synergy.stats.includes(statId)) {
             const allMet = synergy.stats.every(s => (statLevels[s] || 0) >= synergy.minLevel);
             if (allMet) {
-              // Hardcoded check for bonus type for now
               if (synergy.name === 'Algo-Trader' && statId === 'wealth') multiplier *= 1.1;
               if (synergy.name === 'Neural Architect') multiplier *= 1.1;
             }
           }
         });
 
-        // F41: Custom Multipliers from Proof Modal (Achievement % and Speed)
-        if (metadata?.achievement) {
-          const achievementRatio = parseInt(metadata.achievement) / 100;
-          multiplier *= achievementRatio;
-        }
-
+        // Metadata Multipliers (Proof)
+        if (metadata?.achievement) multiplier *= (parseInt(metadata.achievement) / 100);
         if (metadata?.speed) {
-          const speedBonuses: Record<string, number> = {
-            'on-time': 1.0,
-            '1h-early': 1.1,
-            '4h-early': 1.25,
-            '8h-early': 1.5
-          };
+          const speedBonuses: Record<string, number> = { 'on-time': 1.0, '1h-early': 1.1, '4h-early': 1.25, '8h-early': 1.5 };
           multiplier *= (speedBonuses[metadata.speed] || 1.0);
         }
 
-        // F42: Session Quality Multiplier (1-5 SCALE)
         if (metadata?.quality) {
           const qVal = parseInt(metadata.quality);
-          // Error Checking: Ensure quality is within valid tactical range [1-5]
-          if (qVal >= 1 && qVal <= 5) {
-            const qualityMultiplier = 1 - ((5 - qVal) * 0.15);
-            multiplier *= Math.max(0, qualityMultiplier);
-          } else {
-            console.warn(`[DATA_INTEGRITY] Invalid quality level: ${qVal}. Defaulting to 1.0 multiplier.`);
-          }
+          if (qVal >= 1 && qVal <= 5) multiplier *= Math.max(0, 1 - ((5 - qVal) * 0.15));
         }
 
-        // Error Checking: Prevent accidental XP overflow or negative yields
+        // Final Yield Calculation
         const boostedXP = Math.max(0, Math.floor(xp * multiplier));
+        const bonusXP = boostedXP - xp; // Simple ROI tracking
+
+        // Update Loadout ROI
+        if (bonusXP > 0) {
+          set(state => ({
+            activeLoadout: state.activeLoadout.map(l => {
+              const item = SHOP_ITEMS.find(i => i.id === l.itemId);
+              if (item?.multiplier && (!item.stat || item.stat === statId)) {
+                return { ...l, currentROI: l.currentROI + bonusXP };
+              }
+              return l;
+            })
+          }));
+        }
+
 
         // F5: Activity Log
         const logEntry: ActivityLogEntry = {
@@ -1485,15 +1583,8 @@ export const useSovereignStore = create<SovereignStore>()(
             ...q,
             completed: true,
             streak: newStreak,
-            failureStreak: 0,
             lastCompletedAt: now.toISOString()
           } : q);
-
-          // Reset title-based failure cache
-          const newFailureCache = { ...state.failureStreakCache };
-          if (newFailureCache[questToComplete.title]) {
-            newFailureCache[questToComplete.title] = 0;
-          }
 
           // If this was a penalty quest, clear the associated punishment
           let updatedPunishments = state.punishments;
@@ -1507,7 +1598,6 @@ export const useSovereignStore = create<SovereignStore>()(
 
           return {
             dailyQuests: updatedQuests,
-            failureStreakCache: newFailureCache,
             gold: state.gold + goldEarned,
             punishments: updatedPunishments,
             integrity: Math.min(100, state.integrity + integrityBonus)
@@ -1601,53 +1691,36 @@ export const useSovereignStore = create<SovereignStore>()(
           });
           window.dispatchEvent(new CustomEvent('sovereign:boss-complete', { detail: questToComplete }));
         }
+
+        // Repeating quests remain completed for the rest of the day to show progress.
+        // They will be reset to 'uncompleted' by the nightly reset protocol (resetDailyQuests).
+        console.log(`[REPEATER] "${questToComplete.title}" completed. Scheduled for nightly protocol reset.`);
       },
 
       failQuest: async (questId) => {
         const questToFail = get().dailyQuests.find(q => q.id === questId);
         if (!questToFail || questToFail.completed || questToFail.failed) return;
 
-        const { DOMAIN_PUNISHMENT_MATRIX } = await import('../lib/constants');
+        const { DOMAIN_PUNISHMENT_MATRIX, SHOP_ITEMS } = await import('../lib/constants');
         const punishmentId = Math.random().toString(36).substr(2, 9);
-        const { violationStreaks, statXP, failureStreakCache } = get();
+        const { user, violationStreaks, statXP, inventory } = get();
 
-        // 1. Update Failure Streak Cache (Title-based)
-        const currentTitleStreak = (failureStreakCache[questToFail.title] || 0) + 1;
-        const newFailureStreakCache = { ...failureStreakCache, [questToFail.title]: currentTitleStreak };
+        // 1. Penalty Calculation & Item Mitigations
+        let penaltyReduction = 1.0; // 1.0 = no reduction
+        inventory.forEach(itemId => {
+          const item = SHOP_ITEMS.find(i => i.id === itemId);
+          if (item?.penaltyReduction) {
+            penaltyReduction *= (1 - item.penaltyReduction);
+          }
+        });
 
         // 2. Penalty Scaling
         let penaltyMultiplier = 1;
         let integrityLoss = 5;
 
-        if (currentTitleStreak >= 7) {
-          // Reality Wipe Triggered (deferred level 1 reset)
-          get().addNotification({
-            title: 'PROTOCOL COLLAPSE: REALITY WIPE',
-            description: `7th consecutive failure of "${questToFail.title}". ${questToFail.statId.toUpperCase()} has been localized to level 0.`,
-            status: 'URGENT', iconType: 'alert'
-          });
-          // Immediate set to 0, next cycle set to 1
-          set(state => ({
-            statLevels: { ...state.statLevels, [questToFail.statId]: 0 },
-            statXP: { ...state.statXP, [questToFail.statId]: 0 }
-          }));
-        } else if (currentTitleStreak >= 6) {
-          get().addNotification({
-            title: 'TERMINATION WARNING #2',
-            description: `FAILURE #6 DETECTED. ONE STRIKE REMAINING BEFORE TOTAL REALITY WIPE.`,
-            status: 'URGENT', iconType: 'alert'
-          });
-          penaltyMultiplier = 3;
-          integrityLoss = 20;
-        } else if (currentTitleStreak >= 5) {
-          penaltyMultiplier = 3;
-          integrityLoss = 15;
-        } else if (currentTitleStreak >= 3) {
-          penaltyMultiplier = 2;
-          integrityLoss = 10;
-        }
-
-        let xpPenalty = 0;
+        // Apply Mitigations
+        integrityLoss = Math.floor(integrityLoss * penaltyReduction);
+        let xpPenalty = Math.floor(questToFail.xpReward * 0.5 * penaltyMultiplier * penaltyReduction);
         const newViolationStreaks = { ...violationStreaks };
         newViolationStreaks[questToFail.statId] = (newViolationStreaks[questToFail.statId] || 0) + 1;
 
@@ -1663,8 +1736,7 @@ export const useSovereignStore = create<SovereignStore>()(
         while (xpForLevel(finalLevel) <= newXP) { finalLevel++; }
         finalLevel = Math.max(1, finalLevel - 1);
 
-        // If Reality Wipe was triggered, override level to 0
-        const statLevelToSet = currentTitleStreak >= 7 ? 0 : finalLevel;
+        const statLevelToSet = finalLevel;
 
         const isRepeated = newViolationStreaks[questToFail.statId] >= 2;
         let newPunishment: Punishment;
@@ -1680,7 +1752,7 @@ export const useSovereignStore = create<SovereignStore>()(
             date: new Date().toISOString(),
             statId: questToFail.statId,
             options: matrix,
-            penalty: (newViolationStreaks[questToFail.statId] || 1) * 5 * penaltyMultiplier
+            penalty: (newViolationStreaks[questToFail.statId] || 1) * 5
           };
         } else {
           newPunishment = {
@@ -1695,27 +1767,17 @@ export const useSovereignStore = create<SovereignStore>()(
         }
 
         set((state) => ({
-          dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, failed: true, streak: 0, failureStreak: currentTitleStreak } : q),
+          dailyQuests: state.dailyQuests.map(q => q.id === questId ? { ...q, failed: true, streak: 0 } : q),
           gold: Math.max(0, state.gold - (Math.floor(questToFail.xpReward / 2) * penaltyWeight)),
           accountabilityScore: Math.max(0, state.accountabilityScore - scoreLoss),
           integrity: Math.max(0, state.integrity - integrityLoss),
-          statXP: { ...state.statXP, [questToFail.statId]: currentTitleStreak >= 7 ? 0 : newXP },
+          statXP: { ...state.statXP, [questToFail.statId]: newXP },
           statLevels: { ...state.statLevels, [questToFail.statId]: statLevelToSet },
           violationStreaks: newViolationStreaks,
-          failureStreakCache: newFailureStreakCache,
           punishments: [newPunishment, ...state.punishments].slice(0, 100)
         }));
 
-        const { user } = get();
         if (user) {
-          // Double Warning #1 at streak 6
-          if (currentTitleStreak === 6) {
-            get().addNotification({
-              title: 'TERMINATION WARNING #1',
-              description: `Protocol violation critical. 24h window before data localized to level 1.`,
-              status: 'URGENT', iconType: 'alert'
-            });
-          }
           const { error: upsertError } = await supabase.from('quests').upsert({
             id: questId,
             user_id: user.id,
@@ -1762,7 +1824,7 @@ export const useSovereignStore = create<SovereignStore>()(
           timestamp: new Date().toISOString(),
           xpReward: 0,
           difficulty: questToFail.difficulty,
-          excuse: currentTitleStreak >= 3 ? 'REPEATED PROTOCOL VIOLATION' : 'TIME_EXPIRED'
+          excuse: 'TIME_EXPIRED'
         };
         set(state => ({ questHistory: [historyEntry, ...state.questHistory].slice(0, 1000) }));
 
@@ -1877,8 +1939,7 @@ export const useSovereignStore = create<SovereignStore>()(
           priority: quest.priority || 'P2',
           repeating: quest.repeating !== undefined ? quest.repeating : true,
           postponeCount: 0,
-          postponeHistory: [],
-          failureStreak: 0
+          postponeHistory: []
         };
 
         set((state) => ({ dailyQuests: [...state.dailyQuests, newQuest] }));
@@ -1960,7 +2021,11 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
 
-      setLogModalOpen: (open) => set({ logModalOpen: open }),
+      setLogModalOpen: (open, statId, activityId) => set({
+        logModalOpen: open,
+        preselectedStat: statId || null,
+        preselectedActivity: activityId || null
+      }),
       setTheme: (theme) => set({ theme }),
       setSelectedStat: (statId) => set({ selectedStat: statId }),
       setBudgetCap: (budgetCap) => set({ budgetCap }),
@@ -2017,8 +2082,7 @@ export const useSovereignStore = create<SovereignStore>()(
           streak: 0,
           priority: 'P1',
           isPenalty: true,
-          notes: `Resolution protocol for: ${punishment.title}`,
-          failureStreak: 0
+          notes: `Resolution protocol for: ${punishment.title}`
         };
 
         const questId = await addQuest(penaltyQuest);
@@ -2230,21 +2294,154 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
       buyItem: async (itemId, cost) => {
-        const { gold, inventory, user } = get();
-        if (gold < cost) return;
+        const { gold, inventory, user, wishlist } = get();
+
+        // Error Checking
+        if (gold < cost) return { success: false, error: 'INSUFFICIENT_FUNDS' };
+        if (inventory.includes(itemId)) {
+          // Check if it's a permanent or consumable
+          const { SHOP_ITEMS } = await import('../lib/constants');
+          const item = SHOP_ITEMS.find(i => i.id === itemId);
+          if (item?.type === 'permanent') return { success: false, error: 'ALREADY_OWNED' };
+        }
 
         const newInventory = [...inventory, itemId];
-        set({ gold: gold - cost, inventory: newInventory });
+        const newGold = gold - cost;
+        const newWishlist = wishlist.filter(id => id !== itemId);
+
+        set({ gold: newGold, inventory: newInventory, wishlist: newWishlist });
 
         if (user) {
-          await supabase.from('user_stats').update({ gold: get().gold, inventory: newInventory }).eq('id', user.id);
+          try {
+            await supabase.from('user_stats').update({
+              gold: newGold,
+              inventory: newInventory,
+              wishlist: newWishlist
+            }).eq('id', user.id);
+          } catch (e) {
+            console.error('[SYNC_ERROR] buyItem:', e);
+          }
         }
 
         get().addNotification({
-          title: 'ITEM ACQUIRED',
-          description: `${itemId.replace(/_/g, ' ').toUpperCase()} deployed to inventory.`,
+          title: 'ASSET ACQUIRED',
+          description: `${itemId.replace(/_/g, ' ').toUpperCase()} secured in inventory.`,
           status: 'NOW',
           iconType: 'milestone'
+        });
+
+        return { success: true };
+      },
+
+      deployItem: async (itemId) => {
+        const { inventory, activeLoadout, itemCooldowns, user } = get();
+        const { SHOP_ITEMS } = await import('../lib/constants');
+        const item = SHOP_ITEMS.find(i => i.id === itemId);
+
+        if (!item) return { success: false, error: 'ITEM_NOT_FOUND' };
+        if (!inventory.includes(itemId)) return { success: false, error: 'NOT_IN_INVENTORY' };
+
+        // Check Cooldown
+        const cooldownUntil = itemCooldowns[itemId];
+        if (cooldownUntil && new Date(cooldownUntil) > new Date()) {
+          return { success: false, error: 'ON_COOLDOWN' };
+        }
+
+        const now = new Date();
+        const expiresAt = new Date(now.getTime() + (item.duration || 0) * 3600000);
+
+        // Stacking Logic (Time)
+        const existing = activeLoadout.find(l => l.itemId === itemId);
+        let newLoadout;
+
+        if (existing && item.type === 'consumable') {
+          // Extend time
+          const currentExpiry = new Date(existing.expiresAt);
+          const newExpiry = new Date(currentExpiry.getTime() + (item.duration || 0) * 3600000);
+          newLoadout = activeLoadout.map(l =>
+            l.itemId === itemId ? { ...l, expiresAt: newExpiry.toISOString() } : l
+          );
+        } else {
+          newLoadout = [...activeLoadout, {
+            itemId,
+            deployedAt: now.toISOString(),
+            expiresAt: expiresAt.toISOString(),
+            currentROI: 0
+          }];
+        }
+
+        // Set Cooldown
+        const newCooldowns = { ...itemCooldowns };
+        if (item.cooldown) {
+          newCooldowns[itemId] = new Date(now.getTime() + item.cooldown * 3600000).toISOString();
+        }
+
+        // Consume if applicable
+        let newInventory = inventory;
+        if (item.type === 'consumable') {
+          const idx = newInventory.indexOf(itemId);
+          if (idx > -1) {
+            newInventory = [...newInventory.slice(0, idx), ...newInventory.slice(idx + 1)];
+          }
+        }
+
+        set({ activeLoadout: newLoadout, itemCooldowns: newCooldowns, inventory: newInventory });
+
+        if (user) {
+          await supabase.from('user_stats').update({
+            active_loadout: newLoadout,
+            item_cooldowns: newCooldowns,
+            inventory: newInventory
+          }).eq('id', user.id);
+        }
+
+        get().addNotification({
+          title: 'ASSET DEPLOYED',
+          description: `${item.name.toUpperCase()} protocol active.`,
+          status: 'NOW',
+          iconType: 'rank'
+        });
+
+        return { success: true };
+      },
+
+      toggleWishlist: (itemId) => {
+        const { wishlist, user } = get();
+        const newWishlist = wishlist.includes(itemId)
+          ? wishlist.filter(id => id !== itemId)
+          : [...wishlist, itemId];
+
+        set({ wishlist: newWishlist });
+        if (user) {
+          supabase.from('user_stats').update({ wishlist: newWishlist }).eq('id', user.id);
+        }
+      },
+
+      addReward: async (reward) => {
+        const newId = `custom_reward_${Math.random().toString(36).substr(2, 9)}`;
+        set(state => ({
+          customRewards: [...state.customRewards, { ...reward, id: newId, isRealWorld: true }]
+        }));
+        toast.success('REWARD PROTOCOL INITIALIZED', {
+          description: `${reward.name.toUpperCase()} added to marketplace.`
+        });
+      },
+
+      updateReward: async (id, reward) => {
+        set(state => ({
+          customRewards: state.customRewards.map(r => r.id === id ? { ...r, ...reward } : r)
+        }));
+        toast.success('REWARD PROTOCOL UPDATED', {
+          description: 'Protocol parameters recalibrated.'
+        });
+      },
+
+      deleteReward: async (id) => {
+        set(state => ({
+          customRewards: state.customRewards.filter(r => r.id !== id)
+        }));
+        toast.info('REWARD PROTOCOL TERMINATED', {
+          description: 'Target removed from exchange.'
         });
       },
 
@@ -2618,8 +2815,8 @@ export const useSovereignStore = create<SovereignStore>()(
         activityLog: state.activityLog,
         dailyQuests: state.dailyQuests,
         moodHistory: state.moodHistory,
-        lastDailyReset: state.lastDailyReset,
-        lastWeeklyReset: state.lastWeeklyReset,
+        // NOTE: lastDailyReset NOT persisted - only set after sync succeeds, prevents guard from blocking retries
+        // NOTE: lastWeeklyReset NOT persisted - only set after sync succeeds
         knowledgeCards: state.knowledgeCards,
         ventures: state.ventures,
         punishments: state.punishments,
@@ -2647,9 +2844,10 @@ export const useSovereignStore = create<SovereignStore>()(
         portfolios: state.portfolios,
         budgetCap: state.budgetCap,
         recurringTransactions: state.recurringTransactions,
-        failureStreakCache: state.failureStreakCache,
         briefingSeenDates: state.briefingSeenDates,
         summarySeenDates: state.summarySeenDates,
+        lastDailyReset: state.lastDailyReset,
+        lastWeeklyReset: state.lastWeeklyReset,
         briefingTemplates: state.briefingTemplates,
         alias: state.alias,
         username: state.username,
@@ -2667,7 +2865,8 @@ export const useSovereignStore = create<SovereignStore>()(
         freedomRoadmap: state.freedomRoadmap,
         integrationStatus: state.integrationStatus,
         dossiers: state.dossiers,
-        questHistory: state.questHistory
+        questHistory: state.questHistory,
+        customRewards: state.customRewards
       })
     }
   )

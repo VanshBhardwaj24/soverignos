@@ -25,11 +25,12 @@ export const useCadenceStore = create<CadenceState>()(
         
         // 1. Check Daily Reset (Protocol Midnight IST Standard)
         // Standardize to YYYY-MM-DD in Asia/Kolkata
-        const formatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: 'Asia/Kolkata',
-          year: 'numeric', month: '2-digit', day: '2-digit'
-        });
-        const todayStr = formatter.format(now);
+        // Use the same format as sovereign.ts (YYYY-MM-DD)
+        const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        const year = istNow.getFullYear();
+        const month = String(istNow.getMonth() + 1).padStart(2, '0');
+        const day = String(istNow.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
         
         if (sovereign.lastDailyReset !== todayStr) {
           set({ isProcessingReset: true });

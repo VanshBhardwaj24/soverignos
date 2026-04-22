@@ -38,8 +38,7 @@ export function FrictionAudit({ onComplete }: Props) {
         statId: 'mind',
         difficulty: 'easy',
         type: 'daily',
-        priority: 'P1',
-        failureStreak: 0
+        priority: 'P1'
       });
     }
     setSubmitted(true);
