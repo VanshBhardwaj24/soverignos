@@ -182,7 +182,7 @@ export const LogModal = () => {
               className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] z-[201] pointer-events-auto"
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="font-mono text-xl text-white">LOG ACTIVITY</h2>
+                <h2 className="font-bold text-xl text-white">LOG ACTIVITY</h2>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
@@ -202,12 +202,12 @@ export const LogModal = () => {
                   >
                     <div className="flex justify-between items-start">
                       <div className="flex flex-col gap-1">
-                        <span className="font-mono text-[9px] text-[var(--stat-brand)] tracking-[0.3em] uppercase font-black">Mission in Progress</span>
+                        <span className="font-bold text-[9px] text-[var(--stat-brand)] tracking-[0.3em] uppercase font-black">Mission in Progress</span>
                         <div className="text-sm font-bold text-white uppercase tracking-tight">{targetQuest.title}</div>
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <div className={cn(
-                          "px-2 py-0.5 rounded text-[8px] font-mono font-bold border",
+                          "px-2 py-0.5 rounded text-[8px] font-bold font-bold border",
                           targetQuest.priority === 'P0' ? "bg-red-500/20 text-red-500 border-red-500/30" :
                           targetQuest.priority === 'P1' ? "bg-orange-500/20 text-orange-500 border-orange-500/30" :
                           "bg-blue-500/20 text-blue-500 border-blue-500/30"
@@ -215,7 +215,7 @@ export const LogModal = () => {
                           {targetQuest.priority}
                         </div>
                         {(targetQuest.dueDate || targetQuest.expiresAt) && (
-                          <div className="text-[9px] font-mono text-[var(--text-muted)] flex items-center gap-1">
+                          <div className="text-[9px] font-bold text-[var(--text-muted)] flex items-center gap-1">
                             <span className="opacity-50">REMAINING:</span>
                             <span className={cn(
                               "font-black",
@@ -249,7 +249,7 @@ export const LogModal = () => {
               <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
                 <div>
-                  <label className="font-mono text-[10px] tracking-[0.3em] text-[var(--text-muted)] mb-4 block uppercase opacity-60 font-bold">SELECT CHANNEL (1-6)</label>
+                  <label className="font-bold text-[10px] tracking-[0.3em] text-[var(--text-muted)] mb-4 block uppercase opacity-60 font-bold">SELECT CHANNEL (1-6)</label>
                   <div className="grid grid-cols-6 gap-3">
                     {Object.values(STATS).filter(s => s.id !== 'freedom' && s.id !== 'sovereignty').map((stat, i) => (
                       <button
@@ -269,7 +269,7 @@ export const LogModal = () => {
                         }}
                       >
                         <span className={cn(
-                          "font-mono text-xl font-black transition-colors",
+                          "font-bold text-xl font-black transition-colors",
                           selectedStat === stat.id ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"
                         )}>
                           {i + 1}
@@ -286,7 +286,7 @@ export const LogModal = () => {
                 </div>
 
                 <div>
-                  <label className="font-mono text-xs tracking-widest text-[var(--text-muted)] mb-3 block">ACTIVITY</label>
+                  <label className="font-bold text-xs tracking-widest text-[var(--text-muted)] mb-3 block">ACTIVITY</label>
                   <div className="relative">
                     <select
                       value={selectedActivity}
@@ -310,7 +310,7 @@ export const LogModal = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-3"
                   >
-                    <div className="flex justify-between items-center text-[10px] font-mono font-black uppercase tracking-widest text-[var(--text-muted)]">
+                    <div className="flex justify-between items-center text-[10px] font-bold font-black uppercase tracking-widest text-[var(--text-muted)]">
                       <label>Sleep Duration</label>
                       <span className="text-white">{sleepHours.toFixed(1)} <span className="opacity-50">HOURS</span></span>
                     </div>
@@ -335,7 +335,7 @@ export const LogModal = () => {
                           {multiplier.total.toFixed(2)}x
                         </span>
                       )}
-                      <span className="font-mono font-black" style={{ color: STATS[selectedStat]?.colorVar }}>
+                      <span className="font-bold font-black" style={{ color: STATS[selectedStat]?.colorVar }}>
                         +{boostedXP} XP
                       </span>
                     </div>
@@ -354,8 +354,8 @@ export const LogModal = () => {
                     <div className="mt-3 flex flex-wrap gap-2">
                       {multiplier.breakdown.map((item, idx) => (
                         <div key={idx} className="flex items-center gap-1.5 px-2 py-1 bg-white/5 border border-white/5 rounded-lg">
-                          <span className="text-[8px] font-mono text-white/40 uppercase tracking-widest">{item.label}</span>
-                          <span className="text-[8px] font-mono text-[var(--success)] font-black">{item.value}</span>
+                          <span className="text-[8px] font-bold text-white/40 uppercase tracking-widest">{item.label}</span>
+                          <span className="text-[8px] font-bold text-[var(--success)] font-black">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -365,7 +365,7 @@ export const LogModal = () => {
 
                 <button
                   type="submit"
-                  className="w-full h-12 mt-2 bg-white text-black font-mono font-bold tracking-widest rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                  className="w-full h-12 mt-2 bg-white text-black font-bold font-bold tracking-widest rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
                 >
                   <Check size={18} /> CONFIRM [Enter]
                 </button>

@@ -140,7 +140,7 @@ export const BehavioralDossier = () => {
     <div className="space-y-8">
       <div className="flex items-center gap-3 text-white/20 px-4">
         <div className="w-8 h-px bg-white/10" />
-        <h2 className="font-mono text-[10px] font-black tracking-[0.4em] uppercase">Behavioral Dossier — Computed Patterns</h2>
+        <h2 className="font-bold text-[10px] font-black tracking-[0.4em] uppercase">Behavioral Dossier — Computed Patterns</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -151,9 +151,9 @@ export const BehavioralDossier = () => {
               <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/60">
                 <Brain size={16} />
               </div>
-              <h3 className="font-mono text-[10px] tracking-[0.4em] text-cyan-400 uppercase font-black italic">Behavioral Profile</h3>
+              <h3 className="font-bold text-[10px] tracking-[0.4em] text-cyan-400 uppercase font-black italic">Behavioral Profile</h3>
             </div>
-            <span className="font-mono text-[8px] text-white/20 uppercase font-black tracking-widest">Neural Analysis Active</span>
+            <span className="font-bold text-[8px] text-white/20 uppercase font-black tracking-widest">Neural Analysis Active</span>
           </div>
 
           <div className="space-y-8 flex-1">
@@ -161,58 +161,58 @@ export const BehavioralDossier = () => {
                 <div className="space-y-1">
                    <div className="flex items-center gap-2 text-emerald-400/60 mb-2">
                       <Clock size={14} />
-                      <span className="font-mono text-[9px] font-black tracking-widest uppercase">Peak Performance Window</span>
+                      <span className="font-bold text-[9px] font-black tracking-widest uppercase">Peak Performance Window</span>
                    </div>
                    <div className="text-2xl font-black text-white italic uppercase tracking-tighter">{peakProfile.peak}</div>
-                   <p className="text-[10px] font-mono text-white/20 uppercase font-black tracking-tighter">(verified, {peakProfile.sessions} sessions)</p>
+                   <p className="text-[10px] font-bold text-white/20 uppercase font-black tracking-tighter">(verified, {peakProfile.sessions} sessions)</p>
                 </div>
                 <div className="space-y-1">
                    <div className="flex items-center gap-2 text-red-400/60 mb-2">
                       <TrendingDown size={14} />
-                      <span className="font-mono text-[9px] font-black tracking-widest uppercase">Worst Performance Window</span>
+                      <span className="font-bold text-[9px] font-black tracking-widest uppercase">Worst Performance Window</span>
                    </div>
                    <div className="text-2xl font-black text-white italic uppercase tracking-tighter">{peakProfile.worst}</div>
-                   <p className="text-[10px] font-mono text-white/20 uppercase font-black tracking-tighter">(prime avoidance hours)</p>
+                   <p className="text-[10px] font-bold text-white/20 uppercase font-black tracking-tighter">(prime avoidance hours)</p>
                 </div>
              </div>
 
              <div className="pt-8 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                   <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Avoidance Fingerprint</span>
+                   <span className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Avoidance Fingerprint</span>
                    <div className="space-y-4">
                       <div>
-                        <div className="flex justify-between text-[10px] font-mono text-white uppercase font-black mb-1">
+                        <div className="flex justify-between text-[10px] font-bold text-white uppercase font-black mb-1">
                           <span>Most Avoided Stat</span>
                           <span className="text-red-500">{avoidance.stat}</span>
                         </div>
-                        <div className="font-mono text-[8px] text-white/20">({avoidance.rate}% failure rate)</div>
+                        <div className="font-bold text-[8px] text-white/20">({avoidance.rate}% failure rate)</div>
                       </div>
                       <div>
-                        <div className="flex justify-between text-[10px] font-mono text-white uppercase font-black mb-1">
+                        <div className="flex justify-between text-[10px] font-bold text-white uppercase font-black mb-1">
                           <span>Most Common Excuse</span>
                           <span className="text-red-500">{avoidance.excuse}</span>
                         </div>
-                        <div className="font-mono text-[8px] text-white/20">(logged {avoidance.excuseCount || (avoidance.excuse === '"WAS TIRED"' ? 0 : 1)} times)</div>
+                        <div className="font-bold text-[8px] text-white/20">(logged {avoidance.excuseCount || (avoidance.excuse === '"WAS TIRED"' ? 0 : 1)} times)</div>
                       </div>
                    </div>
                 </div>
 
                 <div className="space-y-6">
-                   <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Strength Fingerprint</span>
+                   <span className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Strength Fingerprint</span>
                    <div className="space-y-4">
                       <div>
-                        <div className="flex justify-between text-[10px] font-mono text-white uppercase font-black mb-1">
+                        <div className="flex justify-between text-[10px] font-bold text-white uppercase font-black mb-1">
                           <span>Most Consistent Stat</span>
                           <span className="text-emerald-400">{strength.stat}</span>
                         </div>
-                        <div className="font-mono text-[8px] text-white/20">({strength.current} day active streak)</div>
+                        <div className="font-bold text-[8px] text-white/20">({strength.current} day active streak)</div>
                       </div>
                       <div>
-                        <div className="flex justify-between text-[10px] font-mono text-white uppercase font-black mb-1">
+                        <div className="flex justify-between text-[10px] font-bold text-white uppercase font-black mb-1">
                           <span>Best Streak Ever</span>
                           <span className="text-emerald-400">{strength.bestStat} {strength.bestStreak} DAYS</span>
                         </div>
-                        <div className="font-mono text-[8px] text-white/20">(Lifetime Record)</div>
+                        <div className="font-bold text-[8px] text-white/20">(Lifetime Record)</div>
                       </div>
                    </div>
                 </div>
@@ -227,13 +227,13 @@ export const BehavioralDossier = () => {
               <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/60">
                 <ShieldAlert size={16} />
               </div>
-              <h3 className="font-mono text-[10px] tracking-[0.4em] text-red-500 uppercase font-black italic">Delusion Gap Tracker</h3>
+              <h3 className="font-bold text-[10px] tracking-[0.4em] text-red-500 uppercase font-black italic">Delusion Gap Tracker</h3>
             </div>
             <AlertTriangle size={14} className="text-red-500/40" />
           </div>
 
           <div className="overflow-x-auto">
-             <table className="w-full font-mono text-[10px] font-black text-white/60 uppercase">
+             <table className="w-full font-bold text-[10px] font-black text-white/60 uppercase">
                 <thead>
                    <tr className="border-b border-white/10 text-white/20">
                       <th className="py-4 text-left">Week</th>
@@ -286,7 +286,7 @@ export const BehavioralDossier = () => {
                   {delusion.avgGap > 0 ? '+' : ''}{delusion.avgGap.toFixed(1)}
                 </span>
              </div>
-             <p className="text-[10px] font-mono text-white/40 uppercase font-black italic leading-tight">
+             <p className="text-[10px] font-bold text-white/40 uppercase font-black italic leading-tight">
                {delusion.insight}
              </p>
           </div>

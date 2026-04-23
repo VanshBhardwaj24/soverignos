@@ -1,5 +1,5 @@
-import { 
-  Eye, 
+import {
+  Eye,
   RefreshCw,
   Target
 } from 'lucide-react';
@@ -21,8 +21,8 @@ import { IntelligenceLogs } from '../components/intelligence/IntelligenceLogs';
 import { DecaySimulator } from '../components/intelligence/DecaySimulator';
 
 const Intelligence = () => {
-  const { 
-    updateSurveillance, 
+  const {
+    updateSurveillance,
     runCausalityAnalysis,
   } = useSovereignStore();
 
@@ -40,13 +40,14 @@ const Intelligence = () => {
             <Eye className="text-blue-500 animate-pulse" size={48} />
             INTELLIGENCE
           </h1>
-          <p className="text-[var(--text-secondary)] font-mono text-xs mt-2 tracking-[0.3em] uppercase">
+          <p className="text-[var(--text-secondary)] font-bold text-xs mt-2 tracking-[0.3em] uppercase">
             Command Center // Behavioral Stream: Active
           </p>
         </div>
-        <button 
+        <button
           onClick={handleRecalibrate}
-          className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-[var(--border-default)] bg-white/5 hover:bg-white/10 active:scale-95 transition-all font-mono text-xs tracking-widest uppercase group"
+          aria-label="Recalibrate intelligence system"
+          className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-[var(--border-default)] bg-white/5 hover:bg-white/10 active:scale-95 transition-all font-bold text-[10px] font-black tracking-widest uppercase group outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20 shadow-lg"
         >
           <RefreshCw size={14} className="group-active:rotate-180 transition-transform duration-500" />
           Recalibrate System
@@ -72,7 +73,7 @@ const Intelligence = () => {
           <TrajectoryIntelligence />
         </div>
         <div className="lg:col-span-5">
-           <FocusBalanceVisualizer />
+          <FocusBalanceVisualizer />
         </div>
 
         {/* Row 4: Throughput & Comparative */}
@@ -129,10 +130,10 @@ const FocusBalanceVisualizer = () => {
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-2">
           <Target size={18} className="text-pink-400" />
-          <h2 className="font-mono text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Focus Balance: {balance}%</h2>
+          <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Focus Balance: {balance}%</h2>
         </div>
         <span className={cn(
-          "font-mono text-[9px] px-2 py-1 rounded-full uppercase tracking-widest",
+          "font-bold text-[9px] px-2 py-1 rounded-full uppercase tracking-widest",
           balance > 60 ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
         )}>
           {balance > 60 ? "Balanced" : "Imbalanced ⚠"}
@@ -142,7 +143,7 @@ const FocusBalanceVisualizer = () => {
       <div className="space-y-4">
         {stats.map((stat, i) => (
           <div key={i} className="space-y-1">
-            <div className="flex justify-between items-end text-[9px] font-mono uppercase">
+            <div className="flex justify-between items-end text-[9px] font-bold uppercase">
               <span className="text-white/60">{stat.name}</span>
               <span className={cn(
                 "font-black",
@@ -153,14 +154,14 @@ const FocusBalanceVisualizer = () => {
               <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden flex">
                 <div className={cn("h-full", stat.color)} style={{ width: `${stat.actual}%` }} />
               </div>
-              <span className="font-mono text-[10px] text-white w-8 text-right font-bold">{stat.actual}%</span>
+              <span className="font-bold text-[10px] text-white w-8 text-right font-bold">{stat.actual}%</span>
             </div>
           </div>
         ))}
       </div>
 
       <div className="mt-6 p-4 rounded-xl bg-pink-500/5 border border-pink-500/10">
-        <p className="text-[10px] text-pink-300 font-mono leading-tight">
+        <p className="text-[10px] text-pink-300 font-bold leading-tight">
           IMBALANCE COST: Over-indexing CODE by 27% creates a distribution bottleneck. BRAND and NETWORK atrophy will stall your Freedom Score.
         </p>
       </div>

@@ -11,7 +11,7 @@ export const ActivityHistory = () => {
     return (
       <div className="p-5 rounded-[24px] border border-white/5 bg-white/[0.02] flex flex-col items-center justify-center gap-2 py-10 opacity-30">
         <Clock size={20} />
-        <span className="font-mono text-[9px] uppercase tracking-widest">No activity yet</span>
+        <span className="font-bold text-[9px] uppercase tracking-widest">No activity yet</span>
       </div>
     );
   }
@@ -27,8 +27,8 @@ export const ActivityHistory = () => {
   return (
     <div className="p-5 rounded-[24px] border border-white/5 bg-white/[0.02] flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">Activity Feed</span>
-        <span className="font-mono text-[9px] text-white/20 uppercase">{recent.length} entries</span>
+        <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">Activity Feed</span>
+        <span className="font-bold text-[9px] text-white/20 uppercase">{recent.length} entries</span>
       </div>
 
       <div className="space-y-1 max-h-[300px] overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
@@ -51,15 +51,15 @@ export const ActivityHistory = () => {
                 </div>
                 <div>
                   <div className="text-[10px] font-bold text-white/70 uppercase tracking-tight">{stat?.name || entry.statId}</div>
-                  <div className="text-[8px] text-white/20 font-mono">{formatTime(entry.timestamp)}</div>
+                  <div className="text-[8px] text-white/20 font-bold">{formatTime(entry.timestamp)}</div>
                 </div>
               </div>
               <div className="text-right">
-                <span className="font-mono text-[10px] font-black" style={{ color: stat?.colorVar }}>
+                <span className="font-bold text-[10px] font-black" style={{ color: stat?.colorVar }}>
                   +{entry.xp} XP
                 </span>
                 {entry.multiplier > 1 && (
-                  <div className="text-[7px] text-[var(--success)] font-mono">{entry.multiplier.toFixed(1)}x</div>
+                  <div className="text-[7px] text-[var(--success)] font-bold">{entry.multiplier.toFixed(1)}x</div>
                 )}
               </div>
             </motion.div>

@@ -81,21 +81,21 @@ export function SundayNumbers({ onComplete }: Props) {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <BarChart2 size={16} className="text-[var(--stat-wealth)]" />
-          <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--stat-wealth)] uppercase font-black">
+          <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--stat-wealth)] uppercase font-black">
             Sunday Numbers
           </span>
         </div>
-        <p className="font-mono text-white/30 text-xs">
+        <p className="font-bold text-white/30 text-xs">
           Raw data. No commentary. No color-coding the excuses.
         </p>
       </div>
 
       {/* Week label */}
       <div className="flex items-center gap-3 pb-3 border-b border-white/5">
-        <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest">
+        <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest">
           W{new Date().toISOString().slice(0, 10).replace(/-/g, '')} REPORT
         </span>
-        <span className="font-mono text-[8px] text-white/15">
+        <span className="font-bold text-[8px] text-white/15">
           {weekStart.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} — {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' })}
         </span>
       </div>
@@ -114,12 +114,12 @@ export function SundayNumbers({ onComplete }: Props) {
               {m.trend === 'up' && <TrendingUp size={10} className="text-[var(--success)] shrink-0" />}
               {m.trend === 'down' && <TrendingDown size={10} className="text-red-400 shrink-0" />}
               {(!m.trend || m.trend === 'flat') && <Minus size={10} className="text-white/15 shrink-0" />}
-              <span className="font-mono text-[10px] text-white/40 group-hover:text-white/60 transition-colors">{m.label}</span>
+              <span className="font-bold text-[10px] text-white/40 group-hover:text-white/60 transition-colors">{m.label}</span>
               {m.subLabel && (
-                <span className="font-mono text-[8px] text-white/15 hidden sm:inline">{m.subLabel}</span>
+                <span className="font-bold text-[8px] text-white/15 hidden sm:inline">{m.subLabel}</span>
               )}
             </div>
-            <span className={cn('font-mono text-[11px] font-black tabular-nums', m.color || 'text-white/70')}>
+            <span className={cn('font-bold text-[11px] font-black tabular-nums', m.color || 'text-white/70')}>
               {m.value}
             </span>
           </motion.div>
@@ -128,7 +128,7 @@ export function SundayNumbers({ onComplete }: Props) {
 
       <button
         onClick={onComplete}
-        className="w-full py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center justify-center gap-2"
+        className="w-full py-4 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center justify-center gap-2"
       >
         Acknowledged <ChevronRight size={14} />
       </button>

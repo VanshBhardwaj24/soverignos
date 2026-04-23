@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,23 +6,58 @@
 
 @layer base {
   :root {
-    /* Backgrounds */
-    --bg-primary: #0A0A0A;
-    --bg-secondary: #111111;
-    --bg-card: #161616;
-    --bg-elevated: #1C1C1C;
-    --bg-hover: #222222;
+    /* Backgrounds (Dark Mode - Primary Palette) */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 96%;
 
-    /* Text */
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 0 0% 96%;
+    --primary-foreground: 0 0% 4%;
+
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 96%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 96%;
+
+    --destructive: 0 100% 63%;
+    --destructive-foreground: 0 0% 96%;
+
+    --border: 0 0% 100% / 0.12;
+    --input: 0 0% 100% / 0.12;
+    --ring: 0 0% 85%;
+
+    /* Surface tokens for depth */
+    --surface-1: #0A0A0A;
+    --surface-2: #121212;
+    --surface-3: #1A1A1A;
+    --surface-4: #242424;
+
+    /* Legacy compatibility variables - Updated for depth */
+    --bg-primary: var(--surface-1);
+    --bg-secondary: var(--surface-2);
+    --bg-card: var(--surface-3);
+    --bg-elevated: var(--surface-4);
+    --bg-hover: rgba(255, 255, 255, 0.05);
+
+    /* Text - Improved Contrast */
     --text-primary: #F5F5F5;
-    --text-secondary: #999999;
-    --text-muted: #555555;
-    --text-danger: #FF4444;
+    --text-secondary: #B0B0B0;
+    --text-muted: #808080;
+    --text-danger: #FF5555;
 
     /* Borders */
-    --border-subtle: rgba(255, 255, 255, 0.06);
-    --border-default: rgba(255, 255, 255, 0.10);
-    --border-strong: rgba(255, 255, 255, 0.18);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-default: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(255, 255, 255, 0.20);
 
     /* Stat colors */
     --stat-code: #00D4FF;
@@ -44,7 +79,35 @@
   }
 
   :root.light {
-    /* Backgrounds */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+
+    --primary: 0 0% 4%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 94%;
+    --secondary-foreground: 0 0% 4%;
+
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 0 0% 90%;
+    --accent-foreground: 0 0% 4%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 0% / 0.1;
+    --input: 0 0% 0% / 0.1;
+    --ring: 0 0% 20%;
+
+    /* Legacy compatibility overrides */
     --bg-primary: #F9F9F9;
     --bg-secondary: #F0F0F0;
     --bg-card: #FFFFFF;
@@ -63,6 +126,9 @@
     --border-strong: rgba(0, 0, 0, 0.18);
 
     --xp-bar-track: rgba(0, 0, 0, 0.08);
+
+    /* Invert stat-freedom for light mode visibility */
+    --stat-freedom: #0A0A0A;
   }
 
   body {
@@ -82,22 +148,24 @@
     font-family: 'Geist Mono';
     font-size: 2.5rem;
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
   }
 
   .stat-label {
-    font-family: 'Geist Mono';
-    font-size: 0.625rem;
-    letter-spacing: 0.15em;
+    font-family: 'JetBrains Mono';
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--text-secondary);
   }
 
   .freedom-score {
-    font-family: 'Geist Mono';
+    font-family: 'Geist', sans-serif;
     font-size: 4rem;
     font-weight: 300;
     letter-spacing: -0.04em;
+
   }
 
   /* Sonner Customization */
@@ -111,7 +179,7 @@
   }
 
   [data-sonner-toast] [data-title] {
-    font-family: 'Geist Mono', monospace !important;
+    font-family: 'JetBrains Mono', monospace !important;
     font-size: 11px !important;
     font-weight: 800 !important;
     letter-spacing: 0.1em !important;
@@ -121,7 +189,7 @@
   }
 
   [data-sonner-toast] [data-description] {
-    font-family: 'Geist', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
     font-size: 11px !important;
     color: var(--text-secondary) !important;
     line-height: 1.4 !important;
@@ -150,5 +218,68 @@
     to {
       transform: scaleX(0);
     }
+  }
+
+  .glass-premium {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 4px 24px -1px rgba(0, 0, 0, 0.2),
+      inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-premium-dark {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+      0 10px 40px -10px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
+  .text-glow-subtle {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  }
+
+  .focus-ring-premium {
+    outline: none;
+    ring: 2px solid var(--text-primary);
+    ring-offset: 2px;
+    ring-offset-color: var(--bg-primary);
+  }
+
+  .spring-transition {
+    transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .hover-lift {
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 }

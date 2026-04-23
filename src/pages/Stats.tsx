@@ -85,25 +85,25 @@ export default function Stats() {
               className="flex items-center gap-3 mb-3"
             >
               <span className="w-8 h-px bg-[var(--stat-brand)]" />
-              <span className="font-mono text-[10px] tracking-[0.4em] text-[var(--stat-brand)] uppercase font-black">Capability Management</span>
+              <span className="font-bold text-[10px] tracking-[0.4em] text-[var(--stat-brand)] uppercase font-black">Capability Management</span>
             </motion.div>
-            <h1 className="font-mono text-5xl font-black tracking-tighter text-white uppercase italic">
+            <h1 className="font-bold text-5xl font-black tracking-tighter text-white uppercase italic">
               Neural <span className="text-white/20">Progression</span>
             </h1>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm">
-              <span className="block font-mono text-[9px] text-white/40 uppercase mb-1 tracking-widest font-black">Freedom Index</span>
-              <div className="font-mono text-2xl font-black text-white">{freedomScore.toFixed(1)}<span className="text-xs text-white/20 font-light underline-offset-4 ml-1">SCORE</span></div>
+            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm border-glow-professional shadow-lg">
+              <span className="block font-bold text-[9px] text-white/40 uppercase mb-1 tracking-widest font-black">Freedom Index</span>
+              <div className="font-bold text-2xl font-black text-white">{freedomScore.toFixed(1)}<span className="text-xs text-white/20 font-light underline-offset-4 ml-1">SCORE</span></div>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm">
-              <span className="block font-mono text-[9px] text-white/40 uppercase mb-1 tracking-widest font-black">Integrity Index</span>
-              <div className="font-mono text-2xl font-black text-[var(--stat-spirit)]">{integrity}<span className="text-xs text-white/20 font-light ml-1">%</span></div>
+            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm border-glow-professional shadow-lg">
+              <span className="block font-bold text-[9px] text-white/40 uppercase mb-1 tracking-widest font-black">Integrity Index</span>
+              <div className="font-bold text-2xl font-black text-[var(--stat-spirit)]">{integrity}<span className="text-xs text-white/20 font-light ml-1">%</span></div>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm">
-              <span className="block font-mono text-[9px] text-white/40 uppercase mb-1 tracking-widest font-black">Neural Rank</span>
-              <div className="font-mono text-2xl font-black" style={{ color: currentRank.color }}>{currentRank.name.toUpperCase()}</div>
+            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm border-glow-professional shadow-lg">
+              <span className="block font-bold text-[9px] text-white/40 uppercase mb-1 tracking-widest font-black">Neural Rank</span>
+              <div className="font-bold text-2xl font-black" style={{ color: currentRank.color }}>{currentRank.name.toUpperCase()}</div>
             </div>
           </div>
         </div>
@@ -119,8 +119,9 @@ export default function Stats() {
             <button
               key={stat.id}
               onClick={() => setActiveTab(stat.id)}
+              aria-label={`View ${stat.name} stats`}
               className={cn(
-                "group relative min-w-[180px] p-5 rounded-3xl border transition-all duration-500 overflow-hidden",
+                "group relative min-w-[180px] p-5 rounded-3xl border transition-all duration-500 overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20",
                 isActive
                   ? "bg-white border-white scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
                   : "bg-white/[0.03] border-white/5 hover:border-white/20"
@@ -136,11 +137,11 @@ export default function Stats() {
 
               <div className="relative z-10 text-left">
                 <div className={cn(
-                  "font-mono text-[9px] uppercase tracking-[0.2em] font-black mb-1 opacity-60",
+                  "font-bold text-[9px] uppercase tracking-[0.2em] font-black mb-1 opacity-60",
                   isActive ? "text-black" : "text-white"
                 )}>{stat.name}</div>
                 <div className={cn(
-                  "font-mono text-2xl font-black italic",
+                  "font-bold text-2xl font-black italic",
                   isActive ? "text-black" : "text-white"
                 )}>LVL {level}</div>
               </div>
@@ -169,7 +170,7 @@ export default function Stats() {
 
         {/* F3: Capability Tree (Center-Left) */}
         <div className="lg:col-span-7 space-y-8">
-          <div className="bg-white/[0.02] border border-white/5 rounded-[40px] p-8 md:p-12 relative overflow-hidden group">
+          <div className="bg-white/[0.02] border border-white/5 rounded-[40px] p-8 md:p-12 relative overflow-hidden group border-glow-professional shadow-2xl">
             {/* Background Decoration */}
             <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none group-hover:scale-110 transition-transform duration-1000 rotate-12">
               <div className="scale-[10] opacity-5 translate-x-20 translate-y-20 flex"><ActiveIcon size={40} /></div>
@@ -182,12 +183,12 @@ export default function Stats() {
                 </div>
                 <div>
                   <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">{(activeStat as any)?.name} Protocol</h3>
-                  <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] mt-1 font-black">Neural Architecture System A.I-7</p>
+                  <p className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] mt-1 font-black">Neural Architecture System A.I-7</p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-mono text-[9px] text-white/20 uppercase tracking-widest font-black mb-1">Efficiency</div>
-                <div className="font-mono text-xl font-bold text-[var(--success)]">100%</div>
+                <div className="font-bold text-[9px] text-white/20 uppercase tracking-widest font-black mb-1">Efficiency</div>
+                <div className="font-bold text-xl font-bold text-[var(--success)]">100%</div>
               </div>
             </div>
 
@@ -219,7 +220,7 @@ export default function Stats() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <span className={cn(
-                          "font-mono text-[9px] tracking-[0.2em] px-2 py-0.5 rounded border font-black uppercase",
+                          "font-bold text-[9px] tracking-[0.2em] px-2 py-0.5 rounded border font-black uppercase",
                           unlocked ? "bg-white/10 border-white/20 text-white" : "text-white/20 border-white/5"
                         )}>Level {perk.level} Requirement</span>
                         {unlocked && (
@@ -251,7 +252,7 @@ export default function Stats() {
           {/* Radar Capability Snapshot */}
           <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8 pb-4 relative overflow-hidden backdrop-blur-md shadow-2xl">
             <div className="flex justify-between items-center mb-8">
-              <h3 className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">Capability Radar</h3>
+              <h3 className="font-bold text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">Capability Radar</h3>
               <Award size={16} className="text-white/20" />
             </div>
 
@@ -274,12 +275,12 @@ export default function Stats() {
 
             <div className="grid grid-cols-2 gap-4 mt-8">
               <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                <span className="block font-mono text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">System Rating</span>
-                <div className="font-mono text-xl font-black text-white">{(Number(freedomScore) * 1.5).toFixed(1)}</div>
+                <span className="block font-bold text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">System Rating</span>
+                <div className="font-bold text-xl font-black text-white">{(Number(freedomScore) * 1.5).toFixed(1)}</div>
               </div>
               <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                <span className="block font-mono text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">Aggregated XP</span>
-                <div className="font-mono text-xl font-black text-white">{(Object.values(statLevels).reduce((a, b) => a + (b as number), 0) * 120).toLocaleString()}</div>
+                <span className="block font-bold text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">Aggregated XP</span>
+                <div className="font-bold text-xl font-black text-white">{(Object.values(statLevels).reduce((a, b) => a + (b as number), 0) * 120).toLocaleString()}</div>
               </div>
             </div>
           </div>
@@ -287,7 +288,7 @@ export default function Stats() {
           {/* Growth History Line Chart */}
           <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8 relative overflow-hidden backdrop-blur-md shadow-2xl">
             <div className="flex justify-between items-center mb-10">
-              <h3 className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">XP Trajectory / 14 Day</h3>
+              <h3 className="font-bold text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">XP Trajectory / 14 Day</h3>
               <TrendingUp size={16} className="text-white/20" />
             </div>
 
@@ -318,9 +319,9 @@ export default function Stats() {
             <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-[var(--stat-brand)]" />
-                <span className="font-mono text-[9px] text-white uppercase tracking-widest font-bold">Projected Mastery</span>
+                <span className="font-bold text-[9px] text-white uppercase tracking-widest font-bold">Projected Mastery</span>
               </div>
-              <span className="font-mono text-[9px] text-white/20 uppercase tracking-widest">Q3 2026_EXPECTED</span>
+              <span className="font-bold text-[9px] text-white/20 uppercase tracking-widest">Q3 2026_EXPECTED</span>
             </div>
           </div>
 

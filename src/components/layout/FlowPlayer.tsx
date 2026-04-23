@@ -12,7 +12,7 @@ export const FlowPlayer = () => {
       </div>
       
       <div className="flex flex-col pr-2 min-w-[100px]">
-        <span className="font-mono text-[8px] tracking-[0.2em] text-[var(--text-secondary)]">FLOW STATE</span>
+        <span className="font-bold text-[8px] tracking-[0.2em] text-[var(--text-secondary)]">FLOW STATE</span>
         <span className="font-sans text-xs font-medium text-[var(--text-primary)] shadow-sm">White Noise 40Hz</span>
       </div>
 

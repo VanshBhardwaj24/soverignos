@@ -47,22 +47,22 @@ export function LevelUpOverlay({ statName, oldLevel, newLevel, color, onClose }:
             </div>
           </motion.div>
 
-          <h1 className="font-mono text-[10px] tracking-[0.5em] text-white/40 uppercase mb-2">Capabilities Evolution</h1>
-          <h2 className="font-mono text-5xl font-black text-white tracking-tighter mb-8 uppercase italic">Rank Up</h2>
+          <h1 className="font-bold text-[10px] tracking-[0.5em] text-white/40 uppercase mb-2">Capabilities Evolution</h1>
+          <h2 className="font-bold text-5xl font-black text-white tracking-tighter mb-8 uppercase italic">Rank Up</h2>
           
           <div className="flex items-center justify-center gap-6 mb-12">
             <div className="flex flex-col items-center">
-              <span className="text-[10px] font-mono text-white/40 uppercase mb-1">Pillar</span>
+              <span className="text-[10px] font-bold text-white/40 uppercase mb-1">Pillar</span>
               <span className="text-sm font-bold text-white tracking-widest uppercase">{statName}</span>
             </div>
             <div className="h-10 w-[1px] bg-white/10" />
             <div className="flex items-center gap-4">
-              <span className="text-4xl font-mono font-black text-white/20">{oldLevel}</span>
+              <span className="text-4xl font-bold font-black text-white/20">{oldLevel}</span>
               <ChevronRight className="text-white/40" />
               <motion.span 
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ duration: 0.5, delay: 0.5 }}
-                className="text-6xl font-mono font-black text-white"
+                className="text-6xl font-bold font-black text-white"
                 style={{ textShadow: `0 0 30px ${color}` }}
               >
                 {newLevel}
@@ -72,7 +72,7 @@ export function LevelUpOverlay({ statName, oldLevel, newLevel, color, onClose }:
 
           <button 
             onClick={onClose}
-            className="px-8 py-3 bg-white text-black font-mono font-black text-xs tracking-widest rounded-full hover:scale-105 active:scale-95 transition-all uppercase"
+            className="px-8 py-3 bg-white text-black font-bold font-black text-xs tracking-widest rounded-full hover:scale-105 active:scale-95 transition-all uppercase"
           >
             Acknowledge [Enter]
           </button>

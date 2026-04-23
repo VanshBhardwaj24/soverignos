@@ -11,13 +11,13 @@ export const ComparativeIntelligence = () => {
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-2">
           <Target size={18} className="text-blue-400" />
-          <h2 className="font-mono text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Comparative Intelligence</h2>
+          <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Comparative Intelligence</h2>
         </div>
-        <span className="font-mono text-[9px] text-white/20 uppercase tracking-widest">Target Profile</span>
+        <span className="font-bold text-[9px] text-white/20 uppercase tracking-widest">Target Profile</span>
       </div>
 
       <div className="space-y-6">
-        <div className="grid grid-cols-4 font-mono text-[9px] text-white/30 uppercase tracking-widest pb-2 border-b border-white/5">
+        <div className="grid grid-cols-4 font-bold text-[9px] text-white/30 uppercase tracking-widest pb-2 border-b border-white/5">
           <span>Metric</span>
           <span className="text-right">You</span>
           <span className="text-right">Bench</span>
@@ -29,7 +29,7 @@ export const ComparativeIntelligence = () => {
           const isAtRisk = gap < 0;
 
           return (
-            <div key={i} className="grid grid-cols-4 font-mono text-xs items-center group">
+            <div key={i} className="grid grid-cols-4 font-bold text-xs items-center group">
               <span className="text-white/60 group-hover:text-white transition-colors">{stat.label}</span>
               <span className="text-right font-bold">{stat.actual}{stat.unit}</span>
               <span className="text-right text-white/40">{stat.benchmark}{stat.unit}</span>
@@ -45,7 +45,7 @@ export const ComparativeIntelligence = () => {
       </div>
 
       <div className="mt-8 p-4 rounded-xl bg-purple-500/5 border border-purple-500/10">
-        <p className="text-[10px] text-purple-300 leading-relaxed font-mono">
+        <p className="text-[10px] text-purple-300 leading-relaxed font-bold">
           Commander, knowing the SDE-1 benchmark for consistency is 60% and yours is {surveillanceMetrics.consistency}% is actionable intelligence. Your primary bottleneck is routine stability, not technical breadth.
         </p>
       </div>

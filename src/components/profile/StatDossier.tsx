@@ -31,17 +31,17 @@ const DossierSection = ({ title, icon: Icon, momentum, children, isInitiallyExpa
           <div>
             <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">{title} BREAKDOWN</h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="font-mono text-[8px] text-white/20 uppercase tracking-[0.2em] font-black">Status Intensity:</span>
+              <span className="font-bold text-[8px] text-white/20 uppercase tracking-[0.2em] font-black">Status Intensity:</span>
               {momentum === 'declining' ? (
-                <div className="flex items-center gap-1 text-red-500/60 font-mono text-[8px] font-black uppercase">
+                <div className="flex items-center gap-1 text-red-500/60 font-bold text-[8px] font-black uppercase">
                   <TrendingDown size={10} /> DECLINING — IMMEDIATE ACTION REQUIRED
                 </div>
               ) : momentum === 'improving' ? (
-                <div className="flex items-center gap-1 text-emerald-500/60 font-mono text-[8px] font-black uppercase">
+                <div className="flex items-center gap-1 text-emerald-500/60 font-bold text-[8px] font-black uppercase">
                   <TrendingUp size={10} /> IMPROVING — MOMENTUM SECURED
                 </div>
               ) : (
-                <div className="flex items-center gap-1 text-blue-500/60 font-mono text-[8px] font-black uppercase">
+                <div className="flex items-center gap-1 text-blue-500/60 font-bold text-[8px] font-black uppercase">
                   STABLE — PROTOCOL NOMINAL
                 </div>
               )}
@@ -273,26 +273,26 @@ export const StatDossier = () => {
     <div className="space-y-6">
       <div className="flex items-center gap-3 text-white/20 px-4">
         <div className="w-8 h-px bg-white/10" />
-        <h2 className="font-mono text-[10px] font-black tracking-[0.4em] uppercase">Stat Dossier — Deep Personal Metrics</h2>
+        <h2 className="font-bold text-[10px] font-black tracking-[0.4em] uppercase">Stat Dossier — Deep Personal Metrics</h2>
       </div>
 
       <DossierSection title="Code" icon={Code} momentum={codeMomentum} isInitiallyExpanded={true}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-6">
-            <h4 className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">LeetCode Analysis</h4>
+            <h4 className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">LeetCode Analysis</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-6 bg-white/5 rounded-3xl space-y-2">
-                 <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">Total Solved</span>
+                 <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">Total Solved</span>
                  <div className="text-3xl font-black text-white italic tracking-tighter">{bodyMetrics.code.total}</div>
-                 <div className="flex gap-2 text-[8px] font-mono font-black uppercase">
+                 <div className="flex gap-2 text-[8px] font-bold font-black uppercase">
                     <span className="text-emerald-400">E: {bodyMetrics.code.easy}</span> • <span className="text-yellow-400">M: {bodyMetrics.code.medium}</span> • <span className="text-red-400">H: {bodyMetrics.code.hard}</span>
                  </div>
               </div>
               <div className="p-6 bg-white/5 rounded-3xl space-y-2">
-                 <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">Focus Intensity</span>
+                 <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">Focus Intensity</span>
                  <div className="text-3xl font-black text-white italic tracking-tighter">{bodyMetrics.code.medium > bodyMetrics.code.easy ? 'Advanced' : 'Core'}</div>
                  <span className={cn(
-                   "text-[8px] font-mono font-black uppercase",
+                   "text-[8px] font-bold font-black uppercase",
                    bodyMetrics.code.total > 0 ? "text-emerald-500/60" : "text-red-500/60"
                  )}>
                    {bodyMetrics.code.total > 0 ? 'Active Deployment' : 'Stalled Operations'}
@@ -300,13 +300,13 @@ export const StatDossier = () => {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black w-full mb-2">Category Mastery</span>
+              <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black w-full mb-2">Category Mastery</span>
               {['Arrays', 'Strings', 'HashMap'].map(c => (
-                <span key={c} className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-mono text-emerald-400 font-bold">{c}</span>
+                <span key={c} className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold text-emerald-400 font-bold">{c}</span>
               ))}
-              <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black w-full my-2">Weak Points</span>
+              <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black w-full my-2">Weak Points</span>
               {['Graphs', 'DP', 'Trees'].map(c => (
-                <span key={c} className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[9px] font-mono text-red-400 font-bold">{c}</span>
+                <span key={c} className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[9px] font-bold text-red-400 font-bold">{c}</span>
               ))}
             </div>
             
@@ -315,16 +315,16 @@ export const StatDossier = () => {
               className="w-full py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center gap-3 group hover:bg-emerald-500/20 transition-all mt-4"
             >
               <Plus size={16} className="text-emerald-400 group-hover:rotate-90 transition-transform" />
-              <span className="font-mono text-[10px] font-black text-emerald-400 uppercase tracking-widest">Register Code Mission Log</span>
+              <span className="font-bold text-[10px] font-black text-emerald-400 uppercase tracking-widest">Register Code Mission Log</span>
             </button>
           </div>
 
           <div className="space-y-6">
-            <h4 className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">GitHub & Workflow</h4>
+            <h4 className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">GitHub & Workflow</h4>
             <div className="space-y-4">
               <div className="flex justify-between items-end">
-                <span className="font-mono text-[10px] text-white uppercase tracking-widest font-bold">GitHub Streak</span>
-                <span className="font-mono text-[10px] text-white/40">Current: {bodyMetrics.code.streak} Days | Longest: {bodyMetrics.code.maxStreak} Days</span>
+                <span className="font-bold text-[10px] text-white uppercase tracking-widest font-bold">GitHub Streak</span>
+                <span className="font-bold text-[10px] text-white/40">Current: {bodyMetrics.code.streak} Days | Longest: {bodyMetrics.code.maxStreak} Days</span>
               </div>
               <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex">
                  <div 
@@ -334,12 +334,12 @@ export const StatDossier = () => {
               </div>
               <div className="grid grid-cols-2 gap-4 pt-2">
                  <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
-                    <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Open Source PRs</span>
-                    <div className="font-mono text-xl font-black text-white italic">12 <span className="text-[8px] text-white/20 ml-1">MERGED</span></div>
+                    <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Open Source PRs</span>
+                    <div className="font-bold text-xl font-black text-white italic">12 <span className="text-[8px] text-white/20 ml-1">MERGED</span></div>
                  </div>
                  <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
-                    <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Total Commits</span>
-                    <div className="font-mono text-xl font-black text-white italic">340+</div>
+                    <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Total Commits</span>
+                    <div className="font-bold text-xl font-black text-white italic">340+</div>
                  </div>
               </div>
             </div>
@@ -350,44 +350,44 @@ export const StatDossier = () => {
       <DossierSection title="Wealth" icon={DollarSign} momentum={wealthMomentum}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            <div className="p-6 bg-white/5 rounded-3xl space-y-4">
-              <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Trading Status</span>
+              <span className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Trading Status</span>
               <div className="space-y-1">
                  <div className="text-2xl font-black text-white italic tracking-tighter uppercase">Equity: ${bodyMetrics.wealth.equity.toLocaleString()}</div>
-                 <span className="text-[10px] font-mono text-emerald-400 font-black tracking-widest uppercase">
+                 <span className="text-[10px] font-bold text-emerald-400 font-black tracking-widest uppercase">
                    {bodyMetrics.wealth.equity > 5000 ? "Capital Growth Secured" : "Protocol Deficit"}
                  </span>
               </div>
               <div className="space-y-2">
-                 <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">Account P&L</span>
+                 <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">Account P&L</span>
                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                     <div className={cn(
                       "h-full",
                       bodyMetrics.wealth.equity >= 5000 ? "bg-blue-400" : "bg-red-400"
                     )} style={{ width: `${Math.min(Math.max((bodyMetrics.wealth.equity / 10000) * 100, 5), 100)}%` }} />
                  </div>
-                 <span className="font-mono text-[8px] text-white/40 uppercase font-black text-right block">Baseline: $5,000</span>
+                 <span className="font-bold text-[8px] text-white/40 uppercase font-black text-right block">Baseline: $5,000</span>
               </div>
            </div>
 
            <div className="p-6 bg-white/5 rounded-3xl space-y-4">
-              <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Performance</span>
+              <span className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Performance</span>
               <div className="grid grid-cols-2 gap-4">
                  <div>
-                    <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Win Frequency</span>
-                    <div className="font-mono text-xl font-black text-emerald-400 italic">
+                    <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Win Frequency</span>
+                    <div className="font-bold text-xl font-black text-emerald-400 italic">
                       {bodyMetrics.wealth.winRate > 0 ? bodyMetrics.wealth.winRate.toFixed(1) + '%' : 'N/A'}
                     </div>
                  </div>
                  <div>
-                    <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Income Power</span>
-                    <div className="font-mono text-xl font-black text-white italic">{bodyMetrics.wealth.incomeStreams} <span className="text-[10px] opacity-20">STREAMS</span></div>
+                    <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Income Power</span>
+                    <div className="font-bold text-xl font-black text-white italic">{bodyMetrics.wealth.incomeStreams} <span className="text-[10px] opacity-20">STREAMS</span></div>
                  </div>
               </div>
               <div className="pt-2 border-t border-white/5">
-                 <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black mb-1">Primary Accents</span>
+                 <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black mb-1">Primary Accents</span>
                  <div className="flex gap-2">
-                    <span className="px-2 py-0.5 rounded bg-white/5 font-mono text-[8px] text-white font-bold">XAU/USD</span>
-                    <span className="px-2 py-0.5 rounded bg-white/5 font-mono text-[8px] text-white font-bold">ALPHA-TX</span>
+                    <span className="px-2 py-0.5 rounded bg-white/5 font-bold text-[8px] text-white font-bold">XAU/USD</span>
+                    <span className="px-2 py-0.5 rounded bg-white/5 font-bold text-[8px] text-white font-bold">ALPHA-TX</span>
                  </div>
               </div>
            </div>
@@ -396,20 +396,20 @@ export const StatDossier = () => {
              "p-6 border rounded-3xl space-y-4",
              bodyMetrics.wealth.incomeStreams === 0 ? "bg-red-500/5 border-red-500/10" : "bg-emerald-500/5 border-emerald-500/10"
            )}>
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] font-black opacity-60">Income Diversification</span>
+              <span className="font-bold text-[10px] uppercase tracking-[0.2em] font-black opacity-60">Income Diversification</span>
               <div className={cn(
                 "text-5xl font-black italic tracking-tighter",
                 bodyMetrics.wealth.incomeStreams === 0 ? "text-red-500" : "text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.1)]"
               )}>
                 {bodyMetrics.wealth.incomeStreams}
               </div>
-              <p className="text-[10px] font-mono opacity-40 uppercase font-black leading-tight italic">
+              <p className="text-[10px] font-bold opacity-40 uppercase font-black leading-tight italic">
                 {bodyMetrics.wealth.incomeStreams === 0 
                   ? "Lack of diversity is the primary vulnerability in the current protocol."
                   : "Diversification protocol engaged. Multiple vectors contributing to system equity."}
               </p>
               <div className="pt-2 border-t border-white/10">
-                 <span className="font-mono text-[8px] opacity-40 uppercase tracking-widest block font-black mb-1">Status Report</span>
+                 <span className="font-bold text-[8px] opacity-40 uppercase tracking-widest block font-black mb-1">Status Report</span>
                  <div className="text-xl font-black text-white italic">
                    {bodyMetrics.wealth.incomeStreams > 1 ? "ELITE" : "FRAGILE"} <span className="text-[10px] text-white/20 uppercase ml-1">STANCE</span>
                  </div>
@@ -422,7 +422,7 @@ export const StatDossier = () => {
           className="w-full py-4 mt-8 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center gap-3 group hover:bg-white/10 transition-all"
         >
           <Plus size={16} className="text-white/40 group-hover:text-[var(--stat-wealth)] group-hover:rotate-90 transition-all" />
-          <span className="font-mono text-[10px] font-black text-white/40 group-hover:text-white uppercase tracking-[0.3em]">Register Financial Movement</span>
+          <span className="font-bold text-[10px] font-black text-white/40 group-hover:text-white uppercase tracking-[0.3em]">Register Financial Movement</span>
         </button>
       </DossierSection>
 
@@ -430,8 +430,8 @@ export const StatDossier = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-6">
                 <div className="flex justify-between items-end">
-                    <span className="font-mono text-[10px] text-white uppercase tracking-widest font-bold">Gym Consistency / Month</span>
-                    <span className="font-mono text-2xl font-black text-white italic">{bodyMetrics.gym.sessionsMonth}/30 <span className="text-xs text-white/20 font-light ml-1">Sessions</span></span>
+                    <span className="font-bold text-[10px] text-white uppercase tracking-widest font-bold">Gym Consistency / Month</span>
+                    <span className="font-bold text-2xl font-black text-white italic">{bodyMetrics.gym.sessionsMonth}/30 <span className="text-xs text-white/20 font-light ml-1">Sessions</span></span>
                 </div>
                 <div className="h-8 w-full bg-white/5 rounded-2xl overflow-hidden border border-white/10 p-1 flex gap-1">
                     {Array.from({ length: 30 }).map((_, i) => {
@@ -449,14 +449,14 @@ export const StatDossier = () => {
                 <div className="grid grid-cols-2 gap-4">
                    <div className="p-4 bg-white/5 border border-white/5 rounded-2xl group cursor-pointer hover:bg-white/10 transition-all" onClick={() => setLogModalOpen(true, 'body', 'gym_session')}>
                       <div className="flex justify-between items-start mb-1">
-                        <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Longest Gym Streak</span>
+                        <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Longest Gym Streak</span>
                         <Plus size={10} className="text-white/20 group-hover:text-emerald-400 group-hover:rotate-90 transition-transform" />
                       </div>
-                      <div className="font-mono text-xl font-black text-white italic">{bodyMetrics.gym.longestStreak} <span className="text-[8px] text-white/20 ml-1 uppercase">Days</span></div>
+                      <div className="font-bold text-xl font-black text-white italic">{bodyMetrics.gym.longestStreak} <span className="text-[8px] text-white/20 ml-1 uppercase">Days</span></div>
                    </div>
                    <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
-                      <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Rest Days</span>
-                      <div className="font-mono text-xl font-black text-white italic">{bodyMetrics.gym.restDays} <span className="text-[8px] text-white/20 ml-1 uppercase">This Month</span></div>
+                      <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Rest Days</span>
+                      <div className="font-bold text-xl font-black text-white italic">{bodyMetrics.gym.restDays} <span className="text-[8px] text-white/20 ml-1 uppercase">This Month</span></div>
                    </div>
                 </div>
                 
@@ -465,7 +465,7 @@ export const StatDossier = () => {
                   className="w-full py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center gap-3 group hover:bg-emerald-500/20 transition-all"
                 >
                   <Plus size={16} className="text-emerald-400 group-hover:rotate-90 transition-transform" />
-                  <span className="font-mono text-[10px] font-black text-emerald-400 uppercase tracking-widest">Register Gym Session</span>
+                  <span className="font-bold text-[10px] font-black text-emerald-400 uppercase tracking-widest">Register Gym Session</span>
                 </button>
             </div>
 
@@ -473,14 +473,14 @@ export const StatDossier = () => {
                 <div className="absolute top-0 right-0 p-8 opacity-5">
                   <Moon size={120} />
                 </div>
-                <span className="font-mono text-[10px] text-blue-500/60 uppercase tracking-[0.2em] font-black">Sleep Recovery</span>
+                <span className="font-bold text-[10px] text-blue-500/60 uppercase tracking-[0.2em] font-black">Sleep Recovery</span>
                 <div className="flex items-center gap-6">
                     <div className="text-5xl font-black text-white italic tracking-tighter">
                       {bodyMetrics.sleep.avgHours.toFixed(1)}
                       <span className="text-xs text-white/20 ml-1 uppercase font-light">HOURS</span>
                     </div>
                     <div className={cn(
-                      "flex items-center gap-2 font-mono text-[9px] font-black uppercase",
+                      "flex items-center gap-2 font-bold text-[9px] font-black uppercase",
                       bodyMetrics.sleep.avgHours >= 7.5 ? "text-emerald-500/60" : "text-red-500/60"
                     )}>
                         {bodyMetrics.sleep.avgHours >= 7.5 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
@@ -489,12 +489,12 @@ export const StatDossier = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-blue-500/20">
                    <div>
-                      <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Current Streak</span>
-                      <div className="font-mono text-lg font-black text-white">{bodyMetrics.sleep.currentStreak} <span className="text-[8px] text-white/20 ml-1 lowercase">days</span></div>
+                      <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Current Streak</span>
+                      <div className="font-bold text-lg font-black text-white">{bodyMetrics.sleep.currentStreak} <span className="text-[8px] text-white/20 ml-1 lowercase">days</span></div>
                    </div>
                    <div>
-                      <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Best Streak</span>
-                      <div className="font-mono text-lg font-black text-white">{bodyMetrics.sleep.bestStreak} <span className="text-[8px] text-white/20 ml-1 lowercase">days</span></div>
+                      <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Best Streak</span>
+                      <div className="font-bold text-lg font-black text-white">{bodyMetrics.sleep.bestStreak} <span className="text-[8px] text-white/20 ml-1 lowercase">days</span></div>
                    </div>
                 </div>
 
@@ -503,7 +503,7 @@ export const StatDossier = () => {
                   className="w-full py-4 mt-2 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center gap-3 group hover:bg-blue-500/20 transition-all"
                 >
                   <Plus size={16} className="text-blue-400 group-hover:rotate-90 transition-transform" />
-                  <span className="font-mono text-[10px] font-black text-blue-400 uppercase tracking-widest">Register Sleep Recovery</span>
+                  <span className="font-bold text-[10px] font-black text-blue-400 uppercase tracking-widest">Register Sleep Recovery</span>
                 </button>
             </div>
         </div>
@@ -512,23 +512,23 @@ export const StatDossier = () => {
       <DossierSection title="Brand" icon={Share2} momentum="declining">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
            <div className="p-6 bg-white/5 rounded-3xl space-y-2">
-              <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">Twitter/X Followers</span>
+              <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">Twitter/X Followers</span>
               <div className="text-3xl font-black text-white italic tracking-tighter">COMING SOON</div>
            </div>
            <div className="p-6 bg-white/5 rounded-3xl space-y-2">
-              <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">Posts / Month</span>
+              <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">Posts / Month</span>
               <div className="text-3xl font-black text-white italic tracking-tighter">7</div>
-              <div className="flex items-center gap-2 text-red-500/60 font-mono text-[8px] font-black uppercase">
+              <div className="flex items-center gap-2 text-red-500/60 font-bold text-[8px] font-black uppercase">
                   Last post: 4 days ago
               </div>
            </div>
            <div className="p-6 bg-white/5 rounded-3xl space-y-2">
-              <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">Blog Articles</span>
+              <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">Blog Articles</span>
               <div className="text-3xl font-black text-red-500 italic tracking-tighter">0</div>
-              <span className="font-mono text-[8px] text-red-500/40 uppercase font-black italic">VISIBLE GAP</span>
+              <span className="font-bold text-[8px] text-red-500/40 uppercase font-black italic">VISIBLE GAP</span>
            </div>
            <div className="p-6 bg-white/5 rounded-3xl space-y-2">
-              <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">GitHub Stars</span>
+              <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">GitHub Stars</span>
               <div className="text-3xl font-black text-white italic tracking-tighter">COMING SOON</div>
            </div>
         </div>
@@ -538,25 +538,25 @@ export const StatDossier = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-6">
                <div className="p-8 bg-white/5 border border-white/5 rounded-3xl space-y-6">
-                  <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Outreach Metrics</span>
+                  <span className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Outreach Metrics</span>
                   <div className="grid grid-cols-2 gap-8">
                      <div>
-                        <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Cold Messages Total</span>
-                        <div className="font-mono text-3xl font-black text-white italic">18</div>
+                        <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Cold Messages Total</span>
+                        <div className="font-bold text-3xl font-black text-white italic">18</div>
                      </div>
                      <div>
-                        <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Response Rate</span>
-                        <div className="font-mono text-3xl font-black text-emerald-400 italic">11%</div>
+                        <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Response Rate</span>
+                        <div className="font-bold text-3xl font-black text-emerald-400 italic">11%</div>
                      </div>
                   </div>
                   <div className="pt-4 border-t border-white/5 flex gap-8">
                      <div>
-                        <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Referrals Asked</span>
-                        <div className="font-mono text-lg font-black text-white italic">1</div>
+                        <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Referrals Asked</span>
+                        <div className="font-bold text-lg font-black text-white italic">1</div>
                      </div>
                      <div>
-                        <span className="block font-mono text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Referrals Received</span>
-                        <div className="font-mono text-lg font-black text-white italic opacity-20">0</div>
+                        <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest font-black mb-1">Referrals Received</span>
+                        <div className="font-bold text-lg font-black text-white italic opacity-20">0</div>
                      </div>
                   </div>
                </div>
@@ -565,14 +565,14 @@ export const StatDossier = () => {
             <div className="space-y-6">
                <div className="p-8 bg-red-500/5 border border-red-500/10 rounded-3xl space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-mono text-[10px] text-red-500/60 uppercase tracking-[0.2em] font-black">Stale Node Alert</span>
-                    <span className="px-2 py-0.5 rounded bg-red-500 text-white font-mono text-[8px] font-black">URGENT</span>
+                    <span className="font-bold text-[10px] text-red-500/60 uppercase tracking-[0.2em] font-black">Stale Node Alert</span>
+                    <span className="px-2 py-0.5 rounded bg-red-500 text-white font-bold text-[8px] font-black">URGENT</span>
                   </div>
                   <div className="text-4xl font-black text-white italic tracking-tighter">4 <span className="text-xs text-white/20 uppercase font-light ml-1">Contacts approaching cold</span></div>
-                  <p className="text-[10px] font-mono text-white/40 uppercase font-black italic">
+                  <p className="text-[10px] font-bold text-white/40 uppercase font-black italic">
                     Nodes not contacted in 60+ days are at risk of link decay. Rekindle elite node connections before affinity resets to baseline.
                   </p>
-                  <button className="flex items-center gap-2 text-[10px] font-mono font-black text-red-500 uppercase tracking-widest pt-2 group">
+                  <button className="flex items-center gap-2 text-[10px] font-bold font-black text-red-500 uppercase tracking-widest pt-2 group">
                     View Stale Contacts <ExternalLink size={10} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </button>
                </div>

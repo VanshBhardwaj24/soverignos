@@ -48,11 +48,11 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
                 <div className="h-8 w-8 rounded-xl bg-red-500/10 flex items-center justify-center">
                   <ShieldAlert size={16} className="text-red-500" />
                 </div>
-                <span className="font-mono text-[9px] tracking-[0.3em] text-red-500 uppercase font-black">
+                <span className="font-bold text-[9px] tracking-[0.3em] text-red-500 uppercase font-black">
                   Consequence Chain Active
                 </span>
               </div>
-              <h2 className="font-mono text-xl font-light text-white/60">
+              <h2 className="font-bold text-xl font-light text-white/60">
                 You're about to skip:
               </h2>
               <p className="font-sans text-2xl font-black text-white tracking-tight mt-1">
@@ -85,7 +85,7 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
 
                   {/* Text */}
                   <p className={cn(
-                    'font-mono text-[10px] pb-2 leading-relaxed',
+                    'font-bold text-[10px] pb-2 leading-relaxed',
                     i === 0 ? 'text-orange-400 font-bold' :
                       i === chain.length - 1 ? 'text-red-400 font-bold' :
                         'text-white/40'
@@ -99,14 +99,14 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
 
             {/* Regret probability */}
             <div className="mx-6 mb-3 px-4 py-2 bg-red-500/5 border border-red-500/15 rounded-xl flex items-center justify-between">
-              <span className="font-mono text-[8px] text-white/40 uppercase tracking-widest">
+              <span className="font-bold text-[8px] text-white/40 uppercase tracking-widest">
                 Probability you will regret this
               </span>
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
-                className="font-mono text-lg font-black text-red-400"
+                className="font-bold text-lg font-black text-red-400"
               >
                 {regretProb}%
               </motion.span>
@@ -115,7 +115,7 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
             {/* Identity challenge */}
             {frame && (
               <div className="mx-6 mb-4 text-center">
-                <p className="font-mono text-[8px] text-white/20 tracking-[0.2em]">
+                <p className="font-bold text-[8px] text-white/20 tracking-[0.2em]">
                   {frame.identity.toUpperCase()} {frame.question.toUpperCase()}
                 </p>
               </div>
@@ -123,32 +123,29 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
 
             {/* Actions */}
             <div className="px-6 pb-6 flex flex-col gap-2">
-              <button
-                onClick={onResume}
-                className="w-full py-3 bg-white text-black font-mono font-black text-[9px] tracking-widest uppercase rounded-xl hover:brightness-90 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center justify-center gap-2"
-              >
-                <ArrowRight size={14} /> Resume Protocol
-              </button>
-
               <div className="flex gap-2">
-                {onUseInsurance && (streakInsurance.usesThisMonth || 0) < 4 && (
-                  <button
-                    onClick={onUseInsurance}
-                    className="flex-1 py-3 bg-amber-500/10 border border-amber-500/30 text-amber-500 font-mono text-[9px] uppercase tracking-widest rounded-xl hover:bg-amber-500/20 transition-all flex items-center justify-center gap-2"
-                  >
-                    Insurance
-                  </button>
-                )}
+                <button
+                  onClick={onResume}
+                  className="flex-1 py-3 bg-white/10 border border-white/20 text-white font-bold font-black text-[9px] tracking-widest uppercase rounded-xl hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <ArrowRight size={14} /> Resume
+                </button>
                 <button
                   onClick={onConfirmSkip}
-                  className={cn(
-                    "py-3 bg-white/5 border border-white/10 text-white/30 font-mono text-[9px] uppercase tracking-widest rounded-xl hover:text-white/50 transition-all",
-                    onUseInsurance && (streakInsurance.usesThisMonth || 0) < 4 ? "px-4" : "flex-1"
-                  )}
+                  className="flex-1 py-3 bg-white/10 border border-white/20 text-white font-bold text-[9px] uppercase tracking-widest rounded-xl hover:bg-white/20 transition-all flex items-center justify-center gap-2"
                 >
-                  <X size={14} /> {(!onUseInsurance || (streakInsurance.usesThisMonth || 0) >= 4) && "Confirm Skip"}
+                  <X size={14} /> Take a break
                 </button>
               </div>
+
+              {onUseInsurance && (streakInsurance.usesThisMonth || 0) < 4 && (
+                <button
+                  onClick={onUseInsurance}
+                  className="w-full py-3 bg-amber-500/10 border border-amber-500/30 text-amber-500 font-bold text-[9px] uppercase tracking-widest rounded-xl hover:bg-amber-500/20 transition-all mt-1"
+                >
+                  Use Insurance Token
+                </button>
+              )}
             </div>
           </motion.div>
         </motion.div>

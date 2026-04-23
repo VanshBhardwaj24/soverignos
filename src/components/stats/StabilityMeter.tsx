@@ -10,9 +10,9 @@ export function StabilityMeter() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
            <Activity size={14} className="text-[#00FFA3]" />
-           <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">System Stability</span>
+           <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">System Stability</span>
         </div>
-        <span className="font-mono text-[10px] font-black text-[#00FFA3]">{stability}%</span>
+        <span className="font-bold text-[10px] font-black text-[#00FFA3]">{stability}%</span>
       </div>
 
       <div className="h-12 flex items-end gap-1 px-1">
@@ -27,7 +27,7 @@ export function StabilityMeter() {
         ))}
       </div>
       
-      <p className="text-[10px] font-mono text-white/20 uppercase tracking-tighter leading-tight">
+      <p className="text-[10px] font-bold text-white/20 uppercase tracking-tighter leading-tight">
         Operational integrity is nominal. No significant divergence detected in local timelines.
       </p>
     </div>

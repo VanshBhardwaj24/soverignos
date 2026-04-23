@@ -75,10 +75,10 @@ export function EnergyDashboard() {
             <Zap size={14} />
           </div>
           <div>
-            <h3 className="font-mono text-[9px] font-black tracking-[0.3em] text-[var(--stat-body)] uppercase">
+            <h3 className="font-bold text-[9px] font-black tracking-[0.3em] text-[var(--stat-body)] uppercase">
               Energy Log
             </h3>
-            <p className="font-mono text-[8px] text-white/25">
+            <p className="font-bold text-[8px] text-white/25">
               7-day avg: <span className="text-white/50 font-bold">{avg7}/5</span>
             </p>
           </div>
@@ -89,7 +89,7 @@ export function EnergyDashboard() {
             style={{ borderColor: `${LEVEL_LABELS[todayEnergy.level].color}30`, backgroundColor: `${LEVEL_LABELS[todayEnergy.level].color}10` }}
           >
             <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: LEVEL_LABELS[todayEnergy.level].color }} />
-            <span className="font-mono text-[9px] font-bold uppercase tracking-wider" style={{ color: LEVEL_LABELS[todayEnergy.level].color }}>
+            <span className="font-bold text-[9px] font-bold uppercase tracking-wider" style={{ color: LEVEL_LABELS[todayEnergy.level].color }}>
               {LEVEL_LABELS[todayEnergy.level].label}
             </span>
           </div>
@@ -99,7 +99,7 @@ export function EnergyDashboard() {
       {/* Input — only if not logged today */}
       {!todayEnergy && (
         <div>
-          <p className="font-mono text-[9px] text-white/30 uppercase tracking-widest mb-2.5">
+          <p className="font-bold text-[9px] text-white/30 uppercase tracking-widest mb-2.5">
             Wake-up energy today?
           </p>
           <div className="flex gap-2">
@@ -108,7 +108,7 @@ export function EnergyDashboard() {
                 key={level}
                 onClick={() => logEnergy(level)}
                 className={cn(
-                  'flex-1 py-3 rounded-xl border font-mono text-xs font-black transition-all active:scale-95',
+                  'flex-1 py-3 rounded-xl border font-bold text-xs font-black transition-all active:scale-95',
                 )}
                 style={{
                   borderColor: `${LEVEL_LABELS[level].color}30`,
@@ -121,8 +121,8 @@ export function EnergyDashboard() {
             ))}
           </div>
           <div className="flex justify-between mt-1">
-            <span className="font-mono text-[7px] text-white/15">DEPLETED</span>
-            <span className="font-mono text-[7px] text-white/15">PEAK</span>
+            <span className="font-bold text-[7px] text-white/15">DEPLETED</span>
+            <span className="font-bold text-[7px] text-white/15">PEAK</span>
           </div>
         </div>
       )}
@@ -130,7 +130,7 @@ export function EnergyDashboard() {
       {/* 60-day bar chart */}
       {last60.length > 0 && (
         <div>
-          <p className="font-mono text-[8px] text-white/20 uppercase tracking-widest mb-2">
+          <p className="font-bold text-[8px] text-white/20 uppercase tracking-widest mb-2">
             60-Day Energy History
           </p>
           <div className="flex items-end gap-[2px] h-16 relative">
@@ -151,8 +151,8 @@ export function EnergyDashboard() {
                 >
                   {hoveredDay === i && (
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-[#1a1a1a] border border-white/10 rounded-lg px-2 py-1 whitespace-nowrap z-10">
-                      <p className="font-mono text-[8px] text-white/50">{entry.date}</p>
-                      <p className="font-mono text-[10px] font-bold" style={{ color }}>
+                      <p className="font-bold text-[8px] text-white/50">{entry.date}</p>
+                      <p className="font-bold text-[10px] font-bold" style={{ color }}>
                         {LEVEL_LABELS[entry.level]?.label} ({entry.level}/5)
                       </p>
                     </div>
@@ -167,11 +167,11 @@ export function EnergyDashboard() {
       {/* Correlations */}
       {correlations.length > 0 && (
         <div className="space-y-1.5">
-          <p className="font-mono text-[8px] text-white/20 uppercase tracking-widest">Patterns Detected</p>
+          <p className="font-bold text-[8px] text-white/20 uppercase tracking-widest">Patterns Detected</p>
           {correlations.map((c, i) => (
             <div key={i} className="flex items-center justify-between py-1.5 border-b border-white/[0.04] last:border-0">
-              <span className="font-mono text-[9px] text-white/40">{c.label}</span>
-              <span className={cn('flex items-center gap-1 font-mono text-[9px] font-bold', c.delta >= 0 ? 'text-[var(--stat-body)]' : 'text-red-400')}>
+              <span className="font-bold text-[9px] text-white/40">{c.label}</span>
+              <span className={cn('flex items-center gap-1 font-bold text-[9px] font-bold', c.delta >= 0 ? 'text-[var(--stat-body)]' : 'text-red-400')}>
                 {c.delta >= 0.1 ? <TrendingUp size={10} /> : c.delta <= -0.1 ? <TrendingDown size={10} /> : <Minus size={10} />}
                 {c.delta >= 0 ? '+' : ''}{c.delta.toFixed(1)}
               </span>
@@ -181,7 +181,7 @@ export function EnergyDashboard() {
       )}
 
       {energyLogs.length < 10 && (
-        <p className="font-mono text-[8px] text-white/15 text-center">
+        <p className="font-bold text-[8px] text-white/15 text-center">
           Log {10 - energyLogs.length} more days to unlock pattern detection
         </p>
       )}

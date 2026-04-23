@@ -38,7 +38,7 @@ export const LifeTimeline = () => {
           <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/60">
             <History size={16} />
           </div>
-          <h3 className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Operator Timeline</h3>
+          <h3 className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Operator Timeline</h3>
         </div>
 
         <div className="relative space-y-0">
@@ -62,7 +62,7 @@ export const LifeTimeline = () => {
 
               <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6">
                 <span className={cn(
-                  "font-mono text-[10px] uppercase font-black tracking-widest shrink-0 w-24",
+                  "font-bold text-[10px] uppercase font-black tracking-widest shrink-0 w-24",
                   event.type === 'past' ? "text-white/40" : "text-white/10"
                 )}>
                   {event.date}
@@ -72,7 +72,7 @@ export const LifeTimeline = () => {
                     "text-lg font-black uppercase italic tracking-tighter",
                     event.type === 'past' ? "text-white" : "text-white/20"
                   )}>
-                    {event.type === 'past' ? event.title : <span>{event.title} <span className="text-[8px] font-mono not-italic lowercase tracking-normal ml-2 opacity-40">[PENDING]</span></span>}
+                    {event.type === 'past' ? event.title : <span>{event.title} <span className="text-[8px] font-bold not-italic lowercase tracking-normal ml-2 opacity-40">[PENDING]</span></span>}
                   </h4>
                   {event.description && <p className="text-[10px] text-white/40 uppercase font-black italic">{event.description}</p>}
                 </div>
@@ -90,14 +90,14 @@ export const LifeTimeline = () => {
            </div>
            
            <div className="space-y-1">
-              <span className="font-mono text-[9px] text-red-500/60 uppercase tracking-[0.4em] font-black">Days Since Graduation</span>
+              <span className="font-bold text-[9px] text-red-500/60 uppercase tracking-[0.4em] font-black">Days Since Graduation</span>
               <div className="text-7xl font-black text-white italic tracking-tighter">
                 {daysSinceGrad}
               </div>
            </div>
 
            <div className="space-y-1">
-              <span className="font-mono text-[9px] text-red-500/60 uppercase tracking-[0.4em] font-black">Days Without Income</span>
+              <span className="font-bold text-[9px] text-red-500/60 uppercase tracking-[0.4em] font-black">Days Without Income</span>
               <div className="text-7xl font-black text-white italic tracking-tighter">
                 {daysSinceGrad}
               </div>
@@ -105,7 +105,7 @@ export const LifeTimeline = () => {
 
            <div className="pt-6 border-t border-red-500/20 flex items-start gap-3">
               <AlertCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-[10px] font-mono text-red-500/60 uppercase font-black leading-tight italic">
+              <p className="text-[10px] font-bold text-red-500/60 uppercase font-black leading-tight italic">
                 This number should be decreasing in meaning, not increasing. Visible. Honest. Uncomfortable. Exactly right.
               </p>
            </div>
@@ -116,9 +116,9 @@ export const LifeTimeline = () => {
               <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/40">
                 <Calendar size={14} />
               </div>
-              <span className="font-mono text-[9px] text-white/40 uppercase tracking-widest font-black">Set Graduation Date</span>
+              <span className="font-bold text-[9px] text-white/40 uppercase tracking-widest font-black">Set Graduation Date</span>
            </div>
-           <button className="text-[9px] font-mono font-black text-white/20 uppercase hover:text-white transition-all">EDIT</button>
+           <button className="text-[9px] font-bold font-black text-white/20 uppercase hover:text-white transition-all">EDIT</button>
         </div>
       </div>
     </div>

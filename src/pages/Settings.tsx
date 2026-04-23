@@ -37,20 +37,20 @@ export default function Settings() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto pb-12">
       <div className="mb-12">
-        <h1 className="font-mono text-[11px] tracking-[0.2em] text-[var(--text-secondary)] opacity-80 uppercase mb-2">SYSTEM PREFERENCES</h1>
-        <h2 className="font-mono text-4xl font-light tracking-tight text-[var(--text-primary)]">CORE SETTINGS</h2>
+        <h1 className="font-bold text-[11px] tracking-[0.2em] text-[var(--text-secondary)] opacity-80 uppercase mb-2">SYSTEM PREFERENCES</h1>
+        <h2 className="font-bold text-4xl font-light tracking-tight text-[var(--text-primary)]">CORE SETTINGS</h2>
       </div>
 
       <div className="space-y-8">
         {/* Profile Section */}
-        <section className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-2xl overflow-hidden shadow-xl">
+        <section className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-2xl overflow-hidden shadow-xl border-glow-professional">
           <div className="p-6 border-b border-[var(--border-default)] flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-[var(--text-primary)]/10 flex items-center justify-center text-[var(--text-primary)]">
               <User size={24} />
             </div>
             <div>
-              <h3 className="font-mono text-sm tracking-widest text-[var(--text-primary)] uppercase">Identity Module</h3>
-              <p className="text-xs text-[var(--text-muted)] font-mono">{user?.email || 'Unauthorized session'}</p>
+              <h3 className="font-bold text-sm tracking-widest text-[var(--text-primary)] uppercase">Identity Module</h3>
+              <p className="text-xs text-[var(--text-muted)] font-bold">{user?.email || 'Unauthorized session'}</p>
             </div>
           </div>
           <div className="p-6 space-y-4">
@@ -59,20 +59,20 @@ export default function Settings() {
                 <Shield size={16} className="text-[var(--text-secondary)]" />
                 <span className="text-sm text-[var(--text-secondary)]">Security Level</span>
               </div>
-              <span className="font-mono text-[10px] px-2 py-1 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--success)]">ENCRYPTED</span>
+              <span className="font-bold text-[10px] px-2 py-1 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--success)]">ENCRYPTED</span>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-[var(--border-subtle)]/50">
               <div className="flex items-center gap-3">
                 <Database size={16} className="text-[var(--text-secondary)]" />
                 <span className="text-sm text-[var(--text-secondary)]">Cloud Synchronization</span>
               </div>
-              <span className="font-mono text-[10px] px-2 py-1 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--success)]">ACTIVE</span>
+              <span className="font-bold text-[10px] px-2 py-1 rounded bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-[var(--success)]">ACTIVE</span>
             </div>
           </div>
         </section>
 
         {/* Preferences Section */}
-        <section className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-2xl p-8 shadow-xl space-y-8">
+        <section className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-2xl p-8 shadow-xl space-y-8 border-glow-professional">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Eye size={20} className="text-[var(--text-secondary)]" />
@@ -83,7 +83,8 @@ export default function Settings() {
             </div>
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg font-mono text-[10px] tracking-widest uppercase hover:text-[var(--text-primary)] transition-colors"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg font-bold text-[10px] tracking-widest uppercase hover:text-[var(--text-primary)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20"
             >
               {theme} mode
             </button>
@@ -103,15 +104,15 @@ export default function Settings() {
           </div>
 
           <div className="pt-8 border-t border-[var(--border-subtle)]/50 space-y-4">
-            <h4 className="font-mono text-[10px] tracking-widest text-[var(--text-muted)] uppercase">Data Management</h4>
+            <h4 className="font-bold text-[10px] tracking-widest text-[var(--text-muted)] uppercase">Data Management</h4>
             <div className="flex gap-4">
               <button
                 onClick={handleExport}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-xl font-mono text-[10px] tracking-widest uppercase hover:text-[var(--text-primary)] transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-xl font-bold text-[10px] tracking-widest uppercase hover:text-[var(--text-primary)] transition-colors"
               >
                 <Download size={14} /> Export Backup
               </button>
-              <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-xl font-mono text-[10px] tracking-widest uppercase hover:text-[var(--text-primary)] transition-colors cursor-pointer">
+              <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-xl font-bold text-[10px] tracking-widest uppercase hover:text-[var(--text-primary)] transition-colors cursor-pointer">
                 <Upload size={14} /> Import Backup
                 <input type="file" className="hidden" onChange={handleImport} accept=".json" />
               </label>
@@ -135,7 +136,7 @@ export default function Settings() {
           </div>
           <button
             onClick={() => logout()}
-            className="w-full bg-[var(--danger)]/10 hover:bg-[var(--danger)]/20 border border-[var(--danger)]/30 text-[var(--danger)] font-mono text-xs tracking-[0.2em] py-4 rounded-xl transition-all uppercase font-bold"
+            className="w-full bg-[var(--danger)]/10 hover:bg-[var(--danger)]/20 border border-[var(--danger)]/30 text-[var(--danger)] font-bold text-xs tracking-[0.2em] py-4 rounded-xl transition-all uppercase font-bold"
           >
             Log Out from Hub
           </button>
@@ -143,7 +144,7 @@ export default function Settings() {
       </div>
 
       <div className="mt-12 text-center opacity-30 select-none">
-        <span className="font-mono text-[9px] tracking-[0.5em] text-[var(--text-muted)] uppercase">Sovereign OS · v1.0.4-alpha</span>
+        <span className="font-bold text-[9px] tracking-[0.5em] text-[var(--text-muted)] uppercase">Sovereign OS · v1.0.4-alpha</span>
       </div>
     </div>
   );

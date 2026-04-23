@@ -92,17 +92,17 @@ export function CommitmentContract({ onComplete }: Props) {
           <Check size={32} />
         </div>
         <div>
-          <h3 className="font-mono text-lg font-light text-white mb-2">Contract Executed</h3>
-          <p className="font-mono text-sm text-white/40">
+          <h3 className="font-bold text-lg font-light text-white mb-2">Contract Executed</h3>
+          <p className="font-bold text-sm text-white/40">
             {commitments.filter(c => c.trim()).length} commitments locked in for this week.
           </p>
-          <p className="font-mono text-[10px] text-white/20 mt-1">
+          <p className="font-bold text-[10px] text-white/20 mt-1">
             You will be asked to review this next Sunday.
           </p>
         </div>
         <button
           onClick={onComplete}
-          className="px-8 py-3 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2"
+          className="px-8 py-3 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2"
         >
           Complete Protocol <ChevronRight size={14} />
         </button>
@@ -115,11 +115,11 @@ export function CommitmentContract({ onComplete }: Props) {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <FileText size={16} className="text-white/60" />
-          <span className="font-mono text-[9px] tracking-[0.3em] text-white/60 uppercase font-black">
+          <span className="font-bold text-[9px] tracking-[0.3em] text-white/60 uppercase font-black">
             Commitment Contract
           </span>
         </div>
-        <p className="font-mono text-white/30 text-xs">
+        <p className="font-bold text-white/30 text-xs">
           A signed commitment you review next Sunday.
         </p>
       </div>
@@ -128,7 +128,7 @@ export function CommitmentContract({ onComplete }: Props) {
       {isPastContract && phase === 'review' ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <div className="p-5 bg-white/[0.02] border border-white/10 rounded-2xl">
-            <p className="font-mono text-[8px] text-white/20 uppercase tracking-widest mb-3">
+            <p className="font-bold text-[8px] text-white/20 uppercase tracking-widest mb-3">
               Last Week's Contract — Review
             </p>
             <div className="space-y-1.5 mb-4">
@@ -137,16 +137,16 @@ export function CommitmentContract({ onComplete }: Props) {
                   <div className="h-3 w-3 rounded border border-white/20 flex items-center justify-center mt-0.5 shrink-0">
                     <div className="h-1.5 w-1.5 rounded-sm bg-white/20" />
                   </div>
-                  <span className="font-mono text-[10px] text-white/40">{c}</span>
+                  <span className="font-bold text-[10px] text-white/40">{c}</span>
                 </div>
               ))}
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="font-mono text-[9px] text-white/30 uppercase tracking-widest">
+                <label className="font-bold text-[9px] text-white/30 uppercase tracking-widest">
                   Adherence %
                 </label>
-                <span className="font-mono text-sm font-black text-white">{adherenceScore}%</span>
+                <span className="font-bold text-sm font-black text-white">{adherenceScore}%</span>
               </div>
               <input
                 type="range" min={0} max={100} value={adherenceScore}
@@ -158,7 +158,7 @@ export function CommitmentContract({ onComplete }: Props) {
                   reviewContract(lastContract.id, adherenceScore);
                   setPhase('write');
                 }}
-                className="w-full py-3 bg-white/10 border border-white/20 text-white font-mono text-[9px] font-black tracking-widest uppercase rounded-xl hover:bg-white/20 transition-all"
+                className="w-full py-3 bg-white/10 border border-white/20 text-white font-bold text-[9px] font-black tracking-widest uppercase rounded-xl hover:bg-white/20 transition-all"
               >
                 Submit Review → Write New Contract
               </button>
@@ -168,7 +168,7 @@ export function CommitmentContract({ onComplete }: Props) {
       ) : (
         <div className="space-y-4">
           {/* PDF-style contract */}
-          <div className="p-6 bg-white/[0.02] border border-white/[0.08] rounded-2xl font-mono space-y-4">
+          <div className="p-6 bg-white/[0.02] border border-white/[0.08] rounded-2xl font-bold space-y-4">
             <div className="text-center border-b border-white/10 pb-4">
               <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] mb-1">Sovereign Weekly Contract</p>
               <p className="text-[9px] text-white/20">
@@ -233,7 +233,7 @@ export function CommitmentContract({ onComplete }: Props) {
                 {hasSigned && (
                   <button
                     onClick={clearSig}
-                    className="absolute top-2 right-2 text-[8px] text-white/20 hover:text-white/50 font-mono uppercase tracking-widest"
+                    className="absolute top-2 right-2 text-[8px] text-white/20 hover:text-white/50 font-bold uppercase tracking-widest"
                   >
                     Clear
                   </button>
@@ -245,7 +245,7 @@ export function CommitmentContract({ onComplete }: Props) {
           <button
             onClick={handleExecute}
             disabled={!hasSigned || !commitments.some(c => c.trim())}
-            className="w-full py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 transition-all"
+            className="w-full py-4 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 transition-all"
           >
             Execute Contract
           </button>

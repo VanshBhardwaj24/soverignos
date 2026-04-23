@@ -18,7 +18,7 @@ export function SystemRank() {
   return (
     <div className="flex flex-col gap-1.5 p-4 rounded-3xl bg-white/[0.03] border border-white/10">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">Authentication Rank</span>
+        <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">Authentication Rank</span>
         <Shield size={12} className={cn("opacity-50", rank.text)} style={{ color: rank.color }} />
       </div>
       <div className="flex items-baseline gap-2">

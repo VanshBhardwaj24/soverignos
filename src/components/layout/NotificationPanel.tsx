@@ -65,7 +65,7 @@ export const NotificationPanel = () => {
                     <div className="h-12 w-12 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center mx-auto mb-4 opacity-50">
                        <Clock size={20} className="text-[var(--text-muted)]" />
                     </div>
-                    <p className="font-mono text-[10px] tracking-widest text-[var(--text-muted)] uppercase">No system alerts active</p>
+                    <p className="font-bold text-[10px] tracking-widest text-[var(--text-muted)] uppercase">No system alerts active</p>
                  </div>
                ) : (
                  notifications.map((n, i) => (
@@ -82,7 +82,7 @@ export const NotificationPanel = () => {
                        <div className="flex-1 space-y-1">
                           <h4 className="font-sans font-bold text-sm text-[var(--text-primary)] leading-tight">{n.title}</h4>
                           <p className="font-sans text-xs text-[var(--text-secondary)] leading-relaxed opacity-80">{n.description}</p>
-                          <p className="font-mono text-[9px] tracking-widest text-[var(--text-muted)] font-bold pt-1">{n.status}</p>
+                          <p className="font-bold text-[9px] tracking-widest text-[var(--text-muted)] font-bold pt-1">{n.status}</p>
                        </div>
                     </motion.div>
                  ))
@@ -91,7 +91,7 @@ export const NotificationPanel = () => {
 
             {notifications.length > 0 && (
               <div className="p-4 bg-black/20 border-t border-[var(--border-subtle)] text-center">
-                 <button className="text-[10px] font-mono tracking-widest text-[var(--text-muted)] hover:text-[var(--text-primary)] uppercase transition-colors">
+                 <button className="text-[10px] font-bold tracking-widest text-[var(--text-muted)] hover:text-[var(--text-primary)] uppercase transition-colors">
                     Archive all alerts
                  </button>
               </div>

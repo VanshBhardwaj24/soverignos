@@ -15,7 +15,7 @@ export const SystemHealthRecord = () => {
     <div className="space-y-8">
       <div className="flex items-center gap-3 text-white/20 px-4">
         <div className="w-8 h-px bg-white/10" />
-        <h2 className="font-mono text-[10px] font-black tracking-[0.4em] uppercase">System Health — Violation & Mortality</h2>
+        <h2 className="font-bold text-[10px] font-black tracking-[0.4em] uppercase">System Health — Violation & Mortality</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -30,43 +30,43 @@ export const SystemHealthRecord = () => {
               <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500/60">
                 <AlertTriangle size={16} />
               </div>
-              <h3 className="font-mono text-[10px] tracking-[0.4em] text-red-500 uppercase font-black italic">Lifetime Violation Record</h3>
+              <h3 className="font-bold text-[10px] tracking-[0.4em] text-red-500 uppercase font-black italic">Lifetime Violation Record</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-8">
                <div className="space-y-1">
-                  <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Total Generated</span>
+                  <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Total Generated</span>
                   <div className="text-4xl font-black text-white italic tracking-tighter">67</div>
                </div>
                <div className="space-y-1">
-                  <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Total Resolved</span>
+                  <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Total Resolved</span>
                   <div className="text-4xl font-black text-emerald-400 italic tracking-tighter">51</div>
                </div>
                <div className="space-y-1">
-                  <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Total Expired</span>
+                  <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Total Expired</span>
                   <div className="text-4xl font-black text-white/20 italic tracking-tighter">9</div>
                </div>
                <div className="space-y-1">
-                  <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Active Alerts</span>
+                  <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Active Alerts</span>
                   <div className="text-4xl font-black text-red-500 italic tracking-tighter">7</div>
                </div>
             </div>
 
             <div className="space-y-4 pt-10 border-t border-white/5">
-                <span className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Repeat Offenders</span>
+                <span className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] font-black">Repeat Offenders</span>
                 <div className="space-y-3">
                    <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
-                      <span className="font-mono text-[10px] text-white uppercase font-black">LeetCode Daily</span>
-                      <span className="text-red-500 font-mono text-[10px] font-black">14 VIOLATIONS</span>
+                      <span className="font-bold text-[10px] text-white uppercase font-black">LeetCode Daily</span>
+                      <span className="text-red-500 font-bold text-[10px] font-black">14 VIOLATIONS</span>
                    </div>
                    <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5 opacity-60">
-                      <span className="font-mono text-[10px] text-white uppercase font-black">Cold Outreach ×5</span>
-                      <span className="text-white/40 font-mono text-[10px] font-black">9 VIOLATIONS</span>
+                      <span className="font-bold text-[10px] text-white uppercase font-black">Cold Outreach ×5</span>
+                      <span className="text-white/40 font-bold text-[10px] font-black">9 VIOLATIONS</span>
                    </div>
                 </div>
             </div>
 
-            <div className="pt-6 font-mono text-[8px] text-white/10 uppercase tracking-widest font-black italic">
+            <div className="pt-6 font-bold text-[8px] text-white/10 uppercase tracking-widest font-black italic">
                "False certifications: 0 // Integrity protocol stable"
             </div>
           </div>
@@ -78,7 +78,7 @@ export const SystemHealthRecord = () => {
             <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/40">
               <Skull size={16} />
             </div>
-            <h3 className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Streak Cemetery</h3>
+            <h3 className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Streak Cemetery</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -90,15 +90,15 @@ export const SystemHealthRecord = () => {
                    <div className="space-y-4 relative z-10">
                       <div className="flex justify-between items-baseline">
                          <h4 className="text-xl font-black text-white italic tracking-tighter uppercase">{dead.statId}</h4>
-                         <span className="font-mono text-[10px] text-red-500/60 font-black tracking-widest">{dead.days} DAYS</span>
+                         <span className="font-bold text-[10px] text-red-500/60 font-black tracking-widest">{dead.days} DAYS</span>
                       </div>
                       <div className="space-y-2">
-                        <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest block font-black">Cause of Death:</span>
-                        <p className="text-[10px] font-mono text-white/60 lowercase italic leading-relaxed">
+                        <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest block font-black">Cause of Death:</span>
+                        <p className="text-[10px] font-bold text-white/60 lowercase italic leading-relaxed">
                           "{dead.cause}"
                         </p>
                       </div>
-                      <div className="pt-2 flex items-center gap-2 text-[8px] font-mono text-white/20 uppercase font-black tracking-widest">
+                      <div className="pt-2 flex items-center gap-2 text-[8px] font-bold text-white/20 uppercase font-black tracking-widest">
                          <Timer size={10} /> Deceased: {dead.diedAt}
                       </div>
                    </div>
@@ -107,7 +107,7 @@ export const SystemHealthRecord = () => {
           </div>
 
           <div className="mt-10 p-6 bg-white/5 border border-dashed border-white/10 rounded-2xl flex items-center justify-center">
-             <span className="font-mono text-[10px] text-white/10 uppercase tracking-[0.3em] font-black italic">Memory Allocation Exhausted</span>
+             <span className="font-bold text-[10px] text-white/10 uppercase tracking-[0.3em] font-black italic">Memory Allocation Exhausted</span>
           </div>
         </div>
       </div>

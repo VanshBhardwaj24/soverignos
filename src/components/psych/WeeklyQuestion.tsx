@@ -51,19 +51,19 @@ export function WeeklyQuestion({ onComplete }: Props) {
       <div className="space-y-6">
         <div className="flex items-center gap-3">
           <Lock size={16} className="text-[var(--stat-mind)]/50" />
-          <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--stat-mind)]/50 uppercase font-black">
+          <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--stat-mind)]/50 uppercase font-black">
             Weekly Question — Answered
           </span>
         </div>
         <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-          <p className="font-mono text-xs text-white/30 italic">"{question}"</p>
-          <p className="font-mono text-xs text-white/50 mt-3">
+          <p className="font-bold text-xs text-white/30 italic">"{question}"</p>
+          <p className="font-bold text-xs text-white/50 mt-3">
             {weeklyQuestions.find(q => q.question === question)?.answer}
           </p>
         </div>
         <button
           onClick={onComplete}
-          className="w-full py-4 bg-white/5 border border-white/10 text-white font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+          className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
         >
           Continue <ChevronRight size={14} />
         </button>
@@ -76,11 +76,11 @@ export function WeeklyQuestion({ onComplete }: Props) {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <MessageCircle size={16} className="text-[var(--stat-mind)]" />
-          <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black">
+          <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black">
             Weekly Question
           </span>
         </div>
-        <p className="font-mono text-white/30 text-xs">
+        <p className="font-bold text-white/30 text-xs">
           One hard question. No right answer. Total privacy.
         </p>
       </div>
@@ -91,7 +91,7 @@ export function WeeklyQuestion({ onComplete }: Props) {
         animate={{ opacity: 1, y: 0 }}
         className="p-6 bg-[var(--stat-mind)]/[0.04] border border-[var(--stat-mind)]/15 rounded-2xl"
       >
-        <span className="font-mono text-[8px] text-[var(--stat-mind)]/50 uppercase tracking-widest block mb-3">
+        <span className="font-bold text-[8px] text-[var(--stat-mind)]/50 uppercase tracking-widest block mb-3">
           Week {weekNum} Question
         </span>
         <p className="font-sans text-xl font-light text-white leading-snug">
@@ -106,16 +106,16 @@ export function WeeklyQuestion({ onComplete }: Props) {
             onChange={e => setAnswer(e.target.value)}
             placeholder="Write your honest answer here. No one else will read this."
             autoFocus
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-sm font-mono text-white/80 min-h-[160px] outline-none focus:border-[var(--stat-mind)]/30 transition-all resize-none placeholder:text-white/10 leading-relaxed"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-5 text-sm font-bold text-white/80 min-h-[160px] outline-none focus:border-[var(--stat-mind)]/30 transition-all resize-none placeholder:text-white/10 leading-relaxed"
           />
           <div className="flex items-center justify-between">
-            <span className="font-mono text-[8px] text-white/15">
+            <span className="font-bold text-[8px] text-white/15">
               {wordCount} word{wordCount !== 1 ? 's' : ''}
             </span>
             <button
               onClick={handleSubmit}
               disabled={wordCount < 3}
-              className="px-8 py-3 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 transition-all"
+              className="px-8 py-3 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 transition-all"
             >
               Commit Truth
             </button>
@@ -128,13 +128,13 @@ export function WeeklyQuestion({ onComplete }: Props) {
             animate={{ opacity: 1 }}
             className="p-4 bg-[var(--stat-mind)]/5 border border-[var(--stat-mind)]/15 rounded-2xl"
           >
-            <p className="font-mono text-[10px] text-[var(--stat-mind)] uppercase tracking-widest text-center">
+            <p className="font-bold text-[10px] text-[var(--stat-mind)] uppercase tracking-widest text-center">
               Truth committed. This answer will age.
             </p>
           </motion.div>
           <button
             onClick={onComplete}
-            className="w-full py-4 bg-white/5 border border-white/10 text-white font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
           >
             Continue <ChevronRight size={14} />
           </button>

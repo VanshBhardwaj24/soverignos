@@ -44,7 +44,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           </div>
           <div>
             <h4 className="text-sm font-bold text-white leading-tight line-clamp-2 mb-1">{job.company}</h4>
-            <p className="text-[10px] font-mono text-white/40 uppercase tracking-wider line-clamp-1">{job.role}</p>
+            <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider line-clamp-1">{job.role}</p>
           </div>
         </div>
         
@@ -61,13 +61,13 @@ export const JobCard: React.FC<JobCardProps> = ({
 
       {/* Meta Info */}
       <div className="flex flex-wrap gap-2 mb-3">
-        <div className="flex items-center gap-1 text-[8px] font-mono text-white/20 truncate uppercase">
+        <div className="flex items-center gap-1 text-[8px] font-bold text-white/20 truncate uppercase">
           <Calendar size={10} />
           {new Date(job.date).toLocaleDateString()}
         </div>
         {job.followUpDate && (
            <div className={cn(
-             "flex items-center gap-1 text-[8px] font-mono px-1.5 py-0.5 rounded-full border",
+             "flex items-center gap-1 text-[8px] font-bold px-1.5 py-0.5 rounded-full border",
              new Date(job.followUpDate) <= new Date() 
                ? "bg-red-400/10 border-red-400/20 text-red-400 font-bold" 
                : "bg-white/5 border-white/10 text-white/40"
@@ -81,7 +81,7 @@ export const JobCard: React.FC<JobCardProps> = ({
       {/* Strategic Intel Snippet */}
       {job.notes && (
         <div className="mb-3 px-2 py-1.5 bg-black/20 rounded-lg border border-white/5">
-          <p className="text-[9px] font-mono leading-relaxed text-white/30 italic line-clamp-2">
+          <p className="text-[9px] font-bold leading-relaxed text-white/30 italic line-clamp-2">
             "{job.notes}"
           </p>
         </div>
@@ -108,7 +108,7 @@ export const JobCard: React.FC<JobCardProps> = ({
 
         <button
           onClick={onClick}
-          className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-white/20 group-hover:text-white/60 flex items-center gap-1 transition-colors"
+          className="text-[9px] font-bold font-black uppercase tracking-[0.2em] text-white/20 group-hover:text-white/60 flex items-center gap-1 transition-colors"
         >
           Details <ExternalLink size={10} />
         </button>

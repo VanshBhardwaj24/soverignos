@@ -98,7 +98,7 @@ export const QuestModal = () => {
           className="relative w-full max-w-lg bg-[var(--bg-card)] border border-[var(--border-default)] rounded-3xl p-8 shadow-2xl z-10"
         >
           <div className="flex justify-between items-center mb-6 border-b border-[var(--border-default)] pb-4">
-            <h2 className="font-mono text-xl font-bold text-[var(--text-primary)] tracking-widest uppercase">
+            <h2 className="font-bold text-xl font-bold text-[var(--text-primary)] tracking-widest uppercase">
               {isEditMode ? (isLocked ? 'Protocol Log (Locked)' : 'Modify Protocol') : 'Register Protocol'}
             </h2>
             <button onClick={handleClose} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
@@ -109,7 +109,7 @@ export const QuestModal = () => {
           {!isEditMode && !isEditingTemplates && (
             <div className="mb-6">
               <div className="flex justify-between items-center mb-3">
-                <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] block tracking-widest font-bold">Quick Protocols</label>
+                <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] block tracking-widest font-bold">Quick Protocols</label>
                 <button
                   onClick={() => setIsEditingTemplates(true)}
                   className="text-[var(--text-muted)] hover:text-white transition-colors"
@@ -125,7 +125,7 @@ export const QuestModal = () => {
                       applyDailyTemplate(t.id);
                       handleClose();
                     }}
-                    className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg font-mono text-[9px] uppercase tracking-wider text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
+                    className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg font-bold text-[9px] uppercase tracking-wider text-white/50 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
                   >
                     {t.title}
                   </button>
@@ -137,10 +137,10 @@ export const QuestModal = () => {
           {isEditingTemplates ? (
             <div className="space-y-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-mono text-xs font-bold text-white uppercase tracking-widest">Protocol Bank</h3>
+                <h3 className="font-bold text-xs font-bold text-white uppercase tracking-widest">Protocol Bank</h3>
                 <button
                   onClick={() => setIsEditingTemplates(false)}
-                  className="text-[var(--text-muted)] hover:text-white text-[10px] font-mono uppercase"
+                  className="text-[var(--text-muted)] hover:text-white text-[10px] font-bold uppercase"
                 >
                   Back
                 </button>
@@ -157,7 +157,7 @@ export const QuestModal = () => {
                           newTemplates[ti].title = e.target.value;
                           setLocalTemplates(newTemplates);
                         }}
-                        className="bg-transparent border-b border-white/10 font-mono text-xs text-white outline-none flex-1 pb-1"
+                        className="bg-transparent border-b border-white/10 font-bold text-xs text-white outline-none flex-1 pb-1"
                         placeholder="Template Title"
                       />
                       <button
@@ -203,7 +203,7 @@ export const QuestModal = () => {
                           newTemplates[ti] = { ...newTemplates[ti], tasks: [...newTemplates[ti].tasks, newTask] };
                           setLocalTemplates(newTemplates as any);
                         }}
-                        className="flex items-center gap-2 text-[9px] font-mono text-white/30 hover:text-white transition-colors pt-1"
+                        className="flex items-center gap-2 text-[9px] font-bold text-white/30 hover:text-white transition-colors pt-1"
                       >
                         <Plus size={10} /> Add Task
                       </button>
@@ -222,7 +222,7 @@ export const QuestModal = () => {
                     }];
                     setLocalTemplates(newTemplates as any);
                   }}
-                  className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-mono text-[10px] font-bold text-white/50 uppercase tracking-widest hover:bg-white/10 transition-all"
+                  className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-[10px] font-bold text-white/50 uppercase tracking-widest hover:bg-white/10 transition-all"
                 >
                   Create New Protocol
                 </button>
@@ -231,7 +231,7 @@ export const QuestModal = () => {
                     saveTemplates(localTemplates);
                     setIsEditingTemplates(false);
                   }}
-                  className="flex-1 py-3 bg-white text-black rounded-xl font-mono text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-[1.02]"
+                  className="flex-1 py-3 bg-white text-black rounded-xl font-bold text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-[1.02]"
                 >
                   Save Changes
                 </button>
@@ -240,7 +240,7 @@ export const QuestModal = () => {
           ) : (
             <div className="space-y-5">
               <div>
-                <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Protocol Designation</label>
+                <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Protocol Designation</label>
                 <input
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
@@ -253,7 +253,7 @@ export const QuestModal = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Stat Link</label>
+                  <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Stat Link</label>
                   <Select
                     value={formData.statId}
                     onChange={(val) => setFormData(prev => ({ ...prev, statId: val }))}
@@ -262,7 +262,7 @@ export const QuestModal = () => {
                   />
                 </div>
                 <div>
-                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Cadence</label>
+                  <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Cadence</label>
                   <Select
                     value={formData.type}
                     onChange={(val) => setFormData(prev => ({ ...prev, type: val as any }))}
@@ -285,7 +285,7 @@ export const QuestModal = () => {
                 >
                   <div className="flex items-center gap-2">
                     <RefreshCw size={14} className={formData.repeating ? "text-[var(--success)]" : "text-[var(--text-muted)]"} />
-                    <span className="font-mono text-[10px] uppercase font-bold tracking-tight">Repeating?</span>
+                    <span className="font-bold text-[10px] uppercase font-bold tracking-tight">Repeating?</span>
                   </div>
                   <div className={cn(
                     "w-8 h-4 rounded-full relative transition-all",
@@ -298,13 +298,13 @@ export const QuestModal = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold leading-none">Hard Deadline {!formData.repeating && <span className="text-red-500">*</span>}</label>
+                  <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold leading-none">Hard Deadline {!formData.repeating && <span className="text-red-500">*</span>}</label>
                   <input
                     type="datetime-local"
                     value={formData.dueDate}
                     onChange={(e) => setFormData(prev => ({ ...prev, dueDate: e.target.value }))}
                     className={cn(
-                      "w-full bg-[var(--bg-elevated)] border rounded-lg p-2.5 text-[var(--text-primary)] font-mono text-xs focus:border-[var(--text-strong)] outline-none transition-all color-scheme-dark disabled:opacity-50",
+                      "w-full bg-[var(--bg-elevated)] border rounded-lg p-2.5 text-[var(--text-primary)] font-bold text-xs focus:border-[var(--text-strong)] outline-none transition-all color-scheme-dark disabled:opacity-50",
                       !formData.repeating && !formData.dueDate ? "border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.1)]" : "border-[var(--border-default)]"
                     )}
                     disabled={isLocked}
@@ -314,7 +314,7 @@ export const QuestModal = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Priority Tier</label>
+                  <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">Priority Tier</label>
                   <Select
                     value={formData.priority}
                     onChange={(val) => setFormData(prev => ({ ...prev, priority: val as any }))}
@@ -328,16 +328,16 @@ export const QuestModal = () => {
                   />
                 </div>
                 <div>
-                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">XP Yield</label>
+                  <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-2 block tracking-widest font-bold">XP Yield</label>
                   <div className="relative">
                     <input
                       type="number"
                       value={formData.xpReward || ''}
                       onChange={(e) => setFormData(prev => ({ ...prev, xpReward: parseInt(e.target.value) || 0 }))}
-                      className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 pl-8 text-[var(--success)] font-mono font-bold text-sm focus:border-[var(--text-strong)] outline-none transition-all disabled:opacity-50"
+                      className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg p-3 pl-8 text-[var(--success)] font-bold font-bold text-sm focus:border-[var(--text-strong)] outline-none transition-all disabled:opacity-50"
                       disabled={isLocked}
                     />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-[var(--success)] font-bold text-sm">+</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-[var(--success)] font-bold text-sm">+</span>
                   </div>
                 </div>
               </div>
@@ -345,7 +345,7 @@ export const QuestModal = () => {
               <button
                 onClick={handleSubmit}
                 disabled={!formData.title || (!formData.repeating && !formData.dueDate) || isLocked}
-                className="w-full bg-[var(--text-primary)] text-[var(--bg-primary)] font-mono font-bold text-sm tracking-widest p-4 rounded-xl mt-2 hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed group"
+                className="w-full bg-[var(--text-primary)] text-[var(--bg-primary)] font-bold font-bold text-sm tracking-widest p-4 rounded-xl mt-2 hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed group"
               >
                 <span className="group-hover:tracking-[0.2em] transition-all">
                   {isEditMode ? (isLocked ? 'LOCKED' : 'UPDATE PROTOCOL') : 'INITIALIZE PROTOCOL'}

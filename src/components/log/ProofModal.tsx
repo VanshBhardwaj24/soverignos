@@ -116,7 +116,7 @@ export const ProofModal = () => {
                   <Shield size={24} />
                 </div>
                 <div>
-                  <h2 className="font-mono text-[10px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-black">Mission Finalization</h2>
+                  <h2 className="font-bold text-[10px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-black">Mission Finalization</h2>
                   <div className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
                     {targetQuest?.title || "PROTOCOL VERIFICATION"}
                   </div>
@@ -125,20 +125,20 @@ export const ProofModal = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Achievement Level</label>
+                  <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Achievement Level</label>
                   <Select 
                     options={achievementOptions}
                     value={achievement}
                     onChange={setAchievement}
                   />
-                  <p className="mt-2 text-[9px] text-[var(--text-muted)] font-mono italic">
+                  <p className="mt-2 text-[9px] text-[var(--text-muted)] font-bold italic">
                     * Final XP will be scaled based on achievement ratio.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Execution Speed</label>
+                    <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Execution Speed</label>
                     <Select 
                       options={speedOptions}
                       value={speed}
@@ -146,14 +146,14 @@ export const ProofModal = () => {
                     />
                   </div>
                   <div>
-                    <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Session Quality</label>
+                    <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Session Quality</label>
                     <Select 
                       options={qualityOptions}
                       value={quality}
                       onChange={setQuality}
                     />
                     {parseInt(quality) < 5 && (
-                      <p className="mt-2 text-[9px] text-red-400/70 font-mono italic">
+                      <p className="mt-2 text-[9px] text-red-400/70 font-bold italic">
                         * Tactical Penalty: -{(5 - parseInt(quality)) * 15}% XP reduction.
                       </p>
                     )}
@@ -162,15 +162,15 @@ export const ProofModal = () => {
 
                 {pendingActivity?.metadata?.hours && (
                   <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-center justify-between mt-2">
-                    <span className="font-mono text-[9px] text-blue-400 uppercase tracking-widest font-black">Sleep Duration Recorded</span>
-                    <span className="font-mono text-xl font-black text-white italic">{pendingActivity.metadata.hours} <span className="text-[10px] opacity-30">HRS</span></span>
+                    <span className="font-bold text-[9px] text-blue-400 uppercase tracking-widest font-black">Sleep Duration Recorded</span>
+                    <span className="font-bold text-xl font-black text-white italic">{pendingActivity.metadata.hours} <span className="text-[10px] opacity-30">HRS</span></span>
                   </div>
                 )}
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <label className="font-mono text-[10px] uppercase text-[var(--text-muted)] block tracking-widest font-bold">Learnings & Reflections</label>
-                    <span className="text-[9px] text-[var(--text-muted)] bg-white/5 px-2 py-0.5 rounded uppercase font-mono">Optional</span>
+                    <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] block tracking-widest font-bold">Learnings & Reflections</label>
+                    <span className="text-[9px] text-[var(--text-muted)] bg-white/5 px-2 py-0.5 rounded uppercase font-bold">Optional</span>
                   </div>
                   <div className="relative">
                     <textarea
@@ -190,7 +190,7 @@ export const ProofModal = () => {
                   <motion.div 
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-mono flex items-center gap-2"
+                    className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold flex items-center gap-2"
                   >
                     <Info size={12} /> {error}
                   </motion.div>
@@ -220,7 +220,7 @@ export const ProofModal = () => {
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="w-full mt-4 py-2 text-[10px] font-mono text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors uppercase tracking-widest"
+                    className="w-full mt-4 py-2 text-[10px] font-bold text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors uppercase tracking-widest"
                   >
                     Cancel Operations
                   </button>

@@ -122,20 +122,21 @@ export default function Quests() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div>
-          <h1 className="font-mono text-[11px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-semibold mb-2">System Protocols</h1>
-          <div className="font-mono text-4xl font-light tracking-tight text-white flex items-center gap-3">
-            MISSION BOARD <span className="text-white/20">/</span> <span className="text-white/40">{activeTab.toUpperCase()}</span>
+          <h1 className="font-bold text-[11px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-semibold mb-2">System Protocols</h1>
+          <div className="font-bold text-4xl font-light tracking-tight text-foreground flex items-center gap-3">
+            MISSION BOARD <span className="text-foreground/20">/</span> <span className="text-muted-foreground">{activeTab.toUpperCase()}</span>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="hidden lg:flex flex-col items-end px-6 border-r border-white/5">
-            <span className="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-1">Operational Health</span>
-            <span className="font-mono text-xs font-black text-[var(--success)]">NOMINAL // 98.2%</span>
+            <span className="font-bold text-[10px] text-white/30 uppercase tracking-widest mb-1">Operational Health</span>
+            <span className="font-bold text-xs font-black text-[var(--success)]">NOMINAL // 98.2%</span>
           </div>
           <button
             onClick={() => setQuestModalOpen(true)}
-            className="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded text-sm font-mono font-bold hover:opacity-90 transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            aria-label="Add new mission"
+            className="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded text-sm font-bold font-black hover:brightness-90 transition-all active:scale-95 shadow-[0_0_25px_rgba(255,255,255,0.15)]"
           >
             <Plus size={16} /> ADD MISSION
           </button>
@@ -151,9 +152,10 @@ export default function Quests() {
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
             <input
               placeholder="Search ID..."
+              aria-label="Search missions"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-3 text-[11px] outline-none focus:border-white/20 transition-all font-mono text-white"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-3 text-[11px] outline-none focus:border-white/20 transition-all font-bold text-white"
             />
           </div>
 
@@ -161,7 +163,7 @@ export default function Quests() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-[11px] font-mono text-white outline-none focus:border-white/20"
+              className="bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-[11px] font-bold text-white outline-none focus:border-white/20"
             >
               <option value="date" className="bg-[#111]">SORT: DATE</option>
               <option value="xp" className="bg-[#111]">SORT: XP</option>
@@ -174,7 +176,7 @@ export default function Quests() {
                 setSelectedQuestIds([]);
               }}
               className={cn(
-                "px-4 py-2 rounded-xl border font-mono text-[10px] tracking-widest uppercase transition-all",
+                "px-4 py-2 rounded-xl border font-bold text-[10px] tracking-widest uppercase transition-all",
                 isSelectMode ? "bg-white text-black font-black" : "bg-white/5 border-white/10 text-white/40 hover:text-white"
               )}
             >
@@ -232,7 +234,7 @@ export default function Quests() {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "relative z-10 px-5 py-1.5 font-mono text-[9px] font-bold tracking-[0.2em] uppercase transition-colors whitespace-nowrap",
+                    "relative z-10 px-5 py-1.5 font-bold text-[9px] font-bold tracking-[0.2em] uppercase transition-colors whitespace-nowrap",
                     activeTab === tab ? "text-white" : "text-white/20 hover:text-white/40"
                   )}
                 >
@@ -243,7 +245,7 @@ export default function Quests() {
 
             <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-[var(--danger)] animate-pulse" />
-              <span className="font-mono text-[9px] text-white/40 uppercase tracking-[0.2em]">Risk Coefficient: {stats.failureRate.toFixed(1)}%</span>
+              <span className="font-bold text-[9px] text-white/40 uppercase tracking-[0.2em]">Risk Coefficient: {stats.failureRate.toFixed(1)}%</span>
             </div>
           </div>
 
@@ -252,7 +254,7 @@ export default function Quests() {
               {filteredQuests.length === 0 ? (
                 <div className="py-20 text-center border border-dashed border-white/5 rounded-3xl opacity-20">
                   <AlertTriangle size={32} className="mx-auto mb-4" />
-                  <p className="font-mono text-[10px] uppercase tracking-[0.3em]">No active missions in this sector</p>
+                  <p className="font-bold text-[10px] uppercase tracking-[0.3em]">No active missions in this sector</p>
                 </div>
               ) : (
                 filteredQuests.map((quest, index) => (
@@ -340,8 +342,8 @@ export default function Quests() {
 function Metric({ label, value, color = "text-white/80" }: { label: string, value: string | number, color?: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="font-mono text-[9px] text-white/30 uppercase tracking-widest">{label}</span>
-      <span className={cn("font-mono text-xs font-bold", color)}>{value}</span>
+      <span className="font-bold text-[9px] text-white/30 uppercase tracking-widest">{label}</span>
+      <span className={cn("font-bold text-xs font-bold", color)}>{value}</span>
     </div>
   );
 }
@@ -403,13 +405,14 @@ function QuestEntry({
           ) : (
             <button
               onClick={onExecute}
+              aria-label={quest.completed && quest.repeating ? "Protocol successfully executed" : `Execute protocol: ${quest.title}`}
               disabled={quest.completed || quest.failed}
               className={cn(
                 "h-8 w-8 rounded-lg flex items-center justify-center transition-all border",
                 quest.completed ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20 shadow-[0_0_10px_var(--success)]" :
                   isBoss ? "bg-[#7649C9]/20 text-[#7649C9] border-[#7649C9]/30" :
                     quest.failed ? "bg-red-500/20 text-red-500 border-red-500/30" :
-                      "bg-white/5 text-white/20 border-white/10 hover:text-white hover:border-white/30",
+                      "bg-white/5 text-muted-foreground border-white/10 hover:text-foreground hover:border-white/30",
                 quest.completed && quest.repeating && "opacity-50 grayscale-[0.5]"
               )}
               title={quest.completed && quest.repeating ? "Protocol successfully executed for today." : "Execute protocol"}
@@ -422,20 +425,20 @@ function QuestEntry({
             {/* Identity framing */}
             {(() => {
               const frame = IDENTITY_FRAMES[quest.statId]; return frame && !quest.completed && !quest.failed ? (
-                <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mb-0.5">
+                <p className="font-bold text-[7px] text-white/20 uppercase tracking-widest mb-0.5">
                   {frame.identity} {frame.question.split('.')[0].toLowerCase()}.
                 </p>
               ) : null;
             })()}
             <div className="flex items-center gap-1.5 mb-1">
               <span className={cn(
-                "font-mono text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm uppercase text-white/50 border border-white/5 bg-white/[0.02]",
+                "font-bold text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm uppercase text-white/50 border border-white/5 bg-white/[0.02]",
                 isBoss ? "text-[#7649C9] border-[#7649C9]/20 bg-[#7649C9]/5" : ""
               )}>
                 {quest.statId} // {quest.type}
               </span>
               <span className={cn(
-                "font-mono text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm border",
+                "font-bold text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm border",
                 quest.priority === 'P0' ? "bg-red-500/10 text-red-500 border-red-500/20" :
                   quest.priority === 'P1' ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
                     "bg-white/5 text-white/30 border-white/5"
@@ -443,24 +446,36 @@ function QuestEntry({
                 {quest.priority}
               </span>
               {quest.repeating && (
-                <span className="flex items-center gap-1 font-mono text-[8px] text-[var(--success)] font-bold border border-[var(--success)]/10 px-1.5 py-0.5 rounded animate-pulse">
+                <span className="flex items-center gap-1 font-bold text-[8px] text-[var(--success)] font-bold border border-[var(--success)]/10 px-1.5 py-0.5 rounded animate-pulse">
                   <RefreshCcw size={8} /> REPEATING
                 </span>
               )}
               {quest.streak > 0 && (
-                <span className="flex items-center gap-1 font-mono text-[8px] text-orange-500/80 font-bold border border-orange-500/10 px-1.5 py-0.5 rounded">
+                <span className="flex items-center gap-1 font-bold text-[8px] text-orange-500/80 font-bold border border-orange-500/10 px-1.5 py-0.5 rounded">
                   <Flame size={8} /> STREAK {quest.streak}
                 </span>
               )}
               {quest.postponeCount > 0 && (
                 <span className={cn(
-                  "flex items-center gap-1 font-mono text-[8px] font-bold border px-1.5 py-0.5 rounded",
+                  "flex items-center gap-1 font-bold text-[8px] font-bold border px-1.5 py-0.5 rounded",
                   isBoss ? "text-red-500 border-red-500/20" : "text-orange-500 border-orange-500/20"
                 )}>
                   {isBoss ? `STRIKE ${quest.postponeCount}/3` : `EXTENDED ${quest.postponeCount}/1`}
                 </span>
               )}
-
+              {/* {quest.failureStreak >= 3 && (
+                <span className={cn(
+                  "flex items-center gap-1 font-bold text-[8px] font-black tracking-widest px-1.5 py-0.5 rounded border",
+                  quest.failureStreak >= 6 ? "bg-red-600 text-white border-red-600" :
+                    quest.failureStreak >= 5 ? "bg-red-500/20 text-red-500 border-red-500/40" :
+                      "bg-black/40 text-red-500 border-red-500/20"
+                )}>
+                  <AlertTriangle size={8} /> 
+                  {quest.failureStreak >= 6 ? "TERMINATION IMMINENT" : "REPEAT OFFENDER"} 
+                  {` — FAILURE #${quest.failureStreak}`}
+                </span>
+              )}
+              )} */}
             </div>
             <div className="flex items-center gap-3">
               <h3 className={cn(
@@ -478,12 +493,13 @@ function QuestEntry({
                 {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               </button>
             </div>
-            {(quest.dueDate || (quest.type === 'daily' && !quest.completed && !quest.failed)) && (
+            {(!quest.completed && !quest.failed) && (
               <div className="flex items-center gap-2 mt-2">
                 <div className={cn(
                   "h-1.5 w-1.5 rounded-full animate-pulse",
                   (() => {
-                    const targetDate = quest.dueDate || quest.expiresAt || new Date().setHours(23, 59, 59, 999);
+                    const targetDate = quest.dueDate || quest.expiresAt;
+                    if (!targetDate) return "bg-white/10";
                     const diff = new Date(targetDate).getTime() - new Date().getTime();
                     if (diff / 3600000 < 1) return "bg-red-500";
                     if (diff / 3600000 < 4) return "bg-orange-500";
@@ -491,9 +507,18 @@ function QuestEntry({
                   })()
                 )} />
                 <span className={cn(
-                  "font-mono text-[9px] font-black tracking-widest uppercase",
+                  "font-bold text-[9px] font-black tracking-widest uppercase",
                   (() => {
-                    const targetDate = quest.dueDate || quest.expiresAt || new Date().setHours(23, 59, 59, 999);
+                    // Fallback to IST midnight today if no deadline exists
+                    const getISTMidnight = () => {
+                      const now = new Date();
+                      const istOffset = 5.5 * 60 * 60 * 1000;
+                      const istTime = new Date(now.getTime() + istOffset);
+                      istTime.setUTCHours(23, 59, 59, 999);
+                      return new Date(istTime.getTime() - istOffset);
+                    };
+
+                    const targetDate = quest.dueDate || quest.expiresAt || getISTMidnight();
                     const diff = new Date(targetDate).getTime() - new Date().getTime();
                     if (diff / 3600000 < 1) return "text-red-500";
                     if (diff / 3600000 < 4) return "text-orange-500";
@@ -514,7 +539,7 @@ function QuestEntry({
             {quest.isTimed && !quest.completed && !quest.failed && (
               <div className="flex items-center gap-2 mt-1">
                 <div className="h-1.5 w-1.5 rounded-full bg-[var(--danger)] animate-pulse" />
-                <span className="font-mono text-[9px] text-[var(--danger)] font-black tracking-widest uppercase">
+                <span className="font-bold text-[9px] text-[var(--danger)] font-black tracking-widest uppercase">
                   Time Left: {Math.floor((quest.timeLeft || 0) / 60)}m {(quest.timeLeft || 0) % 60}s
                 </span>
               </div>
@@ -525,7 +550,7 @@ function QuestEntry({
         <div className="flex items-center gap-8">
           <div className="hidden md:block text-right">
             <span className={cn(
-              "font-mono text-sm font-black block",
+              "font-bold text-sm font-black block",
               isBoss ? "text-[#7649C9]" : "text-[var(--stat-code)]"
             )}>
               {quest.failed ? "-" : "+"}{quest.xpReward} XP
@@ -568,7 +593,7 @@ function QuestEntry({
                 {(isBoss || isWeekly) && (
                   <button
                     onClick={onPostpone}
-                    className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-white/40 hover:text-white hover:border-white/30 transition-all uppercase tracking-tighter"
+                    className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 rounded text-[9px] font-bold text-white/40 hover:text-white hover:border-white/30 transition-all uppercase tracking-tighter"
                     title="Reschedule Protocol"
                   >
                     <RefreshCcw size={10} /> Shift
@@ -593,20 +618,20 @@ function QuestEntry({
               onChange={(e) => setNotes(e.target.value)}
               onBlur={() => onUpdateNotes(notes, quest.subtasks || [])}
               placeholder="Operational notes, tactical subtasks, or mission logs..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] font-mono text-white/60 min-h-[80px] outline-none focus:border-white/20 transition-all resize-none"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] font-bold text-white/60 min-h-[80px] outline-none focus:border-white/20 transition-all resize-none"
             />
 
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <List size={12} className="text-white/20" />
-                <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">Procedural Checkpoint(s)</span>
+                <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Procedural Checkpoint(s)</span>
               </div>
               <button
                 onClick={() => {
                   const newTask = { id: Math.random().toString(36).substr(2, 9), text: 'New checkpoint...', completed: false };
                   onUpdateNotes(notes, [...(quest.subtasks || []), newTask]);
                 }}
-                className="text-[9px] font-mono text-white/40 hover:text-white uppercase tracking-widest"
+                className="text-[9px] font-bold text-white/40 hover:text-white uppercase tracking-widest"
               >
                 + Add Step
               </button>
@@ -634,7 +659,7 @@ function QuestEntry({
                       onUpdateNotes(notes, newSubtasks);
                     }}
                     className={cn(
-                      "bg-transparent border-none outline-none text-[10px] font-mono text-white/50 w-full",
+                      "bg-transparent border-none outline-none text-[10px] font-bold text-white/50 w-full",
                       st.completed && "line-through opacity-30"
                     )}
                   />

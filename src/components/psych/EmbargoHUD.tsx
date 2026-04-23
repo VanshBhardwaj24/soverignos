@@ -49,14 +49,14 @@ export function EmbargoHUD() {
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-mono text-sm font-black text-red-400 uppercase tracking-[0.2em]">
+                      <h3 className="font-bold text-sm font-black text-red-400 uppercase tracking-[0.2em]">
                         ⚠ DIGITAL FORTRESS ACTIVE
                       </h3>
                       <div className="px-2 py-0.5 bg-red-500/20 border border-red-500/30 rounded-full">
-                        <span className="font-mono text-[8px] text-red-400 uppercase font-black tracking-widest">EMBARGO DAY {daysActive + 1}</span>
+                        <span className="font-bold text-[8px] text-red-400 uppercase font-black tracking-widest">EMBARGO DAY {daysActive + 1}</span>
                       </div>
                     </div>
-                    <p className="font-mono text-[10px] text-white/40 uppercase tracking-widest">
+                    <p className="font-bold text-[10px] text-white/40 uppercase tracking-widest">
                       CREATE stat was zero for 3+ days. All dopamine sources are locked.
                     </p>
                   </div>
@@ -66,9 +66,9 @@ export function EmbargoHUD() {
                   <div className="text-right">
                     <div className="flex items-center gap-2 text-orange-400 mb-1">
                       <Clock size={14} />
-                      <span className="font-mono text-xl font-black">{daysRemaining}d</span>
+                      <span className="font-bold text-xl font-black">{daysRemaining}d</span>
                     </div>
-                    <p className="font-mono text-[8px] text-white/30 uppercase tracking-widest">to release</p>
+                    <p className="font-bold text-[8px] text-white/30 uppercase tracking-widest">to release</p>
                   </div>
                 </div>
               </div>
@@ -76,7 +76,7 @@ export function EmbargoHUD() {
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-2">
                 {EMBARGO_RULES.map((rule, i) => (
                   <div key={i} className="flex items-center gap-3 py-2 px-4 bg-white/[0.02] border border-white/5 rounded-xl">
-                    <span className="font-mono text-[11px] text-white/50">{rule}</span>
+                    <span className="font-bold text-[11px] text-white/50">{rule}</span>
                   </div>
                 ))}
               </div>
@@ -84,13 +84,13 @@ export function EmbargoHUD() {
               <div className="mt-6 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-white/20">
                   <Flame size={14} className="text-orange-500/50" />
-                  <p className="font-mono text-[9px] uppercase tracking-widest">
+                  <p className="font-bold text-[9px] uppercase tracking-widest">
                     Log CREATE activity daily to end the embargo early.
                   </p>
                 </div>
                 <button
                   onClick={clearEmbargo}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl font-mono text-[9px] uppercase font-black tracking-widest text-white/30 hover:text-white hover:border-white/20 transition-all flex items-center gap-2"
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl font-bold text-[9px] uppercase font-black tracking-widest text-white/30 hover:text-white hover:border-white/20 transition-all flex items-center gap-2"
                 >
                   <X size={12} /> Override (Admin)
                 </button>

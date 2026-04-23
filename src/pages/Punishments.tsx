@@ -22,10 +22,10 @@ export default function Punishments() {
       {/* Header section */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-8">
         <div>
-          <h1 className="font-mono text-[11px] tracking-[0.5em] text-red-500 uppercase font-black mb-3 flex items-center gap-2">
+          <h1 className="font-bold text-[11px] tracking-[0.5em] text-red-500 uppercase font-black mb-3 flex items-center gap-2">
             <AlertTriangle size={14} className="animate-pulse" /> Accountability Command
           </h1>
-          <h2 className="font-mono text-5xl font-black text-white tracking-tighter uppercase max-w-2xl leading-none">
+          <h2 className="font-bold text-5xl font-black text-white tracking-tighter uppercase max-w-2xl leading-none">
             Penal Protocols <span className="text-white/20">&</span> Sanction Registry
           </h2>
           <p className="mt-6 text-sm text-[var(--text-secondary)] font-medium max-w-xl uppercase tracking-tighter leading-relaxed">
@@ -48,7 +48,7 @@ export default function Punishments() {
 
         <div className="hidden md:flex items-center gap-6 px-4">
           <div className="flex flex-col items-end">
-            <span className="text-[9px] font-mono text-white/30 uppercase tracking-[0.2em]">Status</span>
+            <span className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em]">Status</span>
             <span className={cn(
               "text-xs font-black uppercase tracking-widest",
               accountabilityScore >= 90 ? "text-[var(--success)]" : accountabilityScore < 40 ? "text-red-500" : "text-white"
@@ -75,8 +75,8 @@ export default function Punishments() {
               <div className="h-20 w-20 rounded-[40px] bg-white/5 flex items-center justify-center text-white/20 mb-6">
                 <ShieldAlert size={32} />
               </div>
-              <h3 className="font-mono text-lg font-black text-white uppercase mb-2">Registry Clear</h3>
-              <p className="font-mono text-[10px] text-white/30 uppercase tracking-[0.3em]">No active protocol violations detected at this altitude.</p>
+              <h3 className="font-bold text-lg font-black text-white uppercase mb-2">Registry Clear</h3>
+              <p className="font-bold text-[10px] text-white/30 uppercase tracking-[0.3em]">No active protocol violations detected at this altitude.</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -91,11 +91,11 @@ export default function Punishments() {
         ].map((t, i) => (
           <div key={i} className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl group hover:border-red-500/20 transition-all">
             <div className="flex justify-between items-center mb-4">
-              <span className={cn("font-mono text-[9px] font-black uppercase tracking-widest", t.color)}>{t.tier}</span>
+              <span className={cn("font-bold text-[9px] font-black uppercase tracking-widest", t.color)}>{t.tier}</span>
               {activeCount >= (i * 2 + 1) ? <Zap size={14} className={t.color} /> : <div className="h-1.5 w-1.5 rounded-full bg-white/10" />}
             </div>
             <h4 className="text-sm font-black text-white italic uppercase mb-1">{t.penalty}</h4>
-            <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest">Trigger: {t.trigger}</p>
+            <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Trigger: {t.trigger}</p>
           </div>
         ))}
       </div>
@@ -106,7 +106,7 @@ export default function Punishments() {
           <History size={32} />
         </div>
         <div className="space-y-1 text-center md:text-left">
-          <h4 className="font-mono text-sm font-black text-white uppercase tracking-tight">System Policy</h4>
+          <h4 className="font-bold text-sm font-black text-white uppercase tracking-tight">System Policy</h4>
           <p className="text-[10px] text-white/30 font-medium uppercase tracking-tighter max-w-2xl">
             Protocol missed at 00:00 results in -5 Accountability. Repeated failures (2+ days) trigger Domain-Specific Consequential Protocols. Resolve penalty quests to restore Integrity and clear violations.
           </p>
@@ -121,8 +121,9 @@ function FilterButton({ active, label, count, onClick }: { active: boolean, labe
   return (
     <button
       onClick={onClick}
+      aria-label={`Filter by ${label}`}
       className={cn(
-        "px-6 py-2.5 rounded-2xl font-mono text-[9px] font-black tracking-widest uppercase transition-all flex items-center gap-3",
+        "px-6 py-2.5 rounded-2xl font-bold text-[9px] font-black tracking-widest uppercase transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-white/20",
         active ? "bg-white text-black shadow-xl" : "text-white/40 hover:text-white/60 hover:bg-white/5"
       )}
     >

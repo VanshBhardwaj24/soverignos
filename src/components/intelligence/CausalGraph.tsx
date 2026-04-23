@@ -11,14 +11,14 @@ export const CausalGraph = () => {
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-2">
           <Share2 size={18} className="text-emerald-400" />
-          <h2 className="font-mono text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Causal Relationship Graph</h2>
+          <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Causal Relationship Graph</h2>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 font-mono text-[9px] text-white/20 uppercase">
+          <div className="flex items-center gap-1.5 font-bold text-[9px] text-white/20 uppercase">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             Positive
           </div>
-          <div className="flex items-center gap-1.5 font-mono text-[9px] text-white/20 uppercase">
+          <div className="flex items-center gap-1.5 font-bold text-[9px] text-white/20 uppercase">
             <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
             Negative
           </div>
@@ -59,9 +59,9 @@ export const CausalGraph = () => {
               className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center bg-black/40 backdrop-blur-md group-hover:border-emerald-500/50 transition-all shadow-xl"
               style={{ color: node.color }}
             >
-              <span className="font-mono text-[10px] font-black uppercase">{node.label.slice(0, 4)}</span>
+              <span className="font-bold text-[10px] font-black uppercase">{node.label.slice(0, 4)}</span>
             </div>
-            <span className="font-mono text-[8px] text-white/40 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="font-bold text-[8px] text-white/40 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
               {node.label}
             </span>
           </motion.div>
@@ -70,7 +70,7 @@ export const CausalGraph = () => {
 
       <div className="mt-8 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-3">
         <Zap size={14} className="text-emerald-400" />
-        <p className="text-[10px] text-emerald-400/80 font-mono italic">
+        <p className="text-[10px] text-emerald-400/80 font-bold italic">
           Discovery #1: High BODY XP correlates with a 34% increase in subsequent CODE session quality.
         </p>
       </div>

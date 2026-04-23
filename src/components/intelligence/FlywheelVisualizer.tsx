@@ -11,7 +11,7 @@ export const FlywheelVisualizer = () => {
     <section className="p-8 rounded-3xl border border-[var(--border-default)] bg-white/[0.02] backdrop-blur-xl h-full">
       <div className="flex items-center gap-2 mb-8">
         <RefreshCw size={18} className="text-emerald-400" />
-        <h2 className="font-mono text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Active Flywheels</h2>
+        <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Active Flywheels</h2>
       </div>
 
       <div className="grid grid-cols-1 gap-8">
@@ -20,10 +20,10 @@ export const FlywheelVisualizer = () => {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2 text-emerald-400">
                 <Zap size={14} />
-                <span className="font-mono text-[10px] font-black uppercase">{flywheel.label}</span>
+                <span className="font-bold text-[10px] font-black uppercase">{flywheel.label}</span>
               </div>
               <span className={cn(
-                "font-mono text-[10px] uppercase",
+                "font-bold text-[10px] uppercase",
                 flywheel.active ? "text-emerald-400" : "text-white/20"
               )}>
                 {flywheel.active ? `${flywheel.strength}% Strong` : 'Inactive'}
@@ -41,7 +41,7 @@ export const FlywheelVisualizer = () => {
                   )}
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                  <span className="font-mono text-[8px] text-white/20 uppercase">Status</span>
+                  <span className="font-bold text-[8px] text-white/20 uppercase">Status</span>
                   <span className={cn(
                     "text-xs font-bold tracking-tighter uppercase",
                     flywheel.active ? "text-emerald-400" : "text-white/40"
@@ -52,13 +52,13 @@ export const FlywheelVisualizer = () => {
               </div>
 
               <div className="flex-1 space-y-4">
-                <p className="text-[10px] font-mono text-white/60 leading-relaxed">
+                <p className="text-[10px] font-bold text-white/60 leading-relaxed">
                   {flywheel.path}
                 </p>
                 {!flywheel.active && (
                   <div className="flex items-center gap-2 text-red-400">
                     <AlertCircle size={12} />
-                    <span className="font-mono text-[9px] uppercase font-black">Missing Variable: GYM Activity</span>
+                    <span className="font-bold text-[9px] uppercase font-black">Missing Variable: GYM Activity</span>
                   </div>
                 )}
               </div>

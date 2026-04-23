@@ -57,7 +57,7 @@ export const AuthOverlay = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-[#0a0a0a] z-[9999] flex items-center justify-center font-mono selection:bg-white/20">
+    <div className="fixed inset-0 bg-[#0a0a0a] z-[9999] flex items-center justify-center font-bold selection:bg-white/20">
       <div className="w-full max-w-sm p-8 border border-[var(--border-default)] bg-[var(--bg-card)] rounded-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--stat-code)] opacity-5 blur-3xl rounded-full" />
         

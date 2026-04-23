@@ -66,12 +66,12 @@ export const CommandPalette = () => {
                 placeholder="Type a command or search..."
                 className="w-full bg-transparent text-white font-sans text-lg outline-none p-4 placeholder-gray-600"
               />
-              <kbd className="hidden md:inline font-mono text-[10px] text-gray-500 bg-white/5 px-2 py-1 rounded">ESC</kbd>
+              <kbd className="hidden md:inline font-bold text-[10px] text-gray-500 bg-white/5 px-2 py-1 rounded">ESC</kbd>
             </div>
             
             <div className="max-h-80 overflow-y-auto p-2">
               {filteredCommands.length === 0 ? (
-                <div className="p-8 text-center text-gray-500 font-mono text-sm">NO COMMAND FOUND</div>
+                <div className="p-8 text-center text-gray-500 font-bold text-sm">NO COMMAND FOUND</div>
               ) : (
                 filteredCommands.map((cmd) => (
                   <button
@@ -81,7 +81,7 @@ export const CommandPalette = () => {
                   >
                     <div className="flex items-center gap-3">
                       <cmd.icon size={16} className="text-gray-500 group-hover:text-white transition-colors" />
-                      <span className="text-gray-300 group-hover:text-white font-mono text-sm tracking-wide">{cmd.name}</span>
+                      <span className="text-gray-300 group-hover:text-white font-bold text-sm tracking-wide">{cmd.name}</span>
                     </div>
                   </button>
                 ))

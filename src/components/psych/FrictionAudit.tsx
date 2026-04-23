@@ -70,28 +70,28 @@ export function FrictionAudit({ onComplete }: Props) {
           <Check size={32} />
         </div>
         <div>
-          <h3 className="font-mono text-lg font-light text-white mb-2">Friction Located</h3>
+          <h3 className="font-bold text-lg font-light text-white mb-2">Friction Located</h3>
           {under2Min ? (
             <div className="space-y-2">
-              <p className="font-mono text-sm text-white/50">
+              <p className="font-bold text-sm text-white/50">
                 A micro-quest has been deployed to tomorrow's board:
               </p>
               <div className="inline-block px-4 py-2 bg-[var(--success)]/10 border border-[var(--success)]/20 rounded-xl">
-                <p className="font-mono text-[11px] text-[var(--success)] font-bold">{firstAction}</p>
+                <p className="font-bold text-[11px] text-[var(--success)] font-bold">{firstAction}</p>
               </div>
-              <p className="font-mono text-[10px] text-white/30">
+              <p className="font-bold text-[10px] text-white/30">
                 That's your only quest for that stat tomorrow. Just start.
               </p>
             </div>
           ) : (
-            <p className="font-mono text-sm text-white/40">
+            <p className="font-bold text-sm text-white/40">
               The first action takes more than 2 minutes. Consider breaking it down further.
             </p>
           )}
         </div>
         <button
           onClick={onComplete}
-          className="px-8 py-3 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2"
+          className="px-8 py-3 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2"
         >
           Continue <ChevronRight size={14} />
         </button>
@@ -104,11 +104,11 @@ export function FrictionAudit({ onComplete }: Props) {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <Shield size={16} className="text-[var(--stat-mind)]" />
-          <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black">
+          <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black">
             Friction Audit
           </span>
         </div>
-        <p className="font-mono text-white/30 text-xs">
+        <p className="font-bold text-white/30 text-xs">
           Identify where your resistance lives — not the task, but the exact friction point before it.
         </p>
       </div>
@@ -132,10 +132,10 @@ export function FrictionAudit({ onComplete }: Props) {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-4"
           >
-            <label className="block font-mono text-lg font-light text-white leading-snug">
+            <label className="block font-bold text-lg font-light text-white leading-snug">
               {steps[step].question}
             </label>
-            <p className="font-mono text-[10px] text-white/25 uppercase tracking-widest">
+            <p className="font-bold text-[10px] text-white/25 uppercase tracking-widest">
               {steps[step].hint}
             </p>
             <textarea
@@ -143,7 +143,7 @@ export function FrictionAudit({ onComplete }: Props) {
               onChange={e => steps[step].onChange(e.target.value)}
               placeholder="Type here..."
               autoFocus
-              className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-sm font-mono text-white/80 min-h-[100px] outline-none focus:border-[var(--stat-mind)]/40 transition-all resize-none placeholder:text-white/15"
+              className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-4 text-sm font-bold text-white/80 min-h-[100px] outline-none focus:border-[var(--stat-mind)]/40 transition-all resize-none placeholder:text-white/15"
             />
             <button
               onClick={() => {
@@ -151,7 +151,7 @@ export function FrictionAudit({ onComplete }: Props) {
                 setStep(step + 1);
               }}
               disabled={!steps[step].value.trim()}
-              className="w-full py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
               Next <ChevronRight size={14} />
             </button>
@@ -164,7 +164,7 @@ export function FrictionAudit({ onComplete }: Props) {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-6"
           >
-            <label className="block font-mono text-lg font-light text-white leading-snug">
+            <label className="block font-bold text-lg font-light text-white leading-snug">
               Can that first action be completed in under 2 minutes?
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -173,7 +173,7 @@ export function FrictionAudit({ onComplete }: Props) {
                   key={String(val)}
                   onClick={() => setUnder2Min(val)}
                   className={cn(
-                    'py-6 rounded-2xl border font-mono text-sm font-black uppercase tracking-wide transition-all',
+                    'py-6 rounded-2xl border font-bold text-sm font-black uppercase tracking-wide transition-all',
                     under2Min === val
                       ? val
                         ? 'bg-[var(--success)]/10 border-[var(--success)]/40 text-[var(--success)]'
@@ -188,7 +188,7 @@ export function FrictionAudit({ onComplete }: Props) {
             <button
               onClick={handleSubmit}
               disabled={under2Min === null}
-              className="w-full py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 transition-all"
+              className="w-full py-4 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl disabled:opacity-20 hover:brightness-90 transition-all"
             >
               Lock In Audit
             </button>

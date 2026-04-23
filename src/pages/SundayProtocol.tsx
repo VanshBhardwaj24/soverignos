@@ -68,27 +68,27 @@ export default function SundayProtocol() {
               <div className="absolute inset-0 bg-white/5 animate-pulse rounded-3xl" />
             </div>
 
-            <h2 className="font-mono text-[10px] tracking-[0.3em] text-white/30 uppercase font-black mb-2">System Protocol</h2>
-            <h1 className="font-mono text-2xl font-light text-white mb-4">LOCKED</h1>
+            <h2 className="font-bold text-[10px] tracking-[0.3em] text-white/30 uppercase font-black mb-2">System Protocol</h2>
+            <h1 className="font-bold text-2xl font-light text-white mb-4">LOCKED</h1>
 
-            <p className="font-mono text-[11px] text-white/20 leading-relaxed mb-8">
+            <p className="font-bold text-[11px] text-white/20 leading-relaxed mb-8">
               The Sunday Protocol is a weekly terminal for system-wide reflection and recalibration. It only unlocks when the cycle completes.
             </p>
 
             <div className="grid grid-cols-2 gap-4 mb-10">
               <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                <p className="font-mono text-[18px] font-black text-white">{hours}h</p>
-                <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mt-1">HOURS REMAINING</p>
+                <p className="font-bold text-[18px] font-black text-white">{hours}h</p>
+                <p className="font-bold text-[7px] text-white/20 uppercase tracking-widest mt-1">HOURS REMAINING</p>
               </div>
               <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-                <p className="font-mono text-[18px] font-black text-white">{minutes}m</p>
-                <p className="font-mono text-[7px] text-white/20 uppercase tracking-widest mt-1">MINUTES REMAINING</p>
+                <p className="font-bold text-[18px] font-black text-white">{minutes}m</p>
+                <p className="font-bold text-[7px] text-white/20 uppercase tracking-widest mt-1">MINUTES REMAINING</p>
               </div>
             </div>
 
             <Link
               to="/"
-              className="w-full py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center justify-center gap-2 relative z-50 cursor-pointer"
+              className="w-full py-4 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center justify-center gap-2 relative z-50 cursor-pointer"
             >
               <ArrowLeft size={14} className="pointer-events-none" /> Return to HQ
             </Link>
@@ -130,22 +130,22 @@ export default function SundayProtocol() {
             <div className="absolute inset-0 rounded-full bg-[var(--success)]/5 animate-ping" />
           </div>
           <div>
-            <h1 className="font-mono text-3xl font-light text-white mb-3">Protocol Complete</h1>
-            <p className="font-mono text-sm text-white/40 max-w-md mx-auto leading-relaxed">
+            <h1 className="font-bold text-3xl font-light text-white mb-3">Protocol Complete</h1>
+            <p className="font-bold text-sm text-white/40 max-w-md mx-auto leading-relaxed">
               5 systems executed. Friction surfaced. Delusion measured. Truth committed. Contract signed. Numbers reviewed.
             </p>
           </div>
           <div className="flex gap-4 mt-4">
             <div className="px-6 py-3 bg-[var(--stat-mind)]/10 border border-[var(--stat-mind)]/20 rounded-xl flex items-center gap-2">
-              <span className="font-mono text-[10px] text-[var(--stat-mind)] font-black uppercase tracking-wider">+50 MIND XP</span>
+              <span className="font-bold text-[10px] text-[var(--stat-mind)] font-black uppercase tracking-wider">+50 MIND XP</span>
             </div>
             <div className="px-6 py-3 bg-[var(--stat-spirit)]/10 border border-[var(--stat-spirit)]/20 rounded-xl flex items-center gap-2">
-              <span className="font-mono text-[10px] text-[var(--stat-spirit)] font-black uppercase tracking-wider">+30 SPIRIT XP</span>
+              <span className="font-bold text-[10px] text-[var(--stat-spirit)] font-black uppercase tracking-wider">+30 SPIRIT XP</span>
             </div>
           </div>
           <Link
             to="/"
-            className="mt-8 px-10 py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2 relative z-50 cursor-pointer"
+            className="mt-8 px-10 py-4 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all flex items-center gap-2 relative z-50 cursor-pointer"
           >
             <ArrowLeft size={14} className="pointer-events-none" /> Return to HQ
           </Link>
@@ -160,7 +160,7 @@ export default function SundayProtocol() {
       <div className="mb-10">
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-white/20 hover:text-white/50 transition-colors mb-6 font-mono text-[10px] uppercase tracking-widest"
+          className="flex items-center gap-2 text-white/20 hover:text-white/50 transition-colors mb-6 font-bold text-[10px] uppercase tracking-widest"
         >
           <ChevronLeft size={14} /> Back to Dashboard
         </button>
@@ -169,13 +169,13 @@ export default function SundayProtocol() {
             <Calendar size={20} />
           </div>
           <div>
-            <h1 className="font-mono text-[11px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-semibold">Sunday Ritual</h1>
-            <div className="font-mono text-3xl font-light tracking-tight text-white">
+            <h1 className="font-bold text-[11px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-semibold">Sunday Ritual</h1>
+            <div className="font-bold text-3xl font-light tracking-tight text-white">
               SUNDAY PROTOCOL
             </div>
           </div>
         </div>
-        <p className="font-mono text-[10px] text-white/25 mt-2">
+        <p className="font-bold text-[10px] text-white/25 mt-2">
           {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
       </div>
@@ -198,7 +198,7 @@ export default function SundayProtocol() {
                   )}>
                     {i < currentStep ? <Check size={10} /> : i + 1}
                   </div>
-                  <span className="font-mono text-[7px] tracking-[0.15em] uppercase hidden lg:block truncate">{step.label}</span>
+                  <span className="font-bold text-[7px] tracking-[0.15em] uppercase hidden lg:block truncate">{step.label}</span>
                 </div>
               </div>
             );
@@ -213,7 +213,7 @@ export default function SundayProtocol() {
             transition={{ duration: 0.5, ease: 'easeOut' }}
           />
         </div>
-        <p className="font-mono text-[8px] text-white/15 mt-2">
+        <p className="font-bold text-[8px] text-white/15 mt-2">
           Step {currentStep + 1} of {PROTOCOL_STEPS.length}: {PROTOCOL_STEPS[currentStep].label}
         </p>
       </div>
@@ -238,7 +238,7 @@ export default function SundayProtocol() {
                 <DependencyMirror />
                 <button
                   onClick={handleStepComplete}
-                  className="w-full py-4 bg-white text-black font-mono font-black text-[10px] uppercase tracking-widest rounded-2xl hover:brightness-90 transition-all"
+                  className="w-full py-4 bg-white text-black font-bold font-black text-[10px] uppercase tracking-widest rounded-2xl hover:brightness-90 transition-all"
                 >
                   Confirm Dependency Audit
                 </button>

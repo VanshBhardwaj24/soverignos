@@ -111,10 +111,10 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
               </div>
 
               <div>
-                <h2 className="font-mono text-[10px] tracking-[0.4em] text-white/30 uppercase font-black mb-1">
+                <h2 className="font-bold text-[10px] tracking-[0.4em] text-white/30 uppercase font-black mb-1">
                   {mode === 'morning' ? "Strategic Briefing" : "Daily Operational Report"}
                 </h2>
-                <h1 className="font-mono text-2xl font-light text-white tracking-tight">
+                <h1 className="font-bold text-2xl font-light text-white tracking-tight">
                   {mode === 'morning' ? "Initialize Objectives" : (allCompleted ? "Protocol Success" : "Protocol Disruption")}
                 </h1>
               </div>
@@ -130,7 +130,7 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
                         key={t.id}
                         onClick={() => setSelectedTemplateId(t.id)}
                         className={cn(
-                          "px-4 py-2 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-all whitespace-nowrap",
+                          "px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all whitespace-nowrap",
                           selectedTemplateId === t.id
                             ? "bg-white text-black font-black"
                             : "bg-white/5 text-white/40 hover:bg-white/10"
@@ -145,8 +145,8 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
                     {currentTemplate.tasks.map((task, i) => (
                       <div key={i} className="flex items-center gap-3">
                         <Target size={14} className="text-white/20" />
-                        <span className="font-mono text-xs text-white/70">{task.title}</span>
-                        <span className="ml-auto font-mono text-[10px] text-white/20 uppercase">{task.statId}</span>
+                        <span className="font-bold text-xs text-white/70">{task.title}</span>
+                        <span className="ml-auto font-bold text-[10px] text-white/20 uppercase">{task.statId}</span>
                       </div>
                     ))}
                   </div>
@@ -155,16 +155,16 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
                   <div className="p-6 rounded-2xl bg-blue-500/5 border border-blue-500/10 space-y-3">
                     <div className="flex items-center gap-2">
                       <Zap size={14} className="text-blue-400" />
-                      <h3 className="font-mono text-[9px] tracking-widest text-blue-400 uppercase font-black">Intelligence Briefing</h3>
+                      <h3 className="font-bold text-[9px] tracking-widest text-blue-400 uppercase font-black">Intelligence Briefing</h3>
                     </div>
                     {recentDiscovery && (
                       <div className="space-y-1">
-                        <p className="font-mono text-[10px] text-white/80 uppercase leading-tight">Verified Insight: {recentDiscovery.title}</p>
+                        <p className="font-bold text-[10px] text-white/80 uppercase leading-tight">Verified Insight: {recentDiscovery.title}</p>
                         <p className="text-[10px] text-white/40 leading-relaxed italic">"{recentDiscovery.insight}"</p>
                       </div>
                     )}
                     <div className="pt-2 border-t border-blue-500/10">
-                      <p className="font-mono text-[9px] text-blue-300 uppercase leading-tight flex items-center gap-2">
+                      <p className="font-bold text-[9px] text-blue-300 uppercase leading-tight flex items-center gap-2">
                         <ArrowRight size={10} />
                         {intelligenceTip}
                       </p>
@@ -183,7 +183,7 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
                         <XCircle size={18} className="text-red-500" />
                       }
                       <span className={cn(
-                        "font-mono text-xs",
+                        "font-bold text-xs",
                         q.completed ? "text-white/80" : "text-white/40 line-through"
                       )}>
                         {q.title}
@@ -191,7 +191,7 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
                     </div>
                   ))}
                   {todayBriefingQuests.length === 0 && (
-                    <p className="text-center font-mono text-[10px] text-white/20 py-10 uppercase tracking-widest">No objectives tracked for this session.</p>
+                    <p className="text-center font-bold text-[10px] text-white/20 py-10 uppercase tracking-widest">No objectives tracked for this session.</p>
                   )}
                 </div>
               )}
@@ -203,7 +203,7 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
                 onClick={handleAction}
                 disabled={isFinalized}
                 className={cn(
-                  "w-full py-5 rounded-2xl font-mono text-[11px] font-black tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-3",
+                  "w-full py-5 rounded-2xl font-bold text-[11px] font-black tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-3",
                   mode === 'morning' ? "bg-white text-black hover:scale-[1.02]" :
                     (allCompleted ? "bg-emerald-500 text-white hover:scale-[1.02]" : "bg-white/10 text-white/40 hover:bg-white/20")
                 )}
@@ -217,7 +217,7 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
 
               <button
                 onClick={onClose}
-                className="w-full text-center font-mono text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white/40 transition-colors"
+                className="w-full text-center font-bold text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white/40 transition-colors"
               >
                 Stand down
               </button>

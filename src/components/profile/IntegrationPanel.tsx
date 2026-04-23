@@ -60,7 +60,7 @@ export const IntegrationPanel = () => {
     <div className="space-y-8">
       <div className="flex items-center gap-3 text-white/20 px-4">
         <div className="w-8 h-px bg-white/10" />
-        <h2 className="font-mono text-[10px] font-black tracking-[0.4em] uppercase">Data Integrations — Connected Systems</h2>
+        <h2 className="font-bold text-[10px] font-black tracking-[0.4em] uppercase">Data Integrations — Connected Systems</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -81,7 +81,7 @@ export const IntegrationPanel = () => {
                     <h4 className="font-black text-white uppercase italic tracking-tighter">{item.name}</h4>
                     <div className="flex items-center gap-1.5 mt-0.5">
                        <div className={cn("w-1 h-1 rounded-full", item.status ? "bg-emerald-400" : "bg-white/20")} />
-                       <span className="font-mono text-[8px] text-white/20 uppercase font-black tracking-widest">{item.status ? 'Connected' : 'Not Connected'}</span>
+                       <span className="font-bold text-[8px] text-white/20 uppercase font-black tracking-widest">{item.status ? 'Connected' : 'Not Connected'}</span>
                     </div>
                   </div>
                </div>
@@ -89,10 +89,10 @@ export const IntegrationPanel = () => {
             </div>
 
             <div className="space-y-1">
-               <p className="font-mono text-[10px] text-white/60 lowercase italic h-8 line-clamp-2">
+               <p className="font-bold text-[10px] text-white/60 lowercase italic h-8 line-clamp-2">
                  {item.details}
                </p>
-               <div className="pt-4 border-t border-white/5 flex items-center justify-between font-mono text-[8px] text-white/20 uppercase font-black tracking-widest">
+               <div className="pt-4 border-t border-white/5 flex items-center justify-between font-bold text-[8px] text-white/20 uppercase font-black tracking-widest">
                   <span>Last Sync: {item.sync}</span>
                   {item.status && <ShieldCheck size={10} className="text-emerald-500/40" />}
                </div>
@@ -104,7 +104,7 @@ export const IntegrationPanel = () => {
       <div className="bg-blue-600/10 border border-blue-600/20 rounded-[32px] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 group">
          <div className="space-y-4 text-center md:text-left">
             <h3 className="text-3xl font-black text-white italic uppercase tracking-tighter">Initialize Vault Feature</h3>
-            <p className="text-[10px] font-mono text-blue-400/60 uppercase font-black italic max-w-xl">
+            <p className="text-[10px] font-bold text-blue-400/60 uppercase font-black italic max-w-xl">
                Razorpay node currently inactive. Connect your merchant gateway to expand the WEALTH DOSSIER with live liquidity tracking and venture revenue automation.
             </p>
          </div>

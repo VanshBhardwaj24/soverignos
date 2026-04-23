@@ -52,8 +52,8 @@ export default function Travel() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-6xl mx-auto pb-12">
       <div className="mb-12">
-        <h1 className="font-mono text-[11px] tracking-[0.2em] text-[var(--text-secondary)] opacity-80 uppercase mb-2">Global Logistics</h1>
-        <h2 className="font-mono text-4xl font-light tracking-tight text-white">TRAVEL ARCHIVE</h2>
+        <h1 className="font-bold text-[11px] tracking-[0.2em] text-[var(--text-secondary)] opacity-80 uppercase mb-2">Global Logistics</h1>
+        <h2 className="font-bold text-4xl font-light tracking-tight text-white">TRAVEL ARCHIVE</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -94,13 +94,13 @@ export default function Travel() {
               </div>
 
               <h3 className="text-2xl font-black text-white mb-2 uppercase italic tracking-tighter">{loc.name}</h3>
-              <p className="text-[10px] text-white/30 font-mono uppercase tracking-widest leading-relaxed mb-6 italic">
+              <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest leading-relaxed mb-6 italic">
                 {loc.desc}
               </p>
 
               {goal && !loc.isLocked && (
                 <div className="space-y-3 mb-8">
-                  <div className="flex justify-between items-center text-[10px] font-mono uppercase font-black">
+                  <div className="flex justify-between items-center text-[10px] font-bold uppercase font-black">
                     <span className="text-white/20 tracking-tighter">Savings Progress</span>
                     <span className="text-[var(--stat-wealth)]">{progress.toFixed(0)}%</span>
                   </div>
@@ -119,14 +119,14 @@ export default function Travel() {
                     className="overflow-hidden border-t border-white/5 pt-6 mt-2 space-y-4"
                   >
                     <div className="flex items-center justify-between">
-                      <h4 className="text-[10px] font-black font-mono text-white/40 uppercase tracking-widest">Inventory Checklist</h4>
+                      <h4 className="text-[10px] font-black font-bold text-white/40 uppercase tracking-widest">Inventory Checklist</h4>
                       <Package size={12} className="text-white/20" />
                     </div>
                     <div className="space-y-2">
                       {['Passport Proxy', 'Hardware Vault', 'Tactical Gear'].map(item => (
                         <div key={item} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 hover:bg-white/[0.08] transition-colors cursor-pointer group/item">
                           <CheckSquare size={14} className="text-white/20 group-hover/item:text-[var(--success)]" />
-                          <span className="text-[11px] text-white/60 group-hover/item:text-white transition-colors uppercase font-mono">{item}</span>
+                          <span className="text-[11px] text-white/60 group-hover/item:text-white transition-colors uppercase font-bold">{item}</span>
                         </div>
                       ))}
                     </div>
@@ -135,14 +135,14 @@ export default function Travel() {
               </AnimatePresence>
 
               <div className="mt-auto space-y-3 pt-6">
-                <div className="flex justify-between items-center text-[10px] font-mono uppercase font-black">
+                <div className="flex justify-between items-center text-[10px] font-bold uppercase font-black">
                   <span className="text-white/20">Requirement</span>
                   <span className={loc.isLocked ? "text-[var(--danger)]" : "text-[var(--success)]"}>{loc.condition}</span>
                 </div>
                 <button
                   disabled={loc.isLocked}
                   className={cn(
-                    "w-full py-4 rounded-xl font-mono text-[10px] font-black tracking-widest uppercase transition-all",
+                    "w-full py-4 rounded-xl font-bold text-[10px] font-black tracking-widest uppercase transition-all",
                     loc.isLocked
                       ? "bg-white/5 text-white/20 cursor-not-allowed border border-white/5"
                       : "bg-white text-black hover:scale-[0.98] active:scale-[0.95]"

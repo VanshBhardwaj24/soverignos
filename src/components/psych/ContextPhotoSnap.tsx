@@ -68,8 +68,8 @@ export function ContextPhotoSnap({ onComplete }: ContextPhotoSnapProps) {
   return (
     <div className="space-y-8 py-8 px-4">
       <div className="text-center mb-8">
-        <h3 className="font-mono text-2xl font-black text-white uppercase italic">System Context Capture</h3>
-        <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.2em] mt-2">Document your physical reality. No filter. No lies.</p>
+        <h3 className="font-bold text-2xl font-black text-white uppercase italic">System Context Capture</h3>
+        <p className="font-bold text-[10px] text-white/40 uppercase tracking-[0.2em] mt-2">Document your physical reality. No filter. No lies.</p>
       </div>
 
       <div className="max-w-xl mx-auto">
@@ -82,13 +82,13 @@ export function ContextPhotoSnap({ onComplete }: ContextPhotoSnapProps) {
               <div className="h-16 w-16 rounded-2xl bg-[var(--stat-mind)]/10 flex items-center justify-center text-[var(--stat-mind)] group-hover:scale-110 transition-transform">
                 <Camera size={32} />
               </div>
-              <span className="font-mono text-[10px] uppercase font-black tracking-widest text-white/60 group-hover:text-white">Active Lens</span>
+              <span className="font-bold text-[10px] uppercase font-black tracking-widest text-white/60 group-hover:text-white">Active Lens</span>
             </button>
             <label className="cursor-pointer group p-10 bg-white/5 border border-white/10 rounded-[32px] hover:border-[var(--stat-mind)] transition-all flex flex-col items-center gap-4 text-center">
               <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center text-white/40 group-hover:scale-110 transition-transform">
                 <Upload size={32} />
               </div>
-              <span className="font-mono text-[10px] uppercase font-black tracking-widest text-white/60 group-hover:text-white">External Feed</span>
+              <span className="font-bold text-[10px] uppercase font-black tracking-widest text-white/60 group-hover:text-white">External Feed</span>
               <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
             </label>
           </div>
@@ -128,32 +128,32 @@ export function ContextPhotoSnap({ onComplete }: ContextPhotoSnapProps) {
             <div className="relative rounded-[40px] overflow-hidden border border-white/10 shadow-2xl max-w-sm mx-auto aspect-square">
               <img src={previewUrl} alt="Audit Context" className="w-full h-full object-cover" />
               <div className="absolute top-0 right-0 p-4">
-                 <div className="p-3 bg-black/40 backdrop-blur-md rounded-full text-white/60 font-mono text-[8px] uppercase tracking-widest flex items-center gap-2">
+                 <div className="p-3 bg-black/40 backdrop-blur-md rounded-full text-white/60 font-bold text-[8px] uppercase tracking-widest flex items-center gap-2">
                     <Eye size={12} /> Visual Recorded
                  </div>
               </div>
             </div>
 
             <div className="space-y-4">
-              <label className="block font-mono text-[8px] text-white/30 uppercase tracking-[0.3em]">Snapshot Memo (Optional)</label>
+              <label className="block font-bold text-[8px] text-white/30 uppercase tracking-[0.3em]">Snapshot Memo (Optional)</label>
               <textarea 
                 value={note}
                 onChange={e => setNote(e.target.value)}
                 placeholder="Environment state: Decluttered workspace, ready for high-output week..."
-                className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white font-mono text-sm leading-relaxed outline-none focus:border-white/20 h-24 resize-none"
+                className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-white font-bold text-sm leading-relaxed outline-none focus:border-white/20 h-24 resize-none"
               />
             </div>
 
             <div className="flex gap-4">
               <button 
                 onClick={() => setMode('selection')}
-                className="flex-1 py-4 bg-white/5 border border-white/10 rounded-2xl font-mono text-[10px] uppercase font-black tracking-widest text-white/40 hover:text-white transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold text-[10px] uppercase font-black tracking-widest text-white/40 hover:text-white transition-all flex items-center justify-center gap-2"
               >
                 <RefreshCw size={14} /> Recalibrate
               </button>
               <button 
                 onClick={handleFinalize}
-                className="flex-1 py-4 bg-white text-black rounded-2xl font-mono text-[10px] uppercase font-black tracking-widest hover:brightness-90 transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-4 bg-white text-black rounded-2xl font-bold text-[10px] uppercase font-black tracking-widest hover:brightness-90 transition-all flex items-center justify-center gap-2"
               >
                 <Check size={14} /> Commit Context
               </button>

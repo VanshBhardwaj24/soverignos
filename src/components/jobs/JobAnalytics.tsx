@@ -68,7 +68,7 @@ export const JobAnalytics: React.FC<JobAnalyticsProps> = ({ jobs }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Funnel Chart */}
         <div className="lg:col-span-8 bg-white/[0.03] border border-white/10 rounded-[32px] p-8">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Pipeline Intensity</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Pipeline Intensity</h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={funnelData}>
@@ -96,7 +96,7 @@ export const JobAnalytics: React.FC<JobAnalyticsProps> = ({ jobs }) => {
 
         {/* Status Breakdown */}
         <div className="lg:col-span-4 bg-white/[0.03] border border-white/10 rounded-[32px] p-8 flex flex-col">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Status Distribution</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Status Distribution</h3>
           <div className="h-[200px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -117,7 +117,7 @@ export const JobAnalytics: React.FC<JobAnalyticsProps> = ({ jobs }) => {
           </div>
           <div className="mt-8 space-y-3">
              {funnelData.map((d, _i) => (
-               <div key={d.full} className="flex justify-between items-center text-[10px] font-mono">
+               <div key={d.full} className="flex justify-between items-center text-[10px] font-bold">
                  <span className="text-white/40">{d.full}</span>
                  <span className="text-white font-bold">{d.count}</span>
                </div>
@@ -129,19 +129,19 @@ export const JobAnalytics: React.FC<JobAnalyticsProps> = ({ jobs }) => {
         <div className="lg:col-span-12 bg-white/[0.03] border border-white/10 rounded-[40px] p-10">
            <div className="flex items-center justify-between mb-10">
               <div>
-                 <h3 className="font-mono text-[10px] tracking-[0.4em] text-[var(--stat-mind)] uppercase font-black mb-2">The Response Rate Wall</h3>
-                 <p className="font-mono text-2xl font-light text-white">EFFORT VS. RESPONSE</p>
+                 <h3 className="font-bold text-[10px] tracking-[0.4em] text-[var(--stat-mind)] uppercase font-black mb-2">The Response Rate Wall</h3>
+                 <p className="font-bold text-2xl font-light text-white">EFFORT VS. RESPONSE</p>
               </div>
               <div className="text-right">
-                 <p className="font-mono text-[8px] text-white/20 uppercase tracking-[0.3em]">Calibration Insight</p>
-                 <p className="font-mono text-xs text-white/40 italic">Spray and Pray doesn't work. Focus does.</p>
+                 <p className="font-bold text-[8px] text-white/20 uppercase tracking-[0.3em]">Calibration Insight</p>
+                 <p className="font-bold text-xs text-white/40 italic">Spray and Pray doesn't work. Focus does.</p>
               </div>
            </div>
 
            <div className="space-y-8">
               {responseData.map(d => (
                  <div key={d.name} className="space-y-3">
-                    <div className="flex justify-between items-end font-mono">
+                    <div className="flex justify-between items-end font-bold">
                        <span className="text-[10px] text-white/30 tracking-widest uppercase">{d.name}</span>
                        <span className="text-2xl font-black italic" style={{ color: d.color }}>{d.rate.toFixed(1)}%</span>
                     </div>
@@ -168,8 +168,8 @@ const MetricBox = ({ label, value, sub, icon: Icon }: any) => (
     <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 transition-transform group-hover:scale-110">
       <Icon size={48} />
     </div>
-    <span className="block font-mono text-[9px] text-white/30 uppercase tracking-widest mb-3">{label}</span>
-    <div className="font-mono text-3xl font-black text-white mb-1 italic">{value}</div>
-    <span className="font-mono text-[9px] text-white/20 uppercase">{sub}</span>
+    <span className="block font-bold text-[9px] text-white/30 uppercase tracking-widest mb-3">{label}</span>
+    <div className="font-bold text-3xl font-black text-white mb-1 italic">{value}</div>
+    <span className="font-bold text-[9px] text-white/20 uppercase">{sub}</span>
   </div>
 );

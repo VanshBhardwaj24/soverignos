@@ -53,7 +53,7 @@ export const SkillTree = ({ statId, currentLevel }: SkillTreeProps) => {
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
                        <span className={cn(
-                         "font-mono text-[8px] px-2 py-0.5 rounded border uppercase tracking-widest font-black",
+                         "font-bold text-[8px] px-2 py-0.5 rounded border uppercase tracking-widest font-black",
                          isUnlocked ? "bg-white/20 text-white border-white/20" : "bg-white/5 text-white/20 border-white/5"
                        )}>Level {perk.level}</span>
                        {isUnlocked && <Star size={12} className="text-yellow-500 fill-yellow-500 shadow-glow" />}

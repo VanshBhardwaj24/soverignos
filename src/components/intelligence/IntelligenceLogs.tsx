@@ -19,7 +19,7 @@ export const IntelligenceLogs = () => {
     <section className="p-8 rounded-3xl border border-[var(--border-default)] bg-[var(--bg-secondary)] flex flex-col h-full">
       <div className="flex items-center gap-2 mb-6">
         <Database size={18} className="text-blue-400" />
-        <h2 className="font-mono text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Intelligence Logs</h2>
+        <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Intelligence Logs</h2>
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto pr-4 custom-scrollbar">
@@ -31,12 +31,12 @@ export const IntelligenceLogs = () => {
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[9px] text-white/20">
+                  <span className="font-bold text-[9px] text-white/20">
                     {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                   {log.impact > 0 && (
                     <span className={cn(
-                      "px-1.5 py-0.5 rounded-[4px] font-mono text-[8px] font-black uppercase",
+                      "px-1.5 py-0.5 rounded-[4px] font-bold text-[8px] font-black uppercase",
                       log.impact > 70 ? "bg-emerald-500/20 text-emerald-400" : "bg-blue-500/20 text-blue-400"
                     )}>
                       Impact: {log.impact}
@@ -44,7 +44,7 @@ export const IntelligenceLogs = () => {
                   )}
                 </div>
                 <p className={cn(
-                  "font-mono text-[11px] leading-relaxed",
+                  "font-bold text-[11px] leading-relaxed",
                   log.event.toLowerCase().includes('collapse') ? "text-red-400" : "text-white/70"
                 )}>
                   {log.event}
@@ -55,7 +55,7 @@ export const IntelligenceLogs = () => {
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-20 py-12">
             <Clock size={32} className="mb-4" />
-            <p className="font-mono text-[10px] uppercase tracking-widest italic">Monitoring behavioral stream...</p>
+            <p className="font-bold text-[10px] uppercase tracking-widest italic">Monitoring behavioral stream...</p>
           </div>
         )}
       </div>

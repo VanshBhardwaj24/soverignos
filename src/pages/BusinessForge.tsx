@@ -43,8 +43,8 @@ export default function BusinessForge() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <h1 className="font-mono text-[11px] tracking-[0.2em] text-[var(--stat-brand)] uppercase font-semibold mb-2">Venture Foundry</h1>
-          <div className="font-mono text-4xl font-light tracking-tight text-white flex items-center gap-3">
+          <h1 className="font-bold text-[11px] tracking-[0.2em] text-[var(--stat-brand)] uppercase font-semibold mb-2">Venture Foundry</h1>
+          <div className="font-bold text-4xl font-light tracking-tight text-white flex items-center gap-3">
             BUSINESS COMMAND <span className="text-white/20">/</span> <span className="text-white/40">FORGE</span>
           </div>
         </div>
@@ -52,20 +52,20 @@ export default function BusinessForge() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsAdding(true)}
-            className="h-14 px-6 bg-[var(--stat-brand)] text-white rounded-2xl flex items-center gap-3 font-mono text-xs font-black tracking-widest hover:brightness-110 transition-all shadow-[0_0_20px_rgba(236,72,153,0.2)]"
+            className="h-14 px-6 bg-[var(--stat-brand)] text-white rounded-2xl flex items-center gap-3 font-bold text-xs font-black tracking-widest hover:brightness-110 transition-all shadow-[0_0_20px_rgba(236,72,153,0.2)]"
           >
             <Plus size={18} /> INITIALIZE VENTURE
           </button>
 
           <div className="bg-white/[0.02] border border-white/10 p-4 rounded-2xl flex items-center gap-8 shadow-2xl">
             <div className="text-right">
-              <span className="block font-mono text-[9px] text-white/30 uppercase tracking-widest">Aggregate Revenue</span>
-              <span className="text-xl font-mono font-black text-[var(--stat-wealth)]">${aggregateRevenue.toLocaleString()}</span>
+              <span className="block font-bold text-[9px] text-white/30 uppercase tracking-widest">Aggregate Revenue</span>
+              <span className="text-xl font-bold font-black text-[var(--stat-wealth)]">${aggregateRevenue.toLocaleString()}</span>
             </div>
             <div className="h-10 w-px bg-white/10" />
             <div className="text-right">
-              <span className="block font-mono text-[9px] text-white/30 uppercase tracking-widest">Active Ventures</span>
-              <span className="text-xl font-mono font-black text-white">{activeCount.toString().padStart(2, '0')}</span>
+              <span className="block font-bold text-[9px] text-white/30 uppercase tracking-widest">Active Ventures</span>
+              <span className="text-xl font-bold font-black text-white">{activeCount.toString().padStart(2, '0')}</span>
             </div>
           </div>
         </div>
@@ -88,11 +88,11 @@ export default function BusinessForge() {
                 <X size={20} />
               </button>
 
-              <h3 className="font-mono text-xl text-white mb-8 border-b border-white/5 pb-4">INITIALIZE VENTURE PROTOCOL</h3>
+              <h3 className="font-bold text-xl text-white mb-8 border-b border-white/5 pb-4">INITIALIZE VENTURE PROTOCOL</h3>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-[8px] font-mono text-white/30 uppercase tracking-widest mb-2">Venture Name</label>
+                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Venture Name</label>
                   <input
                     value={newName}
                     onChange={e => setNewName(e.target.value)}
@@ -102,7 +102,7 @@ export default function BusinessForge() {
                 </div>
 
                 <div>
-                  <label className="block text-[8px] font-mono text-white/30 uppercase tracking-widest mb-2">Classification</label>
+                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Classification</label>
                   <select
                     value={newType}
                     onChange={e => setNewType(e.target.value as any)}
@@ -117,7 +117,7 @@ export default function BusinessForge() {
                 </div>
 
                 <div>
-                  <label className="block text-[8px] font-mono text-white/30 uppercase tracking-widest mb-2">Tactical Summary</label>
+                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Tactical Summary</label>
                   <textarea
                     value={newDesc}
                     onChange={e => setNewDesc(e.target.value)}
@@ -128,7 +128,7 @@ export default function BusinessForge() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-white text-black font-mono font-bold tracking-widest rounded-xl hover:brightness-90 transition-all uppercase text-xs"
+                  className="w-full py-4 bg-white text-black font-bold font-bold tracking-widest rounded-xl hover:brightness-90 transition-all uppercase text-xs"
                 >
                   DEPLOY TO FORGE
                 </button>
@@ -189,10 +189,10 @@ export default function BusinessForge() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-mono text-xl font-light text-white uppercase tracking-tight">Financial Nexus</h2>
-              <p className="font-mono text-[9px] text-white/20 uppercase tracking-widest mt-1 italic">Cross-portfolio liquidity and asset deployment status.</p>
+              <h2 className="font-bold text-xl font-light text-white uppercase tracking-tight">Financial Nexus</h2>
+              <p className="font-bold text-[9px] text-white/20 uppercase tracking-widest mt-1 italic">Cross-portfolio liquidity and asset deployment status.</p>
             </div>
-            <button className="flex items-center gap-2 font-mono text-[10px] text-white/40 hover:text-white uppercase tracking-widest">
+            <button className="flex items-center gap-2 font-bold text-[10px] text-white/40 hover:text-white uppercase tracking-widest">
               <Filter size={12} /> Filter Pools
             </button>
           </div>
@@ -205,19 +205,19 @@ export default function BusinessForge() {
                 </div>
                 <div className="relative z-10 flex flex-col gap-8">
                   <div className="flex justify-between items-start">
-                    <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[8px] font-black font-mono tracking-widest uppercase text-white/40">
+                    <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[8px] font-black font-bold tracking-widest uppercase text-white/40">
                       {p.type}
                     </div>
                     <TrendingUp size={16} className="text-[var(--success)] opacity-40" />
                   </div>
                   <div>
-                    <span className="block font-mono text-[10px] text-white/20 uppercase tracking-widest mb-1">{p.name}</span>
-                    <span className="text-3xl font-mono font-black text-white">${p.balance.toLocaleString()}</span>
+                    <span className="block font-bold text-[10px] text-white/20 uppercase tracking-widest mb-1">{p.name}</span>
+                    <span className="text-3xl font-bold font-black text-white">${p.balance.toLocaleString()}</span>
                   </div>
                   <div className="h-px w-full bg-white/5" />
                   <div className="flex items-center justify-between opacity-40 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[9px] font-mono uppercase tracking-widest">Operational Efficiency</span>
-                    <span className="text-[9px] font-mono font-black text-[var(--success)]">MAXIMAL</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest">Operational Efficiency</span>
+                    <span className="text-[9px] font-bold font-black text-[var(--success)]">MAXIMAL</span>
                   </div>
                 </div>
               </div>
@@ -228,8 +228,8 @@ export default function BusinessForge() {
                 <Target size={24} />
               </div>
               <div>
-                <h4 className="font-mono text-[11px] font-black text-white/40 uppercase tracking-widest">Initialize New Pool</h4>
-                <p className="font-mono text-[9px] text-white/20 uppercase tracking-tighter mt-1 italic">Expand liquidity infrastructure.</p>
+                <h4 className="font-bold text-[11px] font-black text-white/40 uppercase tracking-widest">Initialize New Pool</h4>
+                <p className="font-bold text-[9px] text-white/20 uppercase tracking-tighter mt-1 italic">Expand liquidity infrastructure.</p>
               </div>
             </div>
           </div>
@@ -265,7 +265,7 @@ export default function BusinessForge() {
               description="Rapid deployment of high-conversion, AI-optimized digital experiences and custom SaaS interfaces."
             >
               <div className="space-y-4">
-                <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest">
+                <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
                   <span className="text-white/40">Current Pipeline</span>
                   <span className="text-white/80">3/5 slots active</span>
                 </div>
@@ -301,7 +301,7 @@ export default function BusinessForge() {
                 <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-2xl">
                   <div>
                     <span className="block text-[9px] text-white/40 uppercase tracking-widest mb-1">Account Equity</span>
-                    <span className="text-2xl font-mono font-black text-white">$8,240.50</span>
+                    <span className="text-2xl font-bold font-black text-white">$8,240.50</span>
                   </div>
                   <div className="h-12 w-12 rounded-xl bg-[var(--success)]/10 flex items-center justify-center text-[var(--success)] border border-[var(--success)]/20 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
                     <TrendingUp size={20} />
@@ -327,7 +327,7 @@ export default function BusinessForge() {
                 <div className="col-span-2 p-3 bg-white/5 border border-dashed border-white/20 rounded-xl flex items-center justify-between group cursor-pointer hover:bg-white/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <Sparkles size={16} className="text-[#A855F7]" />
-                    <span className="text-[10px] font-mono text-white/80 tracking-widest uppercase italic">New 3D Portfolio Concept</span>
+                    <span className="text-[10px] font-bold text-white/80 tracking-widest uppercase italic">New 3D Portfolio Concept</span>
                   </div>
                   <ArrowUpRight size={14} className="text-white/20 group-hover:text-white transition-colors" />
                 </div>
@@ -368,13 +368,13 @@ function VentureCard({ title, tag, icon, color, description, children }: any) {
           >
             {icon}
           </div>
-          <span className="font-mono text-[9px] font-black tracking-widest px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white/40 uppercase">
+          <span className="font-bold text-[9px] font-black tracking-widest px-3 py-1 rounded-full border border-white/10 bg-white/5 text-white/40 uppercase">
             {tag}
           </span>
         </div>
 
         <h3 className="text-2xl font-black tracking-tighter text-white uppercase mb-2 italic">{title}</h3>
-        <p className="text-[11px] text-white/30 leading-relaxed uppercase tracking-widest font-mono mb-10 max-w-[80%] italic">
+        <p className="text-[11px] text-white/30 leading-relaxed uppercase tracking-widest font-bold mb-10 max-w-[80%] italic">
           {description}
         </p>
 
@@ -387,8 +387,8 @@ function VentureCard({ title, tag, icon, color, description, children }: any) {
 function StatBox({ label, value, color = "text-white" }: any) {
   return (
     <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col gap-1">
-      <span className="text-[8px] font-mono text-white/20 uppercase tracking-widest">{label}</span>
-      <span className={cn("text-xl font-mono font-black tracking-tight", color)}>{value}</span>
+      <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest">{label}</span>
+      <span className={cn("text-xl font-bold font-black tracking-tight", color)}>{value}</span>
     </div>
   );
 }
@@ -396,8 +396,8 @@ function StatBox({ label, value, color = "text-white" }: any) {
 function Metric({ label, value, color = "text-white" }: any) {
   return (
     <div className="text-center">
-      <span className="block text-[8px] font-mono text-white/20 uppercase tracking-widest mb-1">{label}</span>
-      <span className={cn("text-sm font-mono font-black", color)}>{value}</span>
+      <span className="block text-[8px] font-bold text-white/20 uppercase tracking-widest mb-1">{label}</span>
+      <span className={cn("text-sm font-bold font-black", color)}>{value}</span>
     </div>
   );
 }
@@ -406,7 +406,7 @@ function ListEntry({ label }: any) {
   return (
     <div className="flex items-center gap-2">
       <div className="h-1 w-1 rounded-full bg-white/20" />
-      <span className="text-[9px] font-mono text-white/40 uppercase tracking-[0.2em]">{label}</span>
+      <span className="text-[9px] font-bold text-white/40 uppercase tracking-[0.2em]">{label}</span>
     </div>
   );
 }
@@ -435,7 +435,7 @@ function VenturePnL() {
     <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-8 flex items-center justify-center min-h-[300px]">
       <div className="text-center">
         <LineChart size={48} className="text-[var(--stat-brand)] opacity-20 mx-auto mb-4" />
-        <p className="font-mono text-[10px] text-white/20 uppercase tracking-[0.3em]">Aggregate PnL Matrix // Awaiting More Data</p>
+        <p className="font-bold text-[10px] text-white/20 uppercase tracking-[0.3em]">Aggregate PnL Matrix // Awaiting More Data</p>
       </div>
     </div>
   );

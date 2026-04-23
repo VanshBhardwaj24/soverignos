@@ -37,7 +37,7 @@ export const InventoryModal = () => {
             <div className="p-6 border-b border-[var(--border-default)] flex justify-between items-center relative z-10">
               <div className="flex items-center gap-3">
                 <Gift size={20} className="text-[var(--stat-wealth)]" />
-                <h2 className="font-mono text-xl tracking-widest text-[var(--text-primary)]">VAULT INVENTORY</h2>
+                <h2 className="font-bold text-xl tracking-widest text-[var(--text-primary)]">VAULT INVENTORY</h2>
               </div>
               <button onClick={() => setIsOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--danger)] transition-colors">
                 <X size={24} />
@@ -47,10 +47,10 @@ export const InventoryModal = () => {
             <div className="p-8">
               <div className="flex items-center justify-between mb-8 pb-4 border-b border-[var(--border-subtle)]">
                 <div>
-                    <span className="font-mono text-sm tracking-widest text-[var(--text-secondary)] block mb-1">AVAILABLE IMPERIAL TOKENS</span>
-                    <span className="font-mono text-[10px] text-[var(--text-muted)] block">Earned globally by advancing stats. 5 Levels = 1 Token.</span>
+                    <span className="font-bold text-sm tracking-widest text-[var(--text-secondary)] block mb-1">AVAILABLE IMPERIAL TOKENS</span>
+                    <span className="font-bold text-[10px] text-[var(--text-muted)] block">Earned globally by advancing stats. 5 Levels = 1 Token.</span>
                 </div>
-                <span className="font-mono text-5xl text-[var(--stat-wealth)] font-light glow-text" style={{textShadow: '0 0 20px rgba(0, 255, 136, 0.4)'}}>{remainingTokens}</span>
+                <span className="font-bold text-5xl text-[var(--stat-wealth)] font-light glow-text" style={{textShadow: '0 0 20px rgba(0, 255, 136, 0.4)'}}>{remainingTokens}</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -59,11 +59,11 @@ export const InventoryModal = () => {
                   return (
                     <div key={item.id} className={`p-4 border rounded-xl transition-all cursor-pointer group ${canAfford ? 'border-[var(--border-default)] bg-[var(--bg-elevated)] hover:border-[var(--text-primary)]' : 'border-dashed border-[var(--border-subtle)] bg-transparent opacity-50'}`}>
                       <div className="flex justify-between items-start mb-2">
-                        <span className="font-mono text-sm font-bold text-[var(--text-primary)]">{item.name}</span>
-                        <span className="font-mono text-[10px] bg-[var(--bg-primary)] border border-[var(--border-subtle)] px-2 py-1 rounded text-[var(--stat-wealth)] font-bold">COST: {item.cost}</span>
+                        <span className="font-bold text-sm font-bold text-[var(--text-primary)]">{item.name}</span>
+                        <span className="font-bold text-[10px] bg-[var(--bg-primary)] border border-[var(--border-subtle)] px-2 py-1 rounded text-[var(--stat-wealth)] font-bold">COST: {item.cost}</span>
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mb-4">{item.desc}</p>
-                      <button disabled={!canAfford} className={`w-full py-2 bg-[var(--bg-primary)] border rounded text-xs font-mono tracking-widest transition-colors ${canAfford ? 'border-[var(--border-default)] text-[var(--text-primary)] hover:border-[var(--text-primary)]' : 'border-[var(--border-subtle)] text-[var(--text-muted)]'}`}>
+                      <button disabled={!canAfford} className={`w-full py-2 bg-[var(--bg-primary)] border rounded text-xs font-bold tracking-widest transition-colors ${canAfford ? 'border-[var(--border-default)] text-[var(--text-primary)] hover:border-[var(--text-primary)]' : 'border-[var(--border-subtle)] text-[var(--text-muted)]'}`}>
                         {canAfford ? 'REDEEM' : 'INSUFFICIENT FUNDS'}
                       </button>
                     </div>

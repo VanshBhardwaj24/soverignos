@@ -40,20 +40,21 @@ export default function Profile() {
             <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter">
               The <span className="text-white/20">Dossier</span>
             </h1>
-            <p className="font-mono text-[10px] text-white/40 uppercase tracking-[0.3em] font-black mt-1">
+            <p className="font-bold text-[10px] text-white/40 uppercase tracking-[0.3em] font-black mt-1">
               Operator Signature: {alias.toUpperCase()} // Alpha-9
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
+          <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 border-glow-professional">
             <Search size={14} className="text-white/20" />
-            <span className="font-mono text-[9px] text-white/20 uppercase font-black tracking-widest">Search Profile Archives...</span>
+            <span className="font-bold text-[9px] text-white/20 uppercase font-black tracking-widest">Search Profile Archives...</span>
           </div>
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white text-black font-black font-mono text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl"
+            aria-label="Export profile dossier"
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white text-black font-black font-bold text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           >
             <Share2 size={14} strokeWidth={3} />
             EXPORT DOSSIER
@@ -110,23 +111,23 @@ export default function Profile() {
       <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between gap-8">
         <div className="flex flex-wrap gap-8">
           <div className="flex flex-col">
-            <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Authentication Status</span>
-            <span className="font-mono text-[10px] text-emerald-400 font-bold uppercase">SECURED (LEVEL 4)</span>
+            <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Authentication Status</span>
+            <span className="font-bold text-[10px] text-emerald-400 font-bold uppercase">SECURED (LEVEL 4)</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Data Latency</span>
-            <span className="font-mono text-[10px] text-white/60 font-bold uppercase">0.4ms // Global Sync</span>
+            <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Data Latency</span>
+            <span className="font-bold text-[10px] text-white/60 font-bold uppercase">0.4ms // Global Sync</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Behavioral Confidence</span>
-            <span className="font-mono text-[10px] text-white/40 font-bold uppercase">87.4% (CALIBRATING)</span>
+            <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Behavioral Confidence</span>
+            <span className="font-bold text-[10px] text-white/40 font-bold uppercase">87.4% (CALIBRATING)</span>
           </div>
         </div>
         <div className="space-y-1 text-right">
-          <div className="font-mono text-[8px] text-white/10 uppercase tracking-[0.4em] font-black">
+          <div className="font-bold text-[8px] text-white/10 uppercase tracking-[0.4em] font-black">
             Sovereign Operating System // v2.4.0_EXPANDED
           </div>
-          <div className="font-mono text-[8px] text-white/5 uppercase tracking-widest italic">
+          <div className="font-bold text-[8px] text-white/5 uppercase tracking-widest italic">
             This dossier is an accurate reflection of your actual output. Self-delusion is the only error.
           </div>
         </div>

@@ -52,7 +52,7 @@ export const IdentityGrid = () => {
                 <div className="p-2 rounded-lg bg-white/5 border border-white/10">
                     <Grid size={16} className="text-white/60" />
                 </div>
-                <h3 className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">Capability Radar</h3>
+                <h3 className="font-bold text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">Capability Radar</h3>
             </div>
             <Award size={16} className="text-white/20" />
         </div>
@@ -79,12 +79,12 @@ export const IdentityGrid = () => {
 
         <div className="grid grid-cols-2 gap-4 mt-8">
             <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                <span className="block font-mono text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">Freedom Rating</span>
-                <div className="font-mono text-xl font-black text-white">{freedomScore.toFixed(1)}</div>
+                <span className="block font-bold text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">Freedom Rating</span>
+                <div className="font-bold text-xl font-black text-white">{freedomScore.toFixed(1)}</div>
             </div>
             <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                <span className="block font-mono text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">Domain Count</span>
-                <div className="font-mono text-xl font-black text-white">8<span className="text-xs text-white/20 font-light ml-1">UNITS</span></div>
+                <span className="block font-bold text-[8px] text-white/20 uppercase mb-1 tracking-widest font-black">Domain Count</span>
+                <div className="font-bold text-xl font-black text-white">8<span className="text-xs text-white/20 font-light ml-1">UNITS</span></div>
             </div>
         </div>
       </div>
@@ -96,7 +96,7 @@ export const IdentityGrid = () => {
                 <div className="p-2 rounded-lg bg-white/5 border border-white/10">
                     <TrendingUp size={16} className="text-white/60" />
                 </div>
-                <h3 className="font-mono text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">XP Trajectory / 14 Day</h3>
+                <h3 className="font-bold text-[10px] tracking-[0.3em] text-white/40 uppercase font-black">XP Trajectory / 14 Day</h3>
             </div>
             <TrendingUp size={16} className="text-white/20" />
         </div>
@@ -131,9 +131,9 @@ export const IdentityGrid = () => {
         <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-blue-400" />
-            <span className="font-mono text-[9px] text-white uppercase tracking-widest font-bold">Neural Growth</span>
+            <span className="font-bold text-[9px] text-white uppercase tracking-widest font-bold">Neural Growth</span>
           </div>
-          <span className="font-mono text-[10px] text-white/20 uppercase tracking-widest font-black italic">Projecting Apex Status</span>
+          <span className="font-bold text-[10px] text-white/20 uppercase tracking-widest font-black italic">Projecting Apex Status</span>
         </div>
       </div>
 

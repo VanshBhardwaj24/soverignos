@@ -56,11 +56,11 @@ export function HonestSentence() {
             <MessageSquare size={14} />
           </div>
           <div>
-            <h3 className="font-mono text-[9px] font-black tracking-[0.3em] text-[var(--stat-mind)] uppercase">
+            <h3 className="font-bold text-[9px] font-black tracking-[0.3em] text-[var(--stat-mind)] uppercase">
               One Honest Sentence
             </h3>
             {streak > 0 && (
-              <p className="font-mono text-[8px] text-white/25 uppercase tracking-wider">
+              <p className="font-bold text-[8px] text-white/25 uppercase tracking-wider">
                 {streak} consecutive day{streak !== 1 ? 's' : ''} logged
               </p>
             )}
@@ -78,7 +78,7 @@ export function HonestSentence() {
       {todayEntry ? (
         <div className="flex items-start gap-3 p-3 bg-[var(--stat-mind)]/5 border border-[var(--stat-mind)]/15 rounded-xl">
           <CheckCircle size={14} className="text-[var(--stat-mind)] mt-0.5 shrink-0" />
-          <p className="font-mono text-[11px] text-white/60 leading-relaxed">{todayEntry.text}</p>
+          <p className="font-bold text-[11px] text-white/60 leading-relaxed">{todayEntry.text}</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -89,17 +89,17 @@ export function HonestSentence() {
               onChange={e => setText(e.target.value)}
               placeholder={EXAMPLE_SENTENCES[exampleIdx]}
               onFocus={() => setExampleIdx(Math.floor(Math.random() * EXAMPLE_SENTENCES.length))}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[11px] font-mono text-white/80 outline-none focus:border-[var(--stat-mind)]/40 transition-all pr-20 placeholder:text-white/10"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[11px] font-bold text-white/80 outline-none focus:border-[var(--stat-mind)]/40 transition-all pr-20 placeholder:text-white/10"
             />
             <button
               type="submit"
               disabled={!text.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[var(--stat-mind)]/80 text-white font-mono text-[8px] font-black tracking-widest uppercase rounded-lg disabled:opacity-20 transition-all hover:bg-[var(--stat-mind)]"
+              className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[var(--stat-mind)]/80 text-white font-bold text-[8px] font-black tracking-widest uppercase rounded-lg disabled:opacity-20 transition-all hover:bg-[var(--stat-mind)]"
             >
               COMMIT
             </button>
           </div>
-          <p className="mt-2 font-mono text-[8px] text-white/15 uppercase tracking-widest">
+          <p className="mt-2 font-bold text-[8px] text-white/15 uppercase tracking-widest">
             One sentence. No minimum length. Just honest.
           </p>
         </form>
@@ -120,20 +120,20 @@ export function HonestSentence() {
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 placeholder="Search entries..."
-                className="w-full bg-white/5 border border-white/5 rounded-xl pl-8 pr-3 py-2 text-[10px] font-mono text-white/60 outline-none"
+                className="w-full bg-white/5 border border-white/5 rounded-xl pl-8 pr-3 py-2 text-[10px] font-bold text-white/60 outline-none"
               />
             </div>
             <div className="space-y-1.5 max-h-48 overflow-y-auto no-scrollbar">
               {filteredHistory.slice(0, 30).map(entry => (
                 <div key={entry.id} className="flex gap-3 py-1.5 border-b border-white/[0.04] last:border-0">
-                  <span className="font-mono text-[8px] text-white/15 shrink-0 mt-0.5 w-16">
+                  <span className="font-bold text-[8px] text-white/15 shrink-0 mt-0.5 w-16">
                     {new Date(entry.date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                   </span>
-                  <p className="font-mono text-[10px] text-white/40 leading-relaxed">{entry.text}</p>
+                  <p className="font-bold text-[10px] text-white/40 leading-relaxed">{entry.text}</p>
                 </div>
               ))}
               {filteredHistory.length === 0 && (
-                <p className="text-center text-white/15 font-mono text-[9px] py-4">No entries found</p>
+                <p className="text-center text-white/15 font-bold text-[9px] py-4">No entries found</p>
               )}
             </div>
           </motion.div>

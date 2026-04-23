@@ -77,19 +77,19 @@ export function SalaryClockWidget() {
           </div>
           <div>
             <h3 className={cn(
-              'font-mono text-[9px] font-black tracking-[0.3em] uppercase',
+              'font-bold text-[9px] font-black tracking-[0.3em] uppercase',
               stopped ? 'text-[var(--stat-body)]' : 'text-red-400'
             )}>
               {stopped ? 'Opportunity Cost — NEUTRALIZED' : 'Opportunity Cost'}
             </h3>
-            <p className="font-mono text-[8px] text-white/20 uppercase tracking-wider">
+            <p className="font-bold text-[8px] text-white/20 uppercase tracking-wider">
               {stopped ? 'Cost frozen — offer secured' : `Since ${new Date(salaryClockConfig.graduationDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' })}`}
             </p>
           </div>
         </div>
         <button
           onClick={() => setShowConfig(!showConfig)}
-          className="font-mono text-[8px] text-white/15 hover:text-white/40 uppercase tracking-widest transition-colors"
+          className="font-bold text-[8px] text-white/15 hover:text-white/40 uppercase tracking-widest transition-colors"
         >
           {showConfig ? 'DONE' : 'EDIT'}
         </button>
@@ -102,7 +102,7 @@ export function SalaryClockWidget() {
           <motion.span
             key={Math.floor(currentCost / 1000)}
             className={cn(
-              'font-mono font-black tabular-nums tracking-tighter text-5xl',
+              'font-bold font-black tabular-nums tracking-tighter text-5xl',
               stopped ? 'text-[var(--stat-body)]' : 'text-white'
             )}
           >
@@ -112,13 +112,13 @@ export function SalaryClockWidget() {
         {!stopped && (
           <div className="flex items-center justify-center gap-1.5 mt-2">
             <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />
-            <span className="font-mono text-[8px] text-red-400/60 uppercase tracking-widest">
+            <span className="font-bold text-[8px] text-red-400/60 uppercase tracking-widest">
               ₹{salaryClockConfig.hourlyOpportunityCost}/hr accumulating
             </span>
           </div>
         )}
         {stopped && (
-          <p className="font-mono text-[9px] text-[var(--stat-body)]/60 uppercase tracking-widest mt-2">
+          <p className="font-bold text-[9px] text-[var(--stat-body)]/60 uppercase tracking-widest mt-2">
             ✓ First offer received
           </p>
         )}
@@ -132,28 +132,28 @@ export function SalaryClockWidget() {
           className="mt-2 pt-4 border-t border-white/5 space-y-3"
         >
           <div>
-            <label className="block font-mono text-[8px] text-white/20 uppercase tracking-widest mb-1.5">
+            <label className="block font-bold text-[8px] text-white/20 uppercase tracking-widest mb-1.5">
               Graduation / Start Date
             </label>
             <input
               type="date"
               value={configGradDate}
               onChange={e => setConfigGradDate(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-[11px] font-mono text-white outline-none focus:border-white/30 [color-scheme:dark]"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-[11px] font-bold text-white outline-none focus:border-white/30 [color-scheme:dark]"
             />
           </div>
           <div>
-            <label className="block font-mono text-[8px] text-white/20 uppercase tracking-widest mb-1.5">
+            <label className="block font-bold text-[8px] text-white/20 uppercase tracking-widest mb-1.5">
               Hourly Rate (₹/hr)
             </label>
             <input
               type="number"
               value={configRate}
               onChange={e => setConfigRate(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-[11px] font-mono text-white outline-none focus:border-white/30"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-2.5 text-[11px] font-bold text-white outline-none focus:border-white/30"
               placeholder="300"
             />
-            <p className="font-mono text-[7px] text-white/15 mt-1">
+            <p className="font-bold text-[7px] text-white/15 mt-1">
               Entry-level ₹8L/yr ≈ ₹385/hr
             </p>
           </div>
@@ -165,7 +165,7 @@ export function SalaryClockWidget() {
               });
               setShowConfig(false);
             }}
-            className="w-full py-2.5 bg-white text-black font-mono text-[9px] font-black tracking-widest uppercase rounded-xl hover:brightness-90 transition-all"
+            className="w-full py-2.5 bg-white text-black font-bold text-[9px] font-black tracking-widest uppercase rounded-xl hover:brightness-90 transition-all"
           >
             Save Config
           </button>

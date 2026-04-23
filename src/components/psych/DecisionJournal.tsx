@@ -55,15 +55,15 @@ export function DecisionJournal() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-mono text-[10px] tracking-[0.3em] text-white/30 uppercase font-black mb-1">Calibration Engine</h2>
-          <p className="font-mono text-2xl font-light text-white">DECISION JOURNAL</p>
+          <h2 className="font-bold text-[10px] tracking-[0.3em] text-white/30 uppercase font-black mb-1">Calibration Engine</h2>
+          <p className="font-bold text-2xl font-light text-white">DECISION JOURNAL</p>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Stats */}
           {reviewedDecisions.length > 0 && (() => {
             return (
-              <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl font-mono text-[9px] text-white/30 uppercase tracking-wider">
+              <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl font-bold text-[9px] text-white/30 uppercase tracking-wider">
                 {reviewedDecisions.length} logged • avg confidence {(reviewedDecisions.reduce((a, b) => a + b.confidence, 0) / reviewedDecisions.length).toFixed(1)}/10
               </div>
             );
@@ -71,7 +71,7 @@ export function DecisionJournal() {
 
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--stat-mind)] text-white rounded-2xl font-mono text-[9px] font-black tracking-widest uppercase hover:brightness-110 transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--stat-mind)] text-white rounded-2xl font-bold text-[9px] font-black tracking-widest uppercase hover:brightness-110 transition-all"
           >
             <Plus size={14} /> Log Decision
           </button>
@@ -87,12 +87,12 @@ export function DecisionJournal() {
         >
           <AlertCircle size={20} className="text-amber-500 shrink-0" />
           <div>
-            <p className="font-mono text-[10px] font-black text-amber-400 uppercase tracking-widest">
+            <p className="font-bold text-[10px] font-black text-amber-400 uppercase tracking-widest">
               {pendingReview.length} Decision{pendingReview.length > 1 ? 's' : ''} Due for Review
             </p>
-            <p className="font-mono text-[9px] text-white/30 mt-0.5">It's been 3 months. What actually happened?</p>
+            <p className="font-bold text-[9px] text-white/30 mt-0.5">It's been 3 months. What actually happened?</p>
           </div>
-          <button onClick={() => setActiveTab('pending')} className="ml-auto font-mono text-[9px] text-amber-400 flex items-center gap-1 uppercase hover:text-amber-300">
+          <button onClick={() => setActiveTab('pending')} className="ml-auto font-bold text-[9px] text-amber-400 flex items-center gap-1 uppercase hover:text-amber-300">
             Review <ChevronRight size={12} />
           </button>
         </motion.div>
@@ -105,7 +105,7 @@ export function DecisionJournal() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
-              'px-6 py-2 rounded-xl font-mono text-[9px] font-black tracking-widest uppercase transition-all',
+              'px-6 py-2 rounded-xl font-bold text-[9px] font-black tracking-widest uppercase transition-all',
               activeTab === tab ? 'bg-white text-black' : 'text-white/30 hover:text-white/60'
             )}
           >
@@ -120,7 +120,7 @@ export function DecisionJournal() {
           {allActive.length === 0 ? (
             <div className="py-16 text-center opacity-20">
               <BookOpen size={32} className="mx-auto mb-3" />
-              <p className="font-mono text-[9px] uppercase tracking-[0.3em]">
+              <p className="font-bold text-[9px] uppercase tracking-[0.3em]">
                 {activeTab === 'pending' ? 'No decisions logged yet' : 'No reviewed decisions'}
               </p>
             </div>
@@ -148,30 +148,30 @@ export function DecisionJournal() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
                         {d.reviewed ? (
-                          <span className="px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded-lg font-mono text-[8px] text-green-400 uppercase tracking-wider">Reviewed</span>
+                          <span className="px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded-lg font-bold text-[8px] text-green-400 uppercase tracking-wider">Reviewed</span>
                         ) : isDueNow ? (
-                          <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-lg font-mono text-[8px] text-amber-400 uppercase tracking-wider animate-pulse">Review Due</span>
+                          <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-lg font-bold text-[8px] text-amber-400 uppercase tracking-wider animate-pulse">Review Due</span>
                         ) : (
-                          <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-lg font-mono text-[8px] text-white/30 uppercase tracking-wider">{daysUntilReview}d until review</span>
+                          <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-lg font-bold text-[8px] text-white/30 uppercase tracking-wider">{daysUntilReview}d until review</span>
                         )}
-                        <span className="font-mono text-[8px] text-white/20 uppercase">
+                        <span className="font-bold text-[8px] text-white/20 uppercase">
                           Confidence: {d.confidence}/10 — {CONFIDENCE_LABELS[d.confidence]}
                         </span>
                       </div>
 
-                      <h3 className="font-mono text-sm font-semibold text-white mb-1 line-clamp-2">{d.decision}</h3>
-                      <p className="font-mono text-[10px] text-white/30 line-clamp-2 mb-2">{d.reasoning}</p>
+                      <h3 className="font-bold text-sm font-semibold text-white mb-1 line-clamp-2">{d.decision}</h3>
+                      <p className="font-bold text-[10px] text-white/30 line-clamp-2 mb-2">{d.reasoning}</p>
 
                       <div className="flex items-start gap-2">
                         <Target size={10} className="text-white/20 mt-0.5 shrink-0" />
-                        <p className="font-mono text-[9px] text-white/20 italic">Expected: {d.expectedOutcome}</p>
+                        <p className="font-bold text-[9px] text-white/20 italic">Expected: {d.expectedOutcome}</p>
                       </div>
 
                       {d.reviewed && d.actualOutcome && (
                         <div className="mt-3 pt-3 border-t border-white/5">
                           <div className="flex items-start gap-2">
                             <Check size={10} className="text-green-400 mt-0.5 shrink-0" />
-                            <p className="font-mono text-[9px] text-green-400/70">Actual: {d.actualOutcome}</p>
+                            <p className="font-bold text-[9px] text-green-400/70">Actual: {d.actualOutcome}</p>
                           </div>
                         </div>
                       )}
@@ -180,7 +180,7 @@ export function DecisionJournal() {
                     {isDueNow && !d.reviewed && (
                       <button
                         onClick={() => setReviewingId(d.id)}
-                        className="shrink-0 px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-xl font-mono text-[8px] text-amber-400 uppercase tracking-wider hover:bg-amber-500/30 transition-all"
+                        className="shrink-0 px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-xl font-bold text-[8px] text-amber-400 uppercase tracking-wider hover:bg-amber-500/30 transition-all"
                       >
                         Review
                       </button>
@@ -196,16 +196,16 @@ export function DecisionJournal() {
                         exit={{ opacity: 0, height: 0 }}
                         className="mt-4 pt-4 border-t border-white/10 space-y-3"
                       >
-                        <p className="font-mono text-[9px] text-white/40 uppercase tracking-widest">What actually happened?</p>
+                        <p className="font-bold text-[9px] text-white/40 uppercase tracking-widest">What actually happened?</p>
                         <textarea
                           value={actualOutcome}
                           onChange={e => setActualOutcome(e.target.value)}
                           placeholder="Be honest. Calibration requires truth..."
-                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[10px] text-white outline-none focus:border-[var(--stat-mind)] resize-none h-20 font-mono"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[10px] text-white outline-none focus:border-[var(--stat-mind)] resize-none h-20 font-bold"
                         />
                         <div className="flex gap-2">
-                          <button onClick={() => handleReview(d.id)} className="px-5 py-2 bg-white text-black rounded-xl font-mono text-[8px] font-black tracking-widest uppercase hover:opacity-90">Commit</button>
-                          <button onClick={() => setReviewingId(null)} className="px-5 py-2 bg-white/5 text-white/40 rounded-xl font-mono text-[8px] uppercase hover:text-white">Cancel</button>
+                          <button onClick={() => handleReview(d.id)} className="px-5 py-2 bg-white text-black rounded-xl font-bold text-[8px] font-black tracking-widest uppercase hover:opacity-90">Commit</button>
+                          <button onClick={() => setReviewingId(null)} className="px-5 py-2 bg-white/5 text-white/40 rounded-xl font-bold text-[8px] uppercase hover:text-white">Cancel</button>
                         </div>
                       </motion.div>
                     )}
@@ -236,42 +236,42 @@ export function DecisionJournal() {
                 <X size={24} />
               </button>
 
-              <h3 className="font-mono text-[10px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black mb-1">Log a Decision</h3>
-              <p className="font-mono text-2xl font-light text-white mb-8">Commit to calibration</p>
+              <h3 className="font-bold text-[10px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black mb-1">Log a Decision</h3>
+              <p className="font-bold text-2xl font-light text-white mb-8">Commit to calibration</p>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block font-mono text-[8px] text-white/30 uppercase tracking-widest mb-3">The Decision</label>
+                  <label className="block font-bold text-[8px] text-white/30 uppercase tracking-widest mb-3">The Decision</label>
                   <input
                     value={decision}
                     onChange={e => setDecision(e.target.value)}
                     placeholder="e.g. I'm going to cold-email 10 engineers this week..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm outline-none focus:border-[var(--stat-mind)] font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm outline-none focus:border-[var(--stat-mind)] font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-mono text-[8px] text-white/30 uppercase tracking-widest mb-3">Why You're Making It</label>
+                  <label className="block font-bold text-[8px] text-white/30 uppercase tracking-widest mb-3">Why You're Making It</label>
                   <textarea
                     value={reasoning}
                     onChange={e => setReasoning(e.target.value)}
                     placeholder="Walk through your reasoning honestly..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm outline-none focus:border-[var(--stat-mind)] font-mono resize-none h-24"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm outline-none focus:border-[var(--stat-mind)] font-bold resize-none h-24"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-mono text-[8px] text-white/30 uppercase tracking-widest mb-3">Expected Outcome (3 months)</label>
+                  <label className="block font-bold text-[8px] text-white/30 uppercase tracking-widest mb-3">Expected Outcome (3 months)</label>
                   <input
                     value={expectedOutcome}
                     onChange={e => setExpectedOutcome(e.target.value)}
                     placeholder="What do you expect to happen as a result?"
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm outline-none focus:border-[var(--stat-mind)] font-mono"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm outline-none focus:border-[var(--stat-mind)] font-bold"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-mono text-[8px] text-white/30 uppercase tracking-widest mb-3">
+                  <label className="block font-bold text-[8px] text-white/30 uppercase tracking-widest mb-3">
                     Confidence: {confidence}/10 — {CONFIDENCE_LABELS[confidence]}
                   </label>
                   <input
@@ -279,13 +279,13 @@ export function DecisionJournal() {
                     onChange={e => setConfidence(Number(e.target.value))}
                     className="w-full accent-[var(--stat-mind)]"
                   />
-                  <div className="flex justify-between font-mono text-[7px] text-white/20 mt-1">
+                  <div className="flex justify-between font-bold text-[7px] text-white/20 mt-1">
                     <span>Wild Guess</span><span>Absolute Certainty</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 pt-2">
-                  <div className="flex items-center gap-2 text-white/20 font-mono text-[8px] uppercase">
+                  <div className="flex items-center gap-2 text-white/20 font-bold text-[8px] uppercase">
                     <Clock size={12} />
                     Review scheduled: {new Date(Date.now() + 90 * 86400000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </div>
@@ -294,7 +294,7 @@ export function DecisionJournal() {
                 <button
                   onClick={handleSubmit}
                   disabled={!decision.trim() || !reasoning.trim() || !expectedOutcome.trim()}
-                  className="w-full py-5 bg-white text-black font-mono font-black text-[10px] uppercase tracking-widest rounded-2xl hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="w-full py-5 bg-white text-black font-bold font-black text-[10px] uppercase tracking-widest rounded-2xl hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   COMMIT DECISION
                 </button>

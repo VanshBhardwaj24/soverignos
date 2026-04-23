@@ -36,7 +36,8 @@ export const Sidebar = () => {
       <div className="absolute top-1/2 -right-3 -translate-y-1/2 z-50">
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="group relative flex items-center justify-center w-6 h-12 bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]/40 transition-all opacity-0 group-hover/sidebar:opacity-100 group-focus-within/sidebar:opacity-100"
+          aria-label={sidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          className="group relative flex items-center justify-center w-6 h-12 bg-[var(--surface-2)] border border-[var(--border-default)] rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--text-primary)]/40 transition-all opacity-0 group-hover/sidebar:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] outline-none"
           style={{ opacity: 'var(--toggle-opacity, 0)' }}
         >
           {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
@@ -61,8 +62,10 @@ export const Sidebar = () => {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
+              aria-label={item.label}
+              title={sidebarCollapsed ? item.label : ""}
               className={cn(
-                "flex items-center rounded-xl transition-all relative group overflow-hidden h-12",
+                "flex items-center rounded-xl transition-all relative group overflow-hidden h-12 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20",
                 sidebarCollapsed ? "justify-center px-0" : "px-4 gap-4",
                 isActive ? "text-[var(--text-primary)] bg-[var(--text-primary)]/5" : "text-[var(--text-secondary)] hover:bg-[var(--text-primary)]/5 hover:text-[var(--text-primary)]",
                 isLocked && "opacity-40 grayscale hover:grayscale-0 hover:opacity-100"
@@ -84,7 +87,7 @@ export const Sidebar = () => {
                 <motion.span
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="font-mono text-xs tracking-widest uppercase mt-0.5 truncate whitespace-nowrap"
+                  className="font-bold text-xs tracking-widest uppercase mt-0.5 truncate whitespace-nowrap"
                 >
                   {isSundayPath && isSunday ? "SUNDAY PROTOCOL (ACTIVE)" : item.label}
                 </motion.span>
@@ -96,7 +99,7 @@ export const Sidebar = () => {
 
       <div className="p-6 border-t border-[var(--border-default)] opacity-50 flex items-center gap-3">
         <Shield size={16} />
-        <span className="font-mono text-[10px] tracking-widest uppercase">System Encrypted</span>
+        <span className="font-bold text-[10px] tracking-widest uppercase">System Encrypted</span>
       </div>
     </motion.aside>
   );

@@ -18,7 +18,7 @@ export const VisionBoard = () => {
     <div className="space-y-8">
       <div className="flex items-center gap-3 text-white/20 px-4">
         <div className="w-8 h-px bg-white/10" />
-        <h2 className="font-mono text-[10px] font-black tracking-[0.4em] uppercase">Goals & Vision — The North Star</h2>
+        <h2 className="font-bold text-[10px] font-black tracking-[0.4em] uppercase">Goals & Vision — The North Star</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -33,13 +33,13 @@ export const VisionBoard = () => {
               <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500/60">
                 <ShieldX size={16} />
               </div>
-              <h3 className="font-mono text-[10px] tracking-[0.4em] text-white uppercase font-black italic">What I'm Running From</h3>
+              <h3 className="font-bold text-[10px] tracking-[0.4em] text-white uppercase font-black italic">What I'm Running From</h3>
             </div>
 
             <div className="space-y-6">
                {antiWishlistSamples.map((item, i) => (
                   <div key={i} className="flex gap-4 group/item">
-                     <span className="font-mono text-[10px] text-red-500/40 mt-1 font-black shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                     <span className="font-bold text-[10px] text-red-500/40 mt-1 font-black shrink-0">{String(i + 1).padStart(2, '0')}</span>
                      <p className="text-lg font-black text-white/80 uppercase italic leading-tight tracking-tighter group-hover/item:text-red-500/80 transition-colors">
                         {item}
                      </p>
@@ -47,7 +47,7 @@ export const VisionBoard = () => {
                ))}
             </div>
 
-            <div className="pt-10 border-t border-white/5 font-mono text-[8px] text-white/10 uppercase tracking-widest font-black italic flex items-center gap-2">
+            <div className="pt-10 border-t border-white/5 font-bold text-[8px] text-white/10 uppercase tracking-widest font-black italic flex items-center gap-2">
                <Lock size={10} /> Written: February 2026 — Uneditable protocol enabled
             </div>
           </div>
@@ -61,7 +61,7 @@ export const VisionBoard = () => {
                 <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/60">
                   <Target size={16} />
                 </div>
-                <h3 className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Freedom Roadmap</h3>
+                <h3 className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Freedom Roadmap</h3>
              </div>
 
              <div className="relative pt-8 pb-12">
@@ -79,14 +79,14 @@ export const VisionBoard = () => {
                          </div>
                          <div className="flex flex-col items-center text-center gap-1">
                             <span className={cn(
-                              "font-mono text-[8px] font-black uppercase tracking-widest transition-opacity",
+                              "font-bold text-[8px] font-black uppercase tracking-widest transition-opacity",
                               m.isUnlocked ? "text-white" : "text-white/20"
                             )}>[{m.timeframe}]</span>
                             <h4 className={cn(
                               "text-xs font-black uppercase italic tracking-tighter whitespace-nowrap",
                               m.isUnlocked ? "text-white" : "text-white/20"
                             )}>{m.label}</h4>
-                            <span className="font-mono text-[8px] text-white/10 uppercase font-black lowercase">{m.dependencyStatus}</span>
+                            <span className="font-bold text-[8px] text-white/10 uppercase font-black lowercase">{m.dependencyStatus}</span>
                          </div>
                       </div>
                    ))}
@@ -100,11 +100,11 @@ export const VisionBoard = () => {
                 <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/60">
                   <Compass size={16} />
                 </div>
-                <h3 className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Destination Board — Places I'm Building Toward</h3>
+                <h3 className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase font-black italic">Destination Board — Places I'm Building Toward</h3>
              </div>
 
              <div className="space-y-4">
-                <table className="w-full font-mono text-[10px] font-black text-white/60 uppercase">
+                <table className="w-full font-bold text-[10px] font-black text-white/60 uppercase">
                    <tbody className="divide-y divide-white/5">
                       {destinationBoard.map((d, i) => (
                          <tr key={i} className="group hover:bg-white/[0.02] transition-all">
@@ -114,7 +114,7 @@ export const VisionBoard = () => {
                                   <span className="text-[8px] text-white/20">{d.country}</span>
                                </div>
                             </td>
-                            <td className="py-6 px-4 text-white/40 font-mono italic">"{d.context}"</td>
+                            <td className="py-6 px-4 text-white/40 font-bold italic">"{d.context}"</td>
                             <td className="py-6 pl-4 text-right">
                                <div className="inline-flex flex-col items-end gap-1">
                                   <span className={cn(
@@ -130,7 +130,7 @@ export const VisionBoard = () => {
                 </table>
              </div>
 
-             <div className="pt-8 border-t border-white/5 flex items-center justify-between font-mono text-[8px] text-white/10 uppercase tracking-widest font-black italic">
+             <div className="pt-8 border-t border-white/5 flex items-center justify-between font-bold text-[8px] text-white/10 uppercase tracking-widest font-black italic">
                 <span>Not a bucket list. A consequence of the work.</span>
                 <span>Traversing Alpha-9 nodes</span>
              </div>

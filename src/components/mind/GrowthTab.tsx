@@ -17,8 +17,8 @@ export function GrowthTab() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 p-8 md:p-12 overflow-y-auto no-scrollbar h-full">
       <div className="mb-12">
-        <h1 className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase mb-2">SYSTEM EVOLUTION</h1>
-        <h2 className="font-mono text-4xl font-black text-white tracking-tighter uppercase">Capabilities Growth</h2>
+        <h1 className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase mb-2">SYSTEM EVOLUTION</h1>
+        <h2 className="font-bold text-4xl font-black text-white tracking-tighter uppercase">Capabilities Growth</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -30,10 +30,10 @@ export function GrowthTab() {
               </div>
 
               <div className="flex items-center justify-between mb-8">
-                <h3 className="font-mono text-xs font-black tracking-widest text-white uppercase flex items-center gap-2">
+                <h3 className="font-bold text-xs font-black tracking-widest text-white uppercase flex items-center gap-2">
                    <Zap size={16} className="text-[#FFB800]" /> Spec Tree [BETA]
                 </h3>
-                <span className="font-mono text-[10px] text-white/20 uppercase">Skill Points: 0</span>
+                <span className="font-bold text-[10px] text-white/20 uppercase">Skill Points: 0</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -52,14 +52,14 @@ export function GrowthTab() {
                          )}>
                             {skill.unlocked ? <Award size={24} /> : <Lock size={20} />}
                          </div>
-                         <span className="font-mono text-[9px] text-white/20 uppercase font-black">Req. {skill.stat} Lvl {skill.level}</span>
+                         <span className="font-bold text-[9px] text-white/20 uppercase font-black">Req. {skill.stat} Lvl {skill.level}</span>
                       </div>
-                      <h4 className="font-mono text-sm font-black text-white uppercase mb-1">{skill.name}</h4>
+                      <h4 className="font-bold text-sm font-black text-white uppercase mb-1">{skill.name}</h4>
                       <div className="flex items-center gap-2">
                          <div className="h-1 flex-1 bg-white/5 rounded-full overflow-hidden">
                             <div className="h-full bg-white/40" style={{ width: skill.unlocked ? '100%' : '0%' }} />
                          </div>
-                         <span className="font-mono text-[10px] text-white/40 uppercase">{skill.unlocked ? 'Unlocked' : 'Locked'}</span>
+                         <span className="font-bold text-[10px] text-white/40 uppercase">{skill.unlocked ? 'Unlocked' : 'Locked'}</span>
                       </div>
                    </div>
                  ))}
@@ -70,7 +70,7 @@ export function GrowthTab() {
         {/* Right Column: Milestone Ledger */}
         <div className="lg:col-span-4 space-y-8">
            <div className="p-8 rounded-[40px] bg-[#111] border border-white/10 shadow-2xl">
-              <h3 className="font-mono text-xs font-black tracking-widest text-white uppercase mb-6 flex items-center gap-2">
+              <h3 className="font-bold text-xs font-black tracking-widest text-white uppercase mb-6 flex items-center gap-2">
                  <Shield size={16} className="text-[#00D1FF]" /> Rank History
               </h3>
               
@@ -84,9 +84,9 @@ export function GrowthTab() {
                     {i !== 2 && <div className="absolute left-[7px] top-5 bottom-[-24px] w-[1px] bg-white/5" />}
                     <div className="h-4 w-4 rounded-full bg-white/10 border border-white/20 shrink-0 mt-1 relative z-10 group-hover:bg-[#00D1FF] transition-colors" />
                     <div>
-                      <h4 className="font-mono text-[11px] font-black text-white uppercase mb-1">{milestone.title}</h4>
-                      <p className="font-mono text-[9px] text-white/20 uppercase tracking-widest mb-1">{milestone.date}</p>
-                      <div className="flex items-center gap-1.5 text-[9px] font-mono text-[#00D1FF] font-black">
+                      <h4 className="font-bold text-[11px] font-black text-white uppercase mb-1">{milestone.title}</h4>
+                      <p className="font-bold text-[9px] text-white/20 uppercase tracking-widest mb-1">{milestone.date}</p>
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-[#00D1FF] font-black">
                          SCORE ARCHIVED: {milestone.score}
                       </div>
                     </div>
@@ -96,7 +96,7 @@ export function GrowthTab() {
            </div>
 
            <div className="p-8 rounded-[40px] bg-gradient-to-br from-[#111] to-[#000] border border-white/5">
-              <h3 className="font-mono text-[11px] font-black text-white/40 uppercase mb-4 tracking-widest">Growth Forecast</h3>
+              <h3 className="font-bold text-[11px] font-black text-white/40 uppercase mb-4 tracking-widest">Growth Forecast</h3>
               <p className="text-[10px] text-white/30 leading-relaxed font-medium mb-6 uppercase tracking-tighter">
                 Based on current trajectory, <span className="text-white">Master Adaptor</span> rank achievable in 14 cycles. Double wealth logging to accelerate.
               </p>

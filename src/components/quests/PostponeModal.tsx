@@ -79,7 +79,7 @@ export const PostponeModal = ({ questId, onClose }: PostponeModalProps) => {
            className="relative w-full max-w-md bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 shadow-2xl z-10"
         >
           <div className="flex justify-between items-center mb-6">
-            <h2 className="font-mono text-xs font-black tracking-[0.3em] text-white uppercase flex items-center gap-2">
+            <h2 className="font-bold text-xs font-black tracking-[0.3em] text-white uppercase flex items-center gap-2">
               <ShieldAlert size={14} className="text-orange-500" />
               Reschedule Protocol
             </h2>
@@ -90,28 +90,28 @@ export const PostponeModal = ({ questId, onClose }: PostponeModalProps) => {
 
           <div className="space-y-6">
             <div className="p-4 bg-orange-500/5 border border-orange-500/10 rounded-xl">
-               <span className="font-mono text-[9px] text-orange-500/60 uppercase block mb-1">Current Status: {quest.type.toUpperCase()}</span>
-               <span className="font-mono text-xs text-white font-bold block mb-2">{quest.title}</span>
+               <span className="font-bold text-[9px] text-orange-500/60 uppercase block mb-1">Current Status: {quest.type.toUpperCase()}</span>
+               <span className="font-bold text-xs text-white font-bold block mb-2">{quest.title}</span>
                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[9px] text-white/40 uppercase">Pressure Level:</span>
-                  <span className="font-mono text-[9px] text-orange-500 font-bold uppercase">
+                  <span className="font-bold text-[9px] text-white/40 uppercase">Pressure Level:</span>
+                  <span className="font-bold text-[9px] text-orange-500 font-bold uppercase">
                     {isWeekly ? `Extension (0/1)` : `Strike (${strikes}/3)`}
                   </span>
                </div>
             </div>
 
             <div>
-              <label className="font-mono text-[9px] uppercase text-white/30 mb-2 block tracking-widest">Extension Reason (Required)</label>
+              <label className="font-bold text-[9px] uppercase text-white/30 mb-2 block tracking-widest">Extension Reason (Required)</label>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Tactical explanation for protocol delay..."
-                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-xs font-mono text-white outline-none focus:border-white/30 min-h-[80px]"
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-xs font-bold text-white outline-none focus:border-white/30 min-h-[80px]"
               />
             </div>
 
             <div>
-              <label className="font-mono text-[9px] uppercase text-white/30 mb-2 block tracking-widest">New Hard Deadline</label>
+              <label className="font-bold text-[9px] uppercase text-white/30 mb-2 block tracking-widest">New Hard Deadline</label>
               <div className="relative">
                 <input
                   type="datetime-local"
@@ -121,27 +121,27 @@ export const PostponeModal = ({ questId, onClose }: PostponeModalProps) => {
                     setError(null);
                   }}
                   className={cn(
-                    "w-full bg-white/5 border rounded-lg p-3 text-xs font-mono text-white outline-none focus:border-white/30 color-scheme-dark",
+                    "w-full bg-white/5 border rounded-lg p-3 text-xs font-bold text-white outline-none focus:border-white/30 color-scheme-dark",
                     error ? "border-red-500" : "border-white/10"
                   )}
                 />
                 <Calendar size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
               </div>
-              {error && <p className="text-[10px] text-red-500 font-mono mt-1 uppercase tracking-tight">{error}</p>}
+              {error && <p className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-tight">{error}</p>}
             </div>
 
             <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-start gap-3">
                <AlertTriangle size={16} className="text-red-500 shrink-0 mt-0.5" />
                <div className="space-y-1">
-                  <span className="font-mono text-[10px] font-black text-red-500 uppercase tracking-widest block">Immediate Penalty Weight</span>
-                  <p className="font-mono text-[9px] font-bold text-white/60 uppercase">{getPenaltyInfo()}</p>
+                  <span className="font-bold text-[10px] font-black text-red-500 uppercase tracking-widest block">Immediate Penalty Weight</span>
+                  <p className="font-bold text-[9px] font-bold text-white/60 uppercase">{getPenaltyInfo()}</p>
                </div>
             </div>
 
             <button
               onClick={handleSubmit}
               disabled={!reason || !newDate || !!error}
-              className="w-full bg-white text-black font-mono font-black text-xs tracking-widest p-4 rounded-xl hover:opacity-90 transition-all disabled:opacity-20"
+              className="w-full bg-white text-black font-bold font-black text-xs tracking-widest p-4 rounded-xl hover:opacity-90 transition-all disabled:opacity-20"
             >
               EXECUTE RESCHEDULE
             </button>

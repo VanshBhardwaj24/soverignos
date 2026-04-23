@@ -88,10 +88,10 @@ export const ProfileHeader = () => {
                 <Check size={14} strokeWidth={4} className="text-white" />
               </div>
             </div>
-            <button className="mt-4 w-full py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-mono font-black tracking-widest text-white/40 hover:bg-white/10 transition-all uppercase">
+            <button className="mt-4 w-full py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold font-black tracking-widest text-white/40 hover:bg-white/10 transition-all uppercase">
               Choose Photo
             </button>
-            <p className="mt-2 text-[8px] font-mono text-white/20 text-center uppercase tracking-tighter">Recommended: Square image, max 2MB</p>
+            <p className="mt-2 text-[8px] font-bold text-white/20 text-center uppercase tracking-tighter">Recommended: Square image, max 2MB</p>
           </div>
 
           {/* User Info & Stats Row */}
@@ -100,7 +100,7 @@ export const ProfileHeader = () => {
               <h1 className="text-5xl font-black text-white italic uppercase tracking-tighter flex items-center gap-4">
                 {alias}
               </h1>
-              <div className="flex gap-4 text-[10px] font-mono text-white/40 uppercase tracking-widest">
+              <div className="flex gap-4 text-[10px] font-bold text-white/40 uppercase tracking-widest">
                 <span>@{username || 'agent'}</span>
                 <span>•</span>
                 <span>{user?.email || 'OFFLINE'}</span>
@@ -111,28 +111,28 @@ export const ProfileHeader = () => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-white/20 mb-2">
                   <Calendar size={14} />
-                  <span className="font-mono text-[9px] font-black tracking-widest">MEMBER FOR</span>
+                  <span className="font-bold text-[9px] font-black tracking-widest">MEMBER FOR</span>
                 </div>
                 <div className="text-xl font-black text-white uppercase italic">{daysMember} Days</div>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-white/20 mb-2">
                   <Zap size={14} />
-                  <span className="font-mono text-[9px] font-black tracking-widest uppercase">Sovereignty</span>
+                  <span className="font-bold text-[9px] font-black tracking-widest uppercase">Sovereignty</span>
                 </div>
                 <div className="text-xl font-black text-white uppercase italic">LVL {sovereigntyLevel} {rank.name}</div>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-white/20 mb-2">
                   <Globe size={14} />
-                  <span className="font-mono text-[9px] font-black tracking-widest uppercase">Streak</span>
+                  <span className="font-bold text-[9px] font-black tracking-widest uppercase">Streak</span>
                 </div>
                 <div className="text-xl font-black text-white uppercase italic">{globalStreak.current} Days</div>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-white/20 mb-2">
                   <ShieldCheck size={14} />
-                  <span className="font-mono text-[9px] font-black tracking-widest uppercase">Integrity</span>
+                  <span className="font-bold text-[9px] font-black tracking-widest uppercase">Integrity</span>
                 </div>
                 <div className="text-xl font-black text-white uppercase italic">{integrity}% Score</div>
               </div>
@@ -154,7 +154,7 @@ export const ProfileHeader = () => {
               {s.icon}
             </div>
             <div className="space-y-1">
-              <span className="block font-mono text-[9px] text-white/40 uppercase tracking-widest font-black leading-none">{s.label}</span>
+              <span className="block font-bold text-[9px] text-white/40 uppercase tracking-widest font-black leading-none">{s.label}</span>
               <div className="text-4xl font-black text-white italic tracking-tighter">{s.val}</div>
             </div>
           </div>
@@ -168,9 +168,9 @@ export const ProfileHeader = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <ShieldCheck className="text-red-500/40" size={20} />
-              <h2 className="font-mono text-xs font-black tracking-[0.4em] text-white uppercase">The Obituary Test</h2>
+              <h2 className="font-bold text-xs font-black tracking-[0.4em] text-white uppercase">The Obituary Test</h2>
             </div>
-            <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest">Uneditable after initialization</span>
+            <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest">Uneditable after initialization</span>
           </div>
 
           <p className="text-2xl font-black text-white/80 uppercase italic leading-tight tracking-tighter max-w-4xl opacity-60">
@@ -180,7 +180,7 @@ export const ProfileHeader = () => {
           <div className="pt-4 flex items-center gap-4">
             <div className="px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-              <span className="font-mono text-[9px] text-red-500 uppercase tracking-widest font-black uppercase">Default Life Protocol</span>
+              <span className="font-bold text-[9px] text-red-500 uppercase tracking-widest font-black uppercase">Default Life Protocol</span>
             </div>
           </div>
         </div>
@@ -190,20 +190,20 @@ export const ProfileHeader = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-3 text-emerald-400">
           <Zap size={14} fill="currentColor" />
-          <h3 className="font-mono text-xs font-black tracking-widest uppercase">General Information</h3>
+          <h3 className="font-bold text-xs font-black tracking-widest uppercase">General Information</h3>
         </div>
 
         <div className="bg-white/[0.02] border border-white/5 rounded-[24px] overflow-hidden">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.01]">
-                <th className="px-6 py-4 text-left font-mono text-[9px] text-white/20 uppercase tracking-[0.2em] font-black border-r border-white/5">Property</th>
-                <th className="px-6 py-4 text-left font-mono text-[9px] text-white/20 uppercase tracking-[0.2em] font-black">Authentication Value</th>
+                <th className="px-6 py-4 text-left font-bold text-[9px] text-white/20 uppercase tracking-[0.2em] font-black border-r border-white/5">Property</th>
+                <th className="px-6 py-4 text-left font-bold text-[9px] text-white/20 uppercase tracking-[0.2em] font-black">Authentication Value</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               <tr>
-                <td className="px-6 py-5 font-mono text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Display Name</td>
+                <td className="px-6 py-5 font-bold text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Display Name</td>
                 <td className="px-6 py-5">
                   {isEditingInfo ? (
                     <input
@@ -217,11 +217,11 @@ export const ProfileHeader = () => {
                 </td>
               </tr>
               <tr>
-                <td className="px-6 py-5 font-mono text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Username</td>
+                <td className="px-6 py-5 font-bold text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Username</td>
                 <td className="px-6 py-5">
                   {isEditingInfo ? (
                     <div className="flex items-center gap-2">
-                      <span className="text-white/20 font-mono">@</span>
+                      <span className="text-white/20 font-bold">@</span>
                       <input
                         value={tempUsername}
                         onChange={(e) => setTempUsername(e.target.value)}
@@ -234,15 +234,15 @@ export const ProfileHeader = () => {
                 </td>
               </tr>
               <tr>
-                <td className="px-6 py-5 font-mono text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Email Protocol</td>
-                <td className="px-6 py-5 text-white/40 italic font-mono text-[10px]">{user?.email}</td>
+                <td className="px-6 py-5 font-bold text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Email Protocol</td>
+                <td className="px-6 py-5 text-white/40 italic font-bold text-[10px]">{user?.email}</td>
               </tr>
               <tr>
-                <td className="px-6 py-5 font-mono text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Status</td>
+                <td className="px-6 py-5 font-bold text-[10px] text-white/40 uppercase font-bold border-r border-white/5 bg-white/[0.01]">Status</td>
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                    <span className="font-mono text-[9px] text-emerald-500 uppercase font-black">Authorized</span>
+                    <span className="font-bold text-[9px] text-emerald-500 uppercase font-black">Authorized</span>
                   </div>
                 </td>
               </tr>

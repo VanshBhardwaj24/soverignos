@@ -37,7 +37,7 @@ export const ThroughputAnalysis = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* By Stat */}
         <div className="p-8 rounded-3xl border border-[var(--border-default)] bg-white/[0.02] backdrop-blur-xl">
-          <h3 className="font-mono text-[10px] tracking-widest text-[var(--text-secondary)] uppercase mb-8">Throughput by Stat</h3>
+          <h3 className="font-bold text-[10px] tracking-widest text-[var(--text-secondary)] uppercase mb-8">Throughput by Stat</h3>
           <div className="h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statData} layout="vertical">
@@ -67,7 +67,7 @@ export const ThroughputAnalysis = () => {
 
         {/* By Day of Week */}
         <div className="p-8 rounded-3xl border border-[var(--border-default)] bg-white/[0.02] backdrop-blur-xl">
-          <h3 className="font-mono text-[10px] tracking-widest text-[var(--text-secondary)] uppercase mb-8">Weekly Collapse Analysis</h3>
+          <h3 className="font-bold text-[10px] tracking-widest text-[var(--text-secondary)] uppercase mb-8">Weekly Collapse Analysis</h3>
           <div className="h-[250px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={dayData}>
@@ -91,7 +91,7 @@ export const ThroughputAnalysis = () => {
 
       {/* Cognitive Load Heatmap */}
       <div className="p-8 rounded-3xl border border-[var(--border-default)] bg-white/[0.02] backdrop-blur-xl">
-        <h3 className="font-mono text-[10px] tracking-widest text-[var(--text-secondary)] uppercase mb-8">Cognitive Load Heatmap (Hourly)</h3>
+        <h3 className="font-bold text-[10px] tracking-widest text-[var(--text-secondary)] uppercase mb-8">Cognitive Load Heatmap (Hourly)</h3>
         <div className="grid grid-cols-24 gap-1 h-12">
           {Array.from({ length: 24 }).map((_, i) => {
             const xp = breakdown.byHour[i] || 0;
@@ -102,14 +102,14 @@ export const ThroughputAnalysis = () => {
                 className="group relative h-full rounded-sm bg-blue-500 transition-all hover:scale-110"
                 style={{ opacity: 0.05 + (opacity * 0.9) }}
               >
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-2 bg-black border border-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none font-mono text-[9px]">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-2 bg-black border border-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none font-bold text-[9px]">
                   {i}:00 — {Math.round(xp)} XP
                 </div>
               </div>
             );
           })}
         </div>
-        <div className="flex justify-between mt-2 font-mono text-[8px] text-white/20 uppercase tracking-widest">
+        <div className="flex justify-between mt-2 font-bold text-[8px] text-white/20 uppercase tracking-widest">
           <span>12 AM</span>
           <span>6 AM</span>
           <span>12 PM</span>

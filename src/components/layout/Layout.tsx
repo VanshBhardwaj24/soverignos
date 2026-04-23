@@ -8,6 +8,7 @@ import { FlowPlayer } from './FlowPlayer';
 import { InventoryModal } from './InventoryModal';
 import { NotificationPanel } from './NotificationPanel';
 import { useSovereignStore } from '../../store/sovereign';
+import { GodModeTracker } from './GodMode';
 import { LogModal } from '../log/LogModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LevelUpOverlay } from '../stats/LevelUpOverlay';
@@ -24,11 +25,11 @@ export const Layout = () => {
   const theme = useSovereignStore(state => state.theme);
   const lastLeveledStat = useSovereignStore(state => state.lastLeveledStat);
   const setLastLeveledStat = useSovereignStore(state => state.setLastLeveledStat);
-   const location = useLocation();
- 
-   const { modalMode, closeBriefing, date } = useDailyBriefing();
- 
-   const leveledStatInfo = lastLeveledStat ? STATS[lastLeveledStat.statId] : null;
+  const location = useLocation();
+
+  const { modalMode, closeBriefing, date } = useDailyBriefing();
+
+  const leveledStatInfo = lastLeveledStat ? STATS[lastLeveledStat.statId] : null;
 
   useEffect(() => {
     if (theme === 'light') {
@@ -111,24 +112,38 @@ export const Layout = () => {
       <Sidebar />
       <NotificationPanel />
       <main className={cn(
-        "pt-24 pb-20 px-4 md:px-8 max-w-[1400px] mx-auto z-10 relative transition-all duration-300",
-        useSovereignStore.getState().sidebarCollapsed ? "md:pl-20" : "md:pl-64"
+        "pt-20 pb-20 px-4 md:px-8 max-w-[1600px] mx-auto z-10 relative transition-all duration-300 ease-in-out",
+        useSovereignStore.getState().sidebarCollapsed ? "md:pl-24" : "md:pl-72"
       )}>
-        <Outlet />
-       </main>
- 
-       <ReminderModal 
-         mode={modalMode} 
-         onClose={closeBriefing} 
-         date={date} 
-       />
- 
-       <LogModal />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 4, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -4, filter: 'blur(4px)' }}
+            transition={{ 
+              duration: 0.15, 
+              ease: [0.23, 1, 0.32, 1] // Snappy out-expo
+            }}
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      <ReminderModal
+        mode={modalMode}
+        onClose={closeBriefing}
+        date={date}
+      />
+
+      <LogModal />
       <QuestModal />
       <ProofModal />
       {location.pathname === '/' && <FlowPlayer />}
       <CommandPalette />
       <InventoryModal />
+      <GodModeTracker />
     </div>
   );
 };

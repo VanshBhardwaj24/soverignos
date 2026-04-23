@@ -81,7 +81,7 @@ export const SurveillanceMatrix = () => {
     <section>
       <div className="flex items-center gap-2 mb-4">
         <Activity size={18} className="text-emerald-400" />
-        <h2 className="font-mono text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Surveillance Matrix</h2>
+        <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Surveillance Matrix</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -105,7 +105,7 @@ export const SurveillanceMatrix = () => {
                   <meta.icon size={20} />
                 </div>
                 <div>
-                  <h3 className="font-mono text-[10px] tracking-widest text-[var(--text-secondary)] uppercase">{meta.label}</h3>
+                  <h3 className="font-bold text-[10px] tracking-widest text-[var(--text-secondary)] uppercase">{meta.label}</h3>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold tracking-tighter">{value}{key === 'throughput' ? '' : '%'}</span>
                     <span className="text-xs text-emerald-400">↑ 12%</span>
@@ -127,8 +127,8 @@ export const SurveillanceMatrix = () => {
                   {meta.definition}
                 </p>
                 <div className="flex justify-between mt-3 pt-3 border-t border-white/5">
-                  <span className="text-[9px] font-mono uppercase text-white/40">Target</span>
-                  <span className="text-[9px] font-mono text-emerald-400">{meta.target}</span>
+                  <span className="text-[9px] font-bold uppercase text-white/40">Target</span>
+                  <span className="text-[9px] font-bold text-emerald-400">{meta.target}</span>
                 </div>
               </div>
             </motion.div>
@@ -169,7 +169,7 @@ export const SurveillanceMatrix = () => {
                 </div>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white/5 font-mono text-sm border border-white/5 mb-6">
+              <div className="p-6 rounded-2xl bg-white/5 font-bold text-sm border border-white/5 mb-6">
                 {METADATA[activeFormula].formula}
               </div>
 

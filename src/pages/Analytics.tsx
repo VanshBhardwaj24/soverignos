@@ -36,9 +36,9 @@ export default function Analytics() {
         <div>
           <div className="flex items-center gap-3 mb-3">
              <span className="w-8 h-px bg-[var(--stat-brand)]" />
-             <span className="font-mono text-[10px] tracking-[0.4em] text-[var(--stat-brand)] uppercase font-black">Central Intelligence</span>
+             <span className="font-bold text-[10px] tracking-[0.4em] text-[var(--stat-brand)] uppercase font-black">Central Intelligence</span>
           </div>
-          <h1 className="font-mono text-5xl font-black tracking-tighter text-white uppercase italic">
+          <h1 className="font-bold text-5xl font-black tracking-tighter text-white uppercase italic">
             Command <span className="text-white/20">Analytics</span>
           </h1>
         </div>
@@ -50,8 +50,9 @@ export default function Analytics() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
+            aria-label={`View ${tab.label}`}
             className={cn(
-               "flex items-center gap-3 px-6 py-3 rounded-2xl font-mono text-[10px] tracking-widest uppercase transition-all whitespace-nowrap border",
+               "flex items-center gap-3 px-6 py-3 rounded-2xl font-bold text-[10px] tracking-widest uppercase transition-all whitespace-nowrap border outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20",
                activeTab === tab.id 
                  ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]" 
                  : "bg-white/5 text-white/40 border-white/5 hover:border-white/10"
@@ -133,12 +134,12 @@ function OverviewTab({ store }: { store: any }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Trajectory */}
-        <div className="lg:col-span-8 bg-white/[0.03] border border-white/10 rounded-[40px] p-8 relative overflow-hidden backdrop-blur-md">
+        <div className="lg:col-span-8 bg-white/[0.03] border border-white/10 rounded-[40px] p-8 relative overflow-hidden backdrop-blur-md border-glow-professional shadow-2xl">
            <div className="flex justify-between items-center mb-8">
-              <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black">Freedom Trajectory / 30D</h3>
+              <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black">Freedom Trajectory / 30D</h3>
               <div className="flex items-center gap-2">
                  <span className="w-2 h-2 rounded-full bg-[var(--stat-brand)]" />
-                 <span className="font-mono text-[10px] text-white/60">ACTIVE PROTOCOL</span>
+                 <span className="font-bold text-[10px] text-white/60">ACTIVE PROTOCOL</span>
               </div>
            </div>
            <div className="h-[300px] w-full">
@@ -162,7 +163,7 @@ function OverviewTab({ store }: { store: any }) {
         {/* Radar and accountability */}
         <div className="lg:col-span-4 space-y-8">
            <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8 flex flex-col items-center justify-center relative overflow-hidden backdrop-blur-md">
-              <h3 className="absolute top-8 left-8 font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black">Stability Radar</h3>
+              <h3 className="absolute top-8 left-8 font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black">Stability Radar</h3>
               <div className="h-[220px] w-full mt-4">
                  <ResponsiveContainer width="100%" height="100%">
                     <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
@@ -176,8 +177,8 @@ function OverviewTab({ store }: { store: any }) {
 
            <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-6">
               <div className="flex justify-between items-center mb-4">
-                 <span className="font-mono text-[9px] text-white/40 uppercase font-black tracking-widest">Accountability</span>
-                 <span className={cn("font-mono text-xs font-bold", accountabilityScore > 70 ? "text-[var(--success)]" : "text-[var(--danger)]")}>{accountabilityScore}%</span>
+                 <span className="font-bold text-[9px] text-white/40 uppercase font-black tracking-widest">Accountability</span>
+                 <span className={cn("font-bold text-xs font-bold", accountabilityScore > 70 ? "text-[var(--success)]" : "text-[var(--danger)]")}>{accountabilityScore}%</span>
               </div>
               <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                  <motion.div 
@@ -192,7 +193,7 @@ function OverviewTab({ store }: { store: any }) {
         {/* Weekly Histogram */}
         <div className="lg:col-span-12 bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
            <div className="flex justify-between items-center mb-8">
-              <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black">Weekly Engagement / XP Vol</h3>
+              <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black">Weekly Engagement / XP Vol</h3>
            </div>
            <div className="h-[150px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -232,7 +233,7 @@ function ProgressionTab({ store }: { store: any }) {
   return (
     <div className="space-y-8">
       <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-         <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Skill Accumulation / Cumulative Growth</h3>
+         <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Skill Accumulation / Cumulative Growth</h3>
          <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
                <AreaChart data={stackData}>
@@ -268,8 +269,8 @@ function ProgressionTab({ store }: { store: any }) {
            return (
              <div key={stat.id} className="bg-white/[0.03] border border-white/10 rounded-3xl p-6">
                 <div className="flex justify-between items-center mb-4">
-                   <span className="font-mono text-[9px] text-white/40 uppercase tracking-widest font-black">{stat.name} Progress</span>
-                   <span className="font-mono text-[10px] text-white">LV. {currentLevel}</span>
+                   <span className="font-bold text-[9px] text-white/40 uppercase tracking-widest font-black">{stat.name} Progress</span>
+                   <span className="font-bold text-[10px] text-white">LV. {currentLevel}</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                    <div 
@@ -278,7 +279,7 @@ function ProgressionTab({ store }: { store: any }) {
                    />
                 </div>
                 <div className="mt-2 text-right">
-                   <span className="font-mono text-[8px] text-white/20 uppercase">{Math.floor(progressXP).toLocaleString()} / {totalNeeded.toLocaleString()} XP</span>
+                   <span className="font-bold text-[8px] text-white/20 uppercase">{Math.floor(progressXP).toLocaleString()} / {totalNeeded.toLocaleString()} XP</span>
                 </div>
              </div>
            );
@@ -306,9 +307,9 @@ function MissionTab({ store }: { store: any }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
        <div className="lg:col-span-4 bg-white/[0.03] border border-white/10 rounded-[40px] p-8 flex flex-col items-center justify-center">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Daily Completion</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Daily Completion</h3>
           <div className="relative w-48 h-48 flex items-center justify-center">
-             <div className="text-4xl font-black font-mono text-white">{questStats.completed}<span className="text-sm text-white/20">/{questStats.total}</span></div>
+             <div className="text-4xl font-black font-bold text-white">{questStats.completed}<span className="text-sm text-white/20">/{questStats.total}</span></div>
              <svg className="absolute inset-0 w-full h-full -rotate-90">
                 <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                 <circle 
@@ -322,7 +323,7 @@ function MissionTab({ store }: { store: any }) {
        </div>
 
        <div className="lg:col-span-8 bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Difficulty Distribution</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Difficulty Distribution</h3>
           <div className="h-[250px] w-full">
              <ResponsiveContainer width="100%" height="100%">
                 <RePieChart>
@@ -347,7 +348,7 @@ function MissionTab({ store }: { store: any }) {
              {difficultyData.map((d, i) => (
                <div key={d.name} className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: i === 0 ? 'var(--success)' : i === 1 ? 'var(--stat-brand)' : i === 2 ? 'var(--danger)' : 'white' }} />
-                  <span className="font-mono text-[8px] text-white/40">{d.name}</span>
+                  <span className="font-bold text-[8px] text-white/40">{d.name}</span>
                </div>
              ))}
           </div>
@@ -397,7 +398,7 @@ function FinancialTab({ store }: { store: any }) {
   return (
     <div className="space-y-8">
        <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Net Worth Trajectory / Global Liquidity</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Net Worth Trajectory / Global Liquidity</h3>
           <div className="h-[300px] w-full">
              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={netWorthData}>
@@ -418,7 +419,7 @@ function FinancialTab({ store }: { store: any }) {
 
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-             <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Cash Flow / Monthly Yield</h3>
+             <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Cash Flow / Monthly Yield</h3>
              <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                    <BarChart data={incomeVsExpense}>
@@ -432,11 +433,11 @@ function FinancialTab({ store }: { store: any }) {
           </div>
 
           <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-             <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Financial Objectives</h3>
+             <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Financial Objectives</h3>
              <div className="space-y-6">
                 {(financialGoals || []).map((goal: any) => (
                   <div key={goal.id} className="space-y-2">
-                     <div className="flex justify-between items-center text-[10px] font-mono">
+                     <div className="flex justify-between items-center text-[10px] font-bold">
                         <span className="text-white font-bold">{goal.name.toUpperCase()}</span>
                         <span className="text-white/40">{((goal.currentAmount / goal.targetAmount) * 100).toFixed(0)}%</span>
                      </div>
@@ -481,7 +482,7 @@ function MindTab({ store }: { store: any }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
        <div className="lg:col-span-8 bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Psychological Flux / Mood Variance</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Psychological Flux / Mood Variance</h3>
           <div className="h-[250px] w-full">
              <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={moodData}>
@@ -494,13 +495,13 @@ function MindTab({ store }: { store: any }) {
        </div>
 
        <div className="lg:col-span-4 bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Mastery Status</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Mastery Status</h3>
           <div className="space-y-4">
-             <div className="flex justify-between items-center font-mono text-[10px]">
+             <div className="flex justify-between items-center font-bold text-[10px]">
                 <span className="text-white/40 uppercase">Cognitive Units</span>
                 <span className="text-white">{(knowledgeCards || []).length}</span>
              </div>
-             <div className="flex justify-between items-center font-mono text-[10px]">
+             <div className="flex justify-between items-center font-bold text-[10px]">
                 <span className="text-white/40 uppercase">Journal Entries</span>
                 <span className="text-white">{(journalEntries || []).length}</span>
              </div>
@@ -508,7 +509,7 @@ function MindTab({ store }: { store: any }) {
        </div>
 
        <div className="lg:col-span-12 bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Journal Frequency / Activity</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Journal Frequency / Activity</h3>
           <div className="h-[120px] w-full">
              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={journalData}>
@@ -536,7 +537,7 @@ function NetworkTab({ store }: { store: any }) {
     <div className="space-y-8">
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-             <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Recruitment Funnel / Pipeline</h3>
+             <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Recruitment Funnel / Pipeline</h3>
              <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                    <BarChart data={funnelData} layout="vertical">
@@ -550,37 +551,37 @@ function NetworkTab({ store }: { store: any }) {
           </div>
 
           <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-             <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Venture Performance</h3>
+             <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Venture Performance</h3>
              <div className="space-y-4">
                 {(ventures || []).map((v: any) => (
                    <div key={v.id} className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/5">
                       <div className="flex flex-col">
-                         <span className="font-mono text-[10px] text-white font-bold">{v.name.toUpperCase()}</span>
-                         <span className="font-mono text-[8px] text-white/20 uppercase">{v.category}</span>
+                         <span className="font-bold text-[10px] text-white font-bold">{v.name.toUpperCase()}</span>
+                         <span className="font-bold text-[8px] text-white/20 uppercase">{v.category}</span>
                       </div>
-                      <div className="font-mono text-xs text-[var(--success)] font-black italic">
+                      <div className="font-bold text-xs text-[var(--success)] font-black italic">
                          +{(v.revenue || 0).toLocaleString()} <span className="text-[10px] opacity-40">GOLD</span>
                       </div>
                    </div>
                 ))}
                 {(!ventures || ventures.length === 0) && (
-                  <div className="h-40 flex items-center justify-center opacity-20 font-mono text-[9px] uppercase italic tracking-[0.4em]">No Live Ventures</div>
+                  <div className="h-40 flex items-center justify-center opacity-20 font-bold text-[9px] uppercase italic tracking-[0.4em]">No Live Ventures</div>
                 )}
              </div>
           </div>
        </div>
 
        <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-          <h3 className="font-mono text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Nexus Connectivity / Audience Growth</h3>
+          <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Nexus Connectivity / Audience Growth</h3>
           <div className="flex items-center gap-12">
              <div>
-                <div className="font-mono text-4xl font-black text-white">{(nexusContacts || []).length}</div>
-                <div className="font-mono text-[9px] text-white/40 uppercase tracking-widest">Active nodes</div>
+                <div className="font-bold text-4xl font-black text-white">{(nexusContacts || []).length}</div>
+                <div className="font-bold text-[9px] text-white/40 uppercase tracking-widest">Active nodes</div>
              </div>
              <div className="flex-1 h-px bg-white/10" />
              <div className="text-right">
-                <div className="font-mono text-xs text-white/40 uppercase">Integration Integrity</div>
-                <div className="font-mono text-sm text-[var(--stat-brand)] font-black">STABLE</div>
+                <div className="font-bold text-xs text-white/40 uppercase">Integration Integrity</div>
+                <div className="font-bold text-sm text-[var(--stat-brand)] font-black">STABLE</div>
              </div>
           </div>
        </div>
@@ -590,15 +591,15 @@ function NetworkTab({ store }: { store: any }) {
 
 function MetricCard({ label, value, sub, icon: Icon, color }: any) {
   return (
-    <div className="bg-white/[0.03] border border-white/10 rounded-[32px] p-8 relative overflow-hidden group">
+    <div className="bg-white/[0.03] border border-white/10 rounded-[32px] p-8 relative overflow-hidden group border-glow-professional shadow-lg">
       <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12 group-hover:scale-110 transition-transform">
         <Icon size={80} />
       </div>
       <div className="relative z-10">
-        <span className="block font-mono text-[9px] text-white/40 uppercase tracking-[0.3em] mb-4 font-black">{label}</span>
-        <div className="font-mono text-4xl font-black text-white mb-2">{value}</div>
+        <span className="block font-bold text-[9px] text-white/40 uppercase tracking-[0.3em] mb-4 font-black">{label}</span>
+        <div className="font-bold text-4xl font-black text-white mb-2">{value}</div>
         <div className="flex items-center gap-2">
-           <span className="font-mono text-[9px] uppercase tracking-widest font-bold" style={{ color }}>{sub}</span>
+           <span className="font-bold text-[9px] uppercase tracking-widest font-bold" style={{ color }}>{sub}</span>
         </div>
       </div>
     </div>

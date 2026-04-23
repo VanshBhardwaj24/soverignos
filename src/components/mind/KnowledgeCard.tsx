@@ -30,7 +30,7 @@ export function KnowledgeCard({ card }: KnowledgeCardProps) {
         )}>
           <div className="absolute top-6 left-6 flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-[var(--stat-mind)]" />
-            <span className="font-mono text-[9px] text-white/20 uppercase tracking-[0.2em]">{card.folder}</span>
+            <span className="font-bold text-[9px] text-white/20 uppercase tracking-[0.2em]">{card.folder}</span>
           </div>
 
           <div className="text-white/20 mb-6">
@@ -43,7 +43,7 @@ export function KnowledgeCard({ card }: KnowledgeCardProps) {
 
           <button 
             onClick={() => setIsFlipped(true)}
-            className="mt-8 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-mono font-black text-white/40 uppercase tracking-widest hover:text-white hover:border-white/20 transition-all"
+            className="mt-8 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold font-black text-white/40 uppercase tracking-widest hover:text-white hover:border-white/20 transition-all"
           >
             Reveal Protocol
           </button>
@@ -69,7 +69,7 @@ export function KnowledgeCard({ card }: KnowledgeCardProps) {
             <button 
               onClick={() => toggleMastered(card.id)}
               className={cn(
-                "px-6 py-3 rounded-2xl font-mono text-[10px] font-black tracking-widest uppercase transition-all flex items-center gap-2",
+                "px-6 py-3 rounded-2xl font-bold text-[10px] font-black tracking-widest uppercase transition-all flex items-center gap-2",
                 card.mastered 
                   ? "bg-[var(--success)] text-white" 
                   : "bg-white text-black hover:brightness-90"

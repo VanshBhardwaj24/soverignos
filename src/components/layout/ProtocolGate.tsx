@@ -42,7 +42,7 @@ export const ProtocolGate = ({ children }: { children: React.ReactNode }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[600] bg-[#050505] flex flex-col items-center justify-center p-6 text-center font-mono"
+            className="fixed inset-0 z-[600] bg-[#050505] flex flex-col items-center justify-center p-6 text-center font-bold"
           >
             {/* Background Texture */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none overflow-hidden">

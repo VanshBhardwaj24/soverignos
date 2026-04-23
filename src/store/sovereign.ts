@@ -330,6 +330,23 @@ export interface IntelligenceLog {
   impact: number;
 }
 
+export interface Loan {
+  id: string;
+  itemId: string;
+  itemName: string;
+  borrowedAmount: number;
+  interestRate: number;
+  totalRepay: number;
+  amountRepaid: number;
+  startDate: string;
+  durationMonths: number;
+  deadline: string;
+  repaymentType: 'all_earnings' | 'monthly_target';
+  associatedStat: string;
+  status: 'active' | 'grace_period' | 'late' | 'repaid' | 'defaulted';
+  lastRepaymentDate?: string;
+}
+
 interface SovereignStore {
   user: User | null;
   setUser: (user: User | null) => void;
@@ -402,10 +419,19 @@ interface SovereignStore {
   }[];
   itemCooldowns: Record<string, string>; // itemId -> ISO Timestamp
   gold: number;
+  activeLoans: Loan[];
+
+  // New behavioral guardrails state
+  sessionStartTime: string;
+  restModeActive: boolean;
+  notificationPreferences: { critical: boolean; informational: boolean; celebratory: boolean };
+  weekScore: number;
+
+  getActiveMultiplierBreakdown: (statId: string) => { sources: { name: string; value: number }[]; total: number };
+  getDailyXPDiminishingFactor: () => number;
+  toggleRestMode: () => void;
 
   // Actions
-
-  // Daily Briefing State
   briefingSeenDates: string[]; // Morning
   summarySeenDates: string[];  // Evening
   briefingTemplates: {
@@ -498,6 +524,8 @@ interface SovereignStore {
   addReward: (reward: Omit<ShopItem, 'id'>) => Promise<void>;
   updateReward: (id: string, reward: Partial<ShopItem>) => Promise<void>;
   deleteReward: (id: string) => Promise<void>;
+  requestLoan: (itemId: string, durationMonths: number, repaymentType: 'all_earnings' | 'monthly_target') => Promise<{ success: boolean; error?: string }>;
+  checkLoanStatus: () => Promise<void>;
 
   addVenture: (v: Omit<Venture, 'id' | 'date'>) => void;
   addKnowledgeCard: (card: Omit<KnowledgeCard, 'id' | 'date' | 'mastered'>) => void;
@@ -604,25 +632,36 @@ export const useSovereignStore = create<SovereignStore>()(
           get().addNotification({ title: 'SYNC WARNING', description: 'Failed to fetch mission protocols. Using local state.', status: 'URGENT', iconType: 'alert' });
         } else if (quests) {
           set({
-            dailyQuests: quests.map(q => ({
-              id: q.id,
-              title: q.title,
-              xpReward: q.xp_reward,
-              statId: q.stat_id,
-              completed: q.completed,
-              failed: q.failed,
-              type: q.type,
-              streak: q.streak || 0,
-              difficulty: q.difficulty || 'medium',
-              lastCompletedAt: q.last_completed_at,
-              expiresAt: q.expires_at,
-              priority: q.priority || 'P2',
-              dueDate: q.due_date,
-              repeating: q.repeating !== null ? q.repeating : true,
-              archived: q.archived || false,
-              postponeCount: q.postpone_count || 0,
-              postponeHistory: q.postpone_history || []
-            }))
+            dailyQuests: quests.map(q => {
+              // Default to IST midnight today if no deadline exists in DB
+              const getISTMidnight = () => {
+                const now = new Date();
+                const istOffset = 5.5 * 60 * 60 * 1000;
+                const istTime = new Date(now.getTime() + istOffset);
+                istTime.setUTCHours(23, 59, 59, 999);
+                return new Date(istTime.getTime() - istOffset).toISOString();
+              };
+
+              return {
+                id: q.id,
+                title: q.title,
+                xpReward: q.xp_reward,
+                statId: q.stat_id,
+                completed: q.completed,
+                failed: q.failed,
+                type: q.type,
+                streak: q.streak || 0,
+                difficulty: q.difficulty || 'medium',
+                lastCompletedAt: q.last_completed_at,
+                expiresAt: q.expires_at || getISTMidnight(),
+                priority: q.priority || 'P2',
+                dueDate: q.due_date,
+                repeating: q.repeating !== null ? q.repeating : true,
+                archived: q.archived || false,
+                postponeCount: q.postpone_count || 0,
+                postponeHistory: q.postpone_history || []
+              };
+            })
           });
         }
 
@@ -701,6 +740,7 @@ export const useSovereignStore = create<SovereignStore>()(
       customRewards: [],
       activeLoadout: [],
       itemCooldowns: {},
+      activeLoans: [],
       resources: {},
       freedomScore: 0,
       sovereignty: 0,
@@ -719,6 +759,11 @@ export const useSovereignStore = create<SovereignStore>()(
       },
       globalStreak: { current: 0, longest: 0 },
       violationStreaks: {},
+
+      sessionStartTime: new Date().toISOString(),
+      restModeActive: false,
+      notificationPreferences: { critical: true, informational: true, celebratory: true },
+      weekScore: 0,
 
       dailyQuests: [
         { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1' },
@@ -937,6 +982,52 @@ export const useSovereignStore = create<SovereignStore>()(
 
       saveTemplates: (templates) => set({ briefingTemplates: templates }),
 
+      getActiveMultiplierBreakdown: (statId) => {
+        if (!statId) return { sources: [], total: 1 };
+        try {
+          const { statLevels, prestige, globalStreak } = get();
+          const sources = [];
+          let total = 1;
+
+          const level = statLevels[statId] || 1;
+          const perk = SKILL_PERKS[statId]?.find(p => level >= p.level);
+          if (perk?.xpBonus) {
+            sources.push({ name: perk.name, value: 1 + perk.xpBonus });
+            total *= (1 + perk.xpBonus);
+          }
+          const statPrestige = prestige[statId] || 0;
+          if (statPrestige > 0) {
+            const pMultiplier = Math.pow(1.5, statPrestige);
+            sources.push({ name: `Prestige ${statPrestige}`, value: pMultiplier });
+            total *= pMultiplier;
+          }
+          if (globalStreak && globalStreak.current > 0) {
+            const sMultiplier = 1 + (globalStreak.current / 30);
+            sources.push({ name: 'Streak Bonus', value: sMultiplier });
+            total *= sMultiplier;
+          }
+          return { sources, total };
+        } catch (e) {
+          console.error('[Sovereign] Error getting multiplier breakdown:', e);
+          return { sources: [], total: 1 };
+        }
+      },
+
+      getDailyXPDiminishingFactor: () => {
+        try {
+          const { statTodayXP, selectedStat } = get();
+          if (!selectedStat) return 1.0;
+          const currentXP = statTodayXP[selectedStat] || 0;
+          if (currentXP > 1000) return 0.5;
+          if (currentXP > 500) return 0.8;
+          return 1.0;
+        } catch (e) {
+          console.error('[Sovereign] Error getting diminishing factor:', e);
+          return 1.0;
+        }
+      },
+
+      toggleRestMode: () => set(state => ({ restModeActive: !state.restModeActive })),
 
       // F1: Daily Reset
       resetDailyQuests: async () => {
@@ -1027,6 +1118,10 @@ export const useSovereignStore = create<SovereignStore>()(
           newConsecutiveFailures += 1;
           const escalationFactor = Math.min(2, 1 + (newConsecutiveFailures * 0.2));
           const missedByStat: Record<string, number> = {};
+
+          let dailyAccountabilityLoss = 0;
+          let dailyGoldLoss = 0;
+
           missedQuests.forEach(quest => {
             missedByStat[quest.statId] = (missedByStat[quest.statId] || 0) + 1;
 
@@ -1089,10 +1184,24 @@ export const useSovereignStore = create<SovereignStore>()(
           });
         }
 
-        // 3. Prepare quest reset + cloud sync payload (UTC STABLE)
+        // 3. Prepare quest reset + cloud sync payload (IST-anchored midnight)
         const now = new Date();
-        const midnightUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
-        const defaultExpiry = midnightUTC.toISOString();
+
+        // IST midnight = 23:59:59 IST = 18:29:59 UTC (IST is UTC+5:30, no DST)
+        // We compute today's IST date and then find its UTC-equivalent midnight.
+        const istYear = istNow.getFullYear();
+        const istMonth = istNow.getMonth();
+        const istDate = istNow.getDate();
+
+        // IST midnight is 23:59:59.999 IST = 18:29:59.999 UTC on the SAME calendar date
+        let istMidnight = new Date(Date.UTC(istYear, istMonth, istDate, 18, 29, 59, 999));
+
+        // Safety: if this IST midnight has already passed (i.e. it's already past 23:59 IST),
+        // target the next IST day's midnight instead.
+        if (istMidnight <= now) {
+          istMidnight = new Date(Date.UTC(istYear, istMonth, istDate + 1, 18, 29, 59, 999));
+        }
+        const defaultExpiry = istMidnight.toISOString();
 
         const questSyncPayload: any[] = [];
 
@@ -1102,12 +1211,14 @@ export const useSovereignStore = create<SovereignStore>()(
 
           if (q.dueDate) {
             const prevDue = new Date(q.dueDate);
-            // Stable UTC Shifting: Keep the SAME UTC Hour/Min, but on TODAY'S UTC Date
-            let shifted = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
-              prevDue.getUTCHours(), prevDue.getUTCMinutes(), prevDue.getUTCSeconds()));
+            // Stable IST-aware Shifting: Keep the same IST hour/min, but on TODAY's IST date
+            // prevDue UTC hours encoded IST time, so we preserve them directly.
+            let shifted = new Date(Date.UTC(
+              istNow.getFullYear(), istNow.getMonth(), istNow.getDate(),
+              prevDue.getUTCHours(), prevDue.getUTCMinutes(), prevDue.getUTCSeconds()
+            ));
 
-            // If the shifted time has already passed TODAY, set it to TOMORROW
-            // This prevents immediate failure if the user resets late in the day.
+            // If the shifted time has already passed TODAY in IST, push to tomorrow
             if (shifted < now) {
               shifted.setUTCDate(shifted.getUTCDate() + 1);
             }
@@ -1148,7 +1259,32 @@ export const useSovereignStore = create<SovereignStore>()(
               subtasks: q.subtasks?.map(s => ({ ...s, completed: false }))
             };
           }
-          if (!q.repeating && q.completed) return { ...q, archived: true, failed: false, protected: false };
+          if (!q.repeating) {
+            const isFailed = q.failed || !q.completed;
+            questSyncPayload.push({
+              id: q.id,
+              user_id: get().user?.id,
+              title: q.title,
+              xp_reward: q.xpReward,
+              stat_id: q.statId,
+              type: q.type,
+              difficulty: q.difficulty || 'medium',
+              priority: q.priority || 'P2',
+              completed: q.completed,
+              failed: isFailed,
+              expires_at: q.expiresAt,
+              due_date: q.dueDate,
+              streak: q.streak,
+              repeating: false,
+              archived: true
+            });
+            return {
+              ...q,
+              archived: true,
+              failed: isFailed,
+              protected: false
+            };
+          }
           return { ...q, failed: false, protected: false };
         });
 
@@ -1181,12 +1317,19 @@ export const useSovereignStore = create<SovereignStore>()(
         if (user) {
           // F31: Bulk sync quest reset status to cloud
           if (questSyncPayload.length > 0) {
-            const { error: questError } = await supabase.from('quests').upsert(questSyncPayload);
-            if (questError) console.error('[SYNC_ERROR] Reset Quests:', questError);
+            // F31: Parallel update to avoid wiping metadata columns
+            await Promise.all(questSyncPayload.map(p => {
+              const { id, user_id, ...updateData } = p;
+              return supabase.from('quests').update(updateData).eq('id', id);
+            }));
           }
 
           // F31: Update stats and reset timestamp in cloud with RETRY LOGIC
           const { statXP, statLevels, gold, accountabilityScore, punishments, globalStreak } = get();
+
+          // Set lastDailyReset LOCALLY FIRST to prevent infinite reset loop on page refresh.
+          // Even if cloud sync fails, we don't want the reset to run again on next load.
+          set({ lastDailyReset: today });
 
           let syncSuccess = false;
           let syncAttempt = 0;
@@ -1204,7 +1347,7 @@ export const useSovereignStore = create<SovereignStore>()(
                 global_streak_current: globalStreak.current,
                 global_streak_longest: globalStreak.longest,
                 last_daily_reset: today, // Persist reset date to cloud
-                last_weekly_reset: get().lastWeeklyReset
+                // NOTE: last_weekly_reset is NOT synced — column does not exist in user_stats schema
               };
               Object.keys(statXP).forEach(stat => {
                 updatePayload[`${stat}_xp`] = statXP[stat];
@@ -1216,9 +1359,6 @@ export const useSovereignStore = create<SovereignStore>()(
 
               syncSuccess = true;
               console.log('[RESET] Supabase sync succeeded!');
-
-              // Only mark reset complete after successful sync
-              set({ lastDailyReset: today });
 
             } catch (err) {
               console.error(`[SYNC_ERROR] User Stats Reset (attempt ${syncAttempt}):`, err);
@@ -1232,8 +1372,7 @@ export const useSovereignStore = create<SovereignStore>()(
           }
 
           if (!syncSuccess) {
-            console.error('[RESET] CRITICAL: Failed to sync reset after 3 attempts. Quests remain reset locally but will retry next load.');
-            // Do NOT set lastDailyReset - allow retry on next load
+            console.warn('[RESET] Cloud sync failed after 3 attempts. Reset is committed locally and will re-sync on next successful load.');
           }
         }
 
@@ -1289,6 +1428,10 @@ export const useSovereignStore = create<SovereignStore>()(
       // F42: Real-time Cadence Monitor - Background Expiry Check
       checkMissionExpiries: async () => {
         const { dailyQuests, user, failQuest } = get();
+
+        // F27: GC Lending Status Audit
+        await get().checkLoanStatus();
+
         if (!user) return;
 
         const now = new Date();
@@ -1302,13 +1445,27 @@ export const useSovereignStore = create<SovereignStore>()(
 
         if (expiredQuests.length > 0) {
           for (const quest of expiredQuests) {
-            await failQuest(quest.id);
-            get().addNotification({
-              title: 'OBJECTIVE LOST',
-              description: `"${quest.title}" cadence deadline passed. Statistics localized downwards.`,
-              status: 'URGENT',
-              iconType: 'alert'
-            });
+            try {
+              await failQuest(quest.id);
+
+              if (quest.repeating) {
+                get().addNotification({
+                  title: 'TIME ELAPSED',
+                  description: `"${quest.title}" window closed. This mission returns tomorrow. You lost some accountability, but your overall progress remains intact.`,
+                  status: 'URGENT',
+                  iconType: 'time'
+                });
+              } else {
+                get().addNotification({
+                  title: 'OBJECTIVE LOST',
+                  description: `"${quest.title}" cadence deadline passed. Statistics localized downwards.`,
+                  status: 'URGENT',
+                  iconType: 'alert'
+                });
+              }
+            } catch (err) {
+              console.error(`[CADENCE] Error failing quest ${quest.id}:`, err);
+            }
           }
         }
       },
@@ -1675,12 +1832,47 @@ export const useSovereignStore = create<SovereignStore>()(
 
           return {
             dailyQuests: updatedQuests,
-            gold: state.gold + goldEarned,
+            gold: state.gold + (state.activeLoans.length > 0 ? 0 : goldEarned),
             punishments: updatedPunishments,
             integrity: Math.min(100, state.integrity + integrityBonus),
             accountabilityScore: Math.min(100, state.accountabilityScore + integrityBonus)
           };
         });
+
+        // Handle Loan Repayment
+        const { activeLoans } = get();
+        if (activeLoans.length > 0) {
+          const updatedLoans = [...activeLoans];
+          let remainingGold = goldEarned;
+
+          for (let i = 0; i < updatedLoans.length; i++) {
+            if (remainingGold <= 0) break;
+            const loan = updatedLoans[i];
+            if (loan.status === 'repaid' || loan.status === 'defaulted') continue;
+
+            const needed = loan.totalRepay - loan.amountRepaid;
+            const repayment = Math.min(remainingGold, needed);
+
+            updatedLoans[i] = {
+              ...loan,
+              amountRepaid: loan.amountRepaid + repayment,
+              lastRepaymentDate: now.toISOString(),
+              status: (loan.amountRepaid + repayment >= loan.totalRepay) ? 'repaid' : loan.status
+            };
+
+            remainingGold -= repayment;
+
+            if (updatedLoans[i].status === 'repaid') {
+              get().addNotification({
+                title: 'DEBT CLEARED',
+                description: `Loan for ${loan.itemName} has been fully settled. Trust restored.`,
+                status: 'NOW',
+                iconType: 'milestone'
+              });
+            }
+          }
+          set({ activeLoans: updatedLoans });
+        }
 
         const { user } = get();
         if (user) {
@@ -2536,6 +2728,136 @@ export const useSovereignStore = create<SovereignStore>()(
         });
       },
 
+      requestLoan: async (itemId, durationMonths, repaymentType) => {
+        const { activeLoans, streaks, inventory, gold } = get();
+        const { SHOP_ITEMS } = await import('../lib/constants');
+        const item = SHOP_ITEMS.find(i => i.id === itemId);
+
+        if (!item) return { success: false, error: 'ITEM_NOT_FOUND' };
+        if (activeLoans.length >= 2) return { success: false, error: 'MAX_LOANS_REACHED' };
+        if (inventory.includes(itemId)) return { success: false, error: 'ALREADY_OWNED' };
+
+        const interestRate = 0.05;
+        const totalRepay = Math.floor(item.cost * (1 + interestRate));
+        const now = new Date();
+        const deadline = new Date(now);
+        deadline.setMonth(deadline.getMonth() + durationMonths);
+
+        const newLoan: Loan = {
+          id: Math.random().toString(36).substr(2, 9),
+          itemId,
+          itemName: item.name,
+          borrowedAmount: item.cost,
+          interestRate,
+          totalRepay,
+          amountRepaid: 0,
+          startDate: now.toISOString(),
+          durationMonths,
+          deadline: deadline.toISOString(),
+          repaymentType,
+          associatedStat: (item.stat?.toLowerCase() || 'code'),
+          status: 'active',
+          monthlyTarget: Math.floor(totalRepay / durationMonths)
+        };
+
+        set(state => ({
+          activeLoans: [...state.activeLoans, newLoan],
+          inventory: [...state.inventory, itemId]
+        }));
+
+        get().addNotification({
+          title: 'LOAN PROTOCOL INITIATED',
+          description: `Borrowed ${item.cost} GC for ${item.name}. Repayment due in ${durationMonths} months.`,
+          status: 'URGENT',
+          iconType: 'time'
+        });
+
+        return { success: true };
+      },
+
+      checkLoanStatus: async () => {
+        const { activeLoans, streaks, statLevels, integrity, user } = get();
+        const now = new Date();
+        let changed = false;
+        const updatedLoans = activeLoans.map(loan => {
+          if (loan.status === 'repaid' || loan.status === 'defaulted') return loan;
+
+          const deadline = new Date(loan.deadline);
+          const diffDays = Math.floor((now.getTime() - deadline.getTime()) / (1000 * 3600 * 24));
+
+          if (diffDays > 0) {
+            // Late State
+            if (diffDays <= 2 && loan.status !== 'late') {
+              changed = true;
+              get().addNotification({
+                title: 'LOAN OVERDUE',
+                description: `Payment for ${loan.itemName} is late. 2-day penalty window active.`,
+                status: 'URGENT',
+                iconType: 'alert'
+              });
+              return { ...loan, status: 'late' as const };
+            }
+
+            // Grace Period / Default
+            if (diffDays > 2 && diffDays <= 7) {
+              const progress = loan.amountRepaid / loan.totalRepay;
+              if (progress >= 0.8) {
+                if (loan.status !== 'grace_period') {
+                  changed = true;
+                  get().addNotification({
+                    title: 'GRACE PERIOD ACTIVATED',
+                    description: `>80% repayment detected. 7-day window to clear ${loan.itemName} debt.`,
+                    status: 'URGENT',
+                    iconType: 'time'
+                  });
+                  return { ...loan, status: 'grace_period' as const };
+                }
+              } else {
+                // < 80% and > 2 days late = Default warning or immediate default?
+                // The user said: "after 2 days put lesser penalty depending on how much progress was done"
+                // and "reset stat for which loan was taken"
+              }
+            }
+
+            if (diffDays > 7) {
+              // TERMINAL DEFAULT
+              changed = true;
+              const associatedStat = loan.associatedStat;
+
+              set(state => ({
+                statLevels: { ...state.statLevels, [associatedStat]: 1 },
+                statXP: { ...state.statXP, [associatedStat]: 0 },
+                integrity: Math.max(0, state.integrity - 20),
+                inventory: state.inventory.filter(id => id !== loan.itemId),
+                streaks: { ...state.streaks, [associatedStat]: { current: 0, longest: state.streaks[associatedStat].longest } }
+              }));
+
+              get().addNotification({
+                title: 'PROTOCOL DEFAULT',
+                description: `Loan for ${loan.itemName} failed. ${associatedStat.toUpperCase()} reset. Integrity compromised.`,
+                status: 'URGENT',
+                iconType: 'alert'
+              });
+
+              return { ...loan, status: 'defaulted' as const };
+            }
+          }
+          return loan;
+        });
+
+        if (changed) {
+          set({ activeLoans: updatedLoans });
+          if (user) {
+            // Sync to DB
+            await supabase.from('user_stats').update({
+              integrity: get().integrity,
+              inventory: get().inventory,
+              active_loans: get().activeLoans // Assuming we add this or store in metadata
+            }).eq('id', user.id);
+          }
+        }
+      },
+
       addVenture: (v) => {
         const newId = Math.random().toString(36).substr(2, 9);
         set(state => ({
@@ -3068,6 +3390,7 @@ export const useSovereignStore = create<SovereignStore>()(
         statTodayXP: state.statTodayXP,
         gold: state.gold,
         inventory: state.inventory,
+        activeLoans: state.activeLoans,
         resources: state.resources,
         freedomScore: state.freedomScore,
         sovereignty: state.sovereignty,

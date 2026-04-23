@@ -64,9 +64,9 @@ export default function Jobs() {
         <div>
           <div className="flex items-center gap-3 mb-3">
             <span className="w-8 h-px bg-white/20" />
-            <span className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase font-black">Job Hunt Engine</span>
+            <span className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase font-black">Job Hunt Engine</span>
           </div>
-          <h1 className="font-mono text-5xl font-black tracking-tighter text-white uppercase italic">
+          <h1 className="font-bold text-5xl font-black tracking-tighter text-white uppercase italic">
             Ops <span className="text-white/20">Deployment</span>
           </h1>
         </div>
@@ -93,7 +93,7 @@ export default function Jobs() {
           <div className="w-px h-8 bg-white/10 mx-2" />
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-3 px-6 py-3 bg-[var(--stat-brand)] text-black rounded-2xl font-mono text-[10px] font-black tracking-widest uppercase hover:opacity-90 transition-all shadow-[0_0_20px_rgba(var(--stat-brand-rgb),0.3)]"
+            className="flex items-center gap-3 px-6 py-3 bg-[var(--stat-brand)] text-black rounded-2xl font-bold text-[10px] font-black tracking-widest uppercase hover:opacity-90 transition-all shadow-[0_0_20px_rgba(var(--stat-brand-rgb),0.3)]"
           >
             <Plus size={16} /> Add Target
           </button>
@@ -108,7 +108,7 @@ export default function Jobs() {
             placeholder="FILTER COMMANDS..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs font-mono text-white outline-none focus:border-white/40 transition-all"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs font-bold text-white outline-none focus:border-white/40 transition-all"
           />
         </div>
       </div>
@@ -132,9 +132,9 @@ export default function Jobs() {
                     <div className="flex items-center justify-between mb-4 px-2">
                       <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-focus-within/lane:bg-white transition-colors" />
-                        <span className="font-mono text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">{lane}</span>
+                        <span className="font-bold text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">{lane}</span>
                       </div>
-                      <span className="font-mono text-[10px] text-white/20">{laneJobs.length}</span>
+                      <span className="font-bold text-[10px] text-white/20">{laneJobs.length}</span>
                     </div>
 
                     {/* Lane Body */}
@@ -142,7 +142,7 @@ export default function Jobs() {
                       {laneJobs.length === 0 ? (
                         <div className="flex-1 border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center text-white/10 gap-3 opacity-50">
                           <Briefcase size={24} />
-                          <span className="font-mono text-[8px] tracking-widest uppercase italic">Empty Sector</span>
+                          <span className="font-bold text-[8px] tracking-widest uppercase italic">Empty Sector</span>
                         </div>
                       ) : (
                         laneJobs.map(job => (
@@ -193,25 +193,25 @@ export default function Jobs() {
 
               <form onSubmit={handleAdd} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] font-black">Company Designation</label>
+                  <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] font-black">Company Designation</label>
                   <input
                     autoFocus
                     placeholder="E.G. NEURALINK / STARK IND."
                     value={newCompany}
                     onChange={e => setNewCompany(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white outline-none focus:border-white/40 transition-all font-mono italic"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white outline-none focus:border-white/40 transition-all font-bold italic"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] font-black">Mission Role</label>
+                  <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] font-black">Mission Role</label>
                   <input
                     placeholder="E.G. SENIOR AI ARCHITECT"
                     value={newRole}
                     onChange={e => setNewRole(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white outline-none focus:border-white/40 transition-all font-mono italic"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white outline-none focus:border-white/40 transition-all font-bold italic"
                   />
                 </div>
-                <button type="submit" className="w-full py-5 bg-white text-black font-black font-mono text-[10px] uppercase tracking-[0.3em] rounded-2xl hover:bg-white/90 transition-all shadow-xl">
+                <button type="submit" className="w-full py-5 bg-white text-black font-black font-bold text-[10px] uppercase tracking-[0.3em] rounded-2xl hover:bg-white/90 transition-all shadow-xl">
                   Deploy Protocol
                 </button>
               </form>
@@ -229,20 +229,20 @@ export default function Jobs() {
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-[var(--stat-brand)] opacity-20" />
               <button onClick={() => setEditingJob(null)} className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"><X size={20} /></button>
-              
+
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
                   <Briefcase className="text-white" size={20} />
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-white uppercase italic tracking-tight">{editingJob.company}</h3>
-                  <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">{editingJob.role}</p>
+                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{editingJob.role}</p>
                 </div>
               </div>
 
               <div className="space-y-8">
                 <div className="space-y-3">
-                  <label className="flex items-center gap-2 text-[10px] font-mono text-white/30 uppercase tracking-widest font-black">
+                  <label className="flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest font-black">
                     <Settings2 size={12} /> Mission Intelligence
                   </label>
                   <textarea
@@ -255,22 +255,22 @@ export default function Jobs() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest font-black">Status Sector</label>
+                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest font-black">Status Sector</label>
                     <select
                       value={editingJob.status}
                       onChange={e => setEditingJob({ ...editingJob, status: e.target.value as any })}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-[10px] font-mono text-white outline-none focus:border-white/40"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-[10px] font-bold text-white outline-none focus:border-white/40"
                     >
                       {LANES.map(l => <option key={l} value={l}>{l}</option>)}
                     </select>
                   </div>
                   <div className="space-y-3">
-                    <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest font-black">Next Follow-up</label>
+                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest font-black">Next Follow-up</label>
                     <input
                       type="date"
                       value={editingJob.followUpDate || ''}
                       onChange={e => setEditingJob({ ...editingJob, followUpDate: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-[10px] font-mono text-white outline-none focus:border-white/40 [color-scheme:dark]"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-[10px] font-bold text-white outline-none focus:border-white/40 [color-scheme:dark]"
                     />
                   </div>
                 </div>
@@ -281,7 +281,7 @@ export default function Jobs() {
                       updateJobApp(editingJob.id, editingJob);
                       setEditingJob(null);
                     }}
-                    className="flex-1 py-5 bg-white text-black font-black font-mono text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/90 transition-all"
+                    className="flex-1 py-5 bg-white text-black font-black font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/90 transition-all"
                   >
                     Commit Changes
                   </button>

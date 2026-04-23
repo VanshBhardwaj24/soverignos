@@ -49,10 +49,10 @@ export function AntiWishlistCard() {
             <Skull size={16} />
           </div>
           <div className="text-left">
-            <h3 className="font-mono text-[9px] font-black tracking-[0.3em] text-red-400 uppercase">
+            <h3 className="font-bold text-[9px] font-black tracking-[0.3em] text-red-400 uppercase">
               Threat Model
             </h3>
-            <p className="font-mono text-[8px] text-white/20 uppercase tracking-widest">
+            <p className="font-bold text-[8px] text-white/20 uppercase tracking-widest">
               {antiWishlistLocked ? 'SEALED — REVIEW WEEKLY' : `${antiWishlist.length} threats logged`}
             </p>
           </div>
@@ -70,7 +70,7 @@ export function AntiWishlistCard() {
             {/* Item list */}
             <div className="space-y-1.5 mb-4">
               {antiWishlist.length === 0 ? (
-                <p className="text-[10px] font-mono text-white/15 text-center py-4">
+                <p className="text-[10px] font-bold text-white/15 text-center py-4">
                   What are you running away from?
                 </p>
               ) : (
@@ -83,7 +83,7 @@ export function AntiWishlistCard() {
                     className="flex items-start gap-2.5 group/item py-1"
                   >
                     <div className="h-1.5 w-1.5 rounded-full bg-red-500/60 mt-1.5 shrink-0 group-hover/item:bg-red-400 transition-colors" />
-                    <span className="font-mono text-[10px] text-white/50 flex-1 leading-relaxed group-hover/item:text-white/70 transition-colors">
+                    <span className="font-bold text-[10px] text-white/50 flex-1 leading-relaxed group-hover/item:text-white/70 transition-colors">
                       {item.text}
                     </span>
                     {!antiWishlistLocked && (
@@ -107,7 +107,7 @@ export function AntiWishlistCard() {
                     value={newItem}
                     onChange={e => setNewItem(e.target.value)}
                     placeholder="Adding a fear..."
-                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-[10px] font-mono text-white/60 outline-none focus:border-red-500/30 transition-all placeholder:text-white/15"
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-[10px] font-bold text-white/60 outline-none focus:border-red-500/30 transition-all placeholder:text-white/15"
                   />
                   <button
                     type="submit"
@@ -120,7 +120,7 @@ export function AntiWishlistCard() {
                 {antiWishlist.length >= 5 && (
                   <button
                     onClick={lockAntiWishlist}
-                    className="w-full py-2.5 bg-red-500/10 border border-red-500/25 rounded-xl text-red-400 font-mono text-[9px] font-black tracking-[0.2em] uppercase hover:bg-red-500/20 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-2.5 bg-red-500/10 border border-red-500/25 rounded-xl text-red-400 font-bold text-[9px] font-black tracking-[0.2em] uppercase hover:bg-red-500/20 transition-all flex items-center justify-center gap-2"
                   >
                     <Lock size={12} /> Seal Forever
                   </button>
@@ -131,12 +131,12 @@ export function AntiWishlistCard() {
             {/* Locked state footer */}
             {antiWishlistLocked && antiWishlistLockedAt && (
               <div className="flex items-center justify-between pt-3 border-t border-red-500/10 mt-2">
-                <span className="font-mono text-[8px] text-red-500/40 uppercase tracking-widest">
+                <span className="font-bold text-[8px] text-red-500/40 uppercase tracking-widest">
                   <Lock size={8} className="inline mr-1" />
                   Sealed {new Date(antiWishlistLockedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: '2-digit' })}
                 </span>
                 {isWeeklyReviewDay && (
-                  <span className="font-mono text-[8px] text-red-400 uppercase tracking-widest animate-pulse">
+                  <span className="font-bold text-[8px] text-red-400 uppercase tracking-widest animate-pulse">
                     Review Day
                   </span>
                 )}

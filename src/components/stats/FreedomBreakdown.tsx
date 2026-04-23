@@ -31,14 +31,14 @@ export const FreedomBreakdown = () => {
   return (
     <div className="p-5 rounded-[24px] border border-white/5 bg-white/[0.02] flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">Freedom Breakdown</span>
-        <span className="font-mono text-[9px] text-white/20 uppercase">Contribution %</span>
+        <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">Freedom Breakdown</span>
+        <span className="font-bold text-[9px] text-white/20 uppercase">Contribution %</span>
       </div>
       
       <div className="space-y-3">
         {breakdown.map((item) => (
           <div key={item.id} className="space-y-1">
-            <div className="flex justify-between text-[10px] font-mono uppercase tracking-tighter">
+            <div className="flex justify-between text-[10px] font-bold uppercase tracking-tighter">
               <span style={{ color: item.color }} className="font-bold">{item.name}</span>
               <span className="text-white/40">{item.percent}%</span>
             </div>

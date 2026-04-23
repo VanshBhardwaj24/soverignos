@@ -32,11 +32,11 @@ export const SovereigntyBar = ({ totalXP }: SovereigntyBarProps) => {
                 <div className="p-2 rounded-lg bg-white/5 border border-white/10">
                     <Zap size={16} className="text-white/60" />
                 </div>
-                <span className="font-mono text-[10px] tracking-[0.4em] text-white/40 uppercase font-black">Life Progression Matrix</span>
+                <span className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase font-black">Life Progression Matrix</span>
              </div>
              
              <div>
-                <h3 className="text-xl font-mono font-black text-white/20 uppercase tracking-[0.2em]">Overall Sovereignty</h3>
+                <h3 className="text-xl font-bold font-black text-white/20 uppercase tracking-[0.2em]">Overall Sovereignty</h3>
                 <div className="flex items-baseline gap-4 mt-2">
                     <span className="text-6xl font-black text-white italic tracking-tighter uppercase">LVL {currentLevel}</span>
                     <div className="px-4 py-1.5 rounded-xl border-2 border-white text-white font-black italic text-lg shadow-[0_0_20px_rgba(255,255,255,0.3)]"
@@ -50,9 +50,9 @@ export const SovereigntyBar = ({ totalXP }: SovereigntyBarProps) => {
           <div className="text-left md:text-right space-y-2">
             <div className="flex items-center md:justify-end gap-2 text-white/40">
                 <TrendingUp size={14} />
-                <span className="font-mono text-[10px] font-black uppercase tracking-widest">Next Threshold</span>
+                <span className="font-bold text-[10px] font-black uppercase tracking-widest">Next Threshold</span>
             </div>
-            <div className="font-mono text-2xl font-black text-white">
+            <div className="font-bold text-2xl font-black text-white">
                 {nextLevelXP.toLocaleString()}<span className="text-xs text-white/20 font-light ml-1 uppercase">Total XP</span>
             </div>
           </div>
@@ -60,10 +60,10 @@ export const SovereigntyBar = ({ totalXP }: SovereigntyBarProps) => {
 
         <div className="space-y-4">
             <div className="flex justify-between items-end mb-2">
-                <span className="font-mono text-[9px] text-white/40 uppercase tracking-widest font-black">
+                <span className="font-bold text-[9px] text-white/40 uppercase tracking-widest font-black">
                     Progress to Level {currentLevel + 1}
                 </span>
-                <span className="font-mono text-xl font-black text-white italic">
+                <span className="font-bold text-xl font-black text-white italic">
                     {Math.floor(progressPercent)}%
                 </span>
             </div>
@@ -87,7 +87,7 @@ export const SovereigntyBar = ({ totalXP }: SovereigntyBarProps) => {
                 </motion.div>
             </div>
 
-            <div className="flex justify-between font-mono text-[9px] text-white/20 uppercase tracking-[0.2em] font-black">
+            <div className="flex justify-between font-bold text-[9px] text-white/20 uppercase tracking-[0.2em] font-black">
                 <span>{totalXP.toLocaleString()} XP COMMITTED</span>
                 <span>{(nextLevelXP - totalXP).toLocaleString()} XP REMAINING</span>
             </div>
@@ -109,7 +109,7 @@ export const SovereigntyBar = ({ totalXP }: SovereigntyBarProps) => {
                                 "w-2 h-2 rounded-full",
                                 isActive ? "bg-white shadow-[0_0_10px_white]" : isPast ? "bg-white/40" : "bg-white/10"
                             )} />
-                            <span className="font-mono text-[8px] font-black tracking-widest">{r}</span>
+                            <span className="font-bold text-[8px] font-black tracking-widest">{r}</span>
                         </div>
                         {i < 6 && <ChevronRight size={10} className="text-white/10" />}
                     </div>

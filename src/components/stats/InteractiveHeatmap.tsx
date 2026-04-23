@@ -40,11 +40,11 @@ export const InteractiveHeatmap = ({ entries = [] }: Props) => {
   return (
     <div className="w-full bg-white/[0.03] border border-white/10 rounded-2xl p-6 overflow-hidden backdrop-blur-md">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="font-mono text-[9px] tracking-[0.3em] text-white/40 flex items-center gap-2 uppercase font-black">
+        <h2 className="font-bold text-[9px] tracking-[0.3em] text-white/40 flex items-center gap-2 uppercase font-black">
           <Activity size={14} className="text-[var(--stat-brand)]" /> Contribution Heatmap (YTD)
         </h2>
         <div className="flex items-center gap-4">
-           <span className="font-mono text-[9px] text-[var(--stat-brand)] border border-[var(--stat-brand)]/20 bg-[var(--stat-brand)]/5 rounded px-2 py-0.5 font-bold uppercase tracking-widest">
+           <span className="font-bold text-[9px] text-[var(--stat-brand)] border border-[var(--stat-brand)]/20 bg-[var(--stat-brand)]/5 rounded px-2 py-0.5 font-bold uppercase tracking-widest">
              {entries.length} SESSIONS
            </span>
         </div>
@@ -73,7 +73,7 @@ export const InteractiveHeatmap = ({ entries = [] }: Props) => {
       </div>
       
       <div className="flex items-center gap-3 mt-2 justify-end">
-        <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">Low</span>
+        <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">Low</span>
         <div className="flex gap-1">
           <div className="w-3 h-3 rounded-[2px] bg-[#1A1A1A] border border-white/5"></div>
           <div className="w-3 h-3 rounded-[2px] bg-[var(--stat-brand)]/20 border border-[var(--stat-brand)]/10"></div>
@@ -81,7 +81,7 @@ export const InteractiveHeatmap = ({ entries = [] }: Props) => {
           <div className="w-3 h-3 rounded-[2px] bg-[var(--stat-brand)]/70 border border-[var(--stat-brand)]/30"></div>
           <div className="w-3 h-3 rounded-[2px] bg-[var(--stat-brand)] border border-white/50"></div>
         </div>
-        <span className="font-mono text-[8px] text-white/20 uppercase tracking-widest font-black">High</span>
+        <span className="font-bold text-[8px] text-white/20 uppercase tracking-widest font-black">High</span>
       </div>
 
     </div>

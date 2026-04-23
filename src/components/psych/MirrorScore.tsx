@@ -52,11 +52,11 @@ export function MirrorScore({ onComplete }: Props) {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <Eye size={16} className="text-[var(--stat-mind)]" />
-          <span className="font-mono text-[9px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black">
+          <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--stat-mind)] uppercase font-black">
             Mirror Score
           </span>
         </div>
-        <p className="font-mono text-white/30 text-xs">
+        <p className="font-bold text-white/30 text-xs">
           The gap between how productive you feel and how productive you actually were.
         </p>
       </div>
@@ -64,27 +64,27 @@ export function MirrorScore({ onComplete }: Props) {
       {/* This week's actual XP */}
       <div className="grid grid-cols-2 gap-3">
         <div className="p-4 bg-white/[0.03] border border-white/10 rounded-2xl text-center">
-          <p className="font-mono text-[8px] text-white/25 uppercase tracking-widest mb-2">Actual XP This Week</p>
-          <p className="font-mono text-3xl font-light text-[var(--success)]">{weeklyActualXP}</p>
-          <p className="font-mono text-[8px] text-white/20">{normalizedActual}/10 normalized</p>
+          <p className="font-bold text-[8px] text-white/25 uppercase tracking-widest mb-2">Actual XP This Week</p>
+          <p className="font-bold text-3xl font-light text-[var(--success)]">{weeklyActualXP}</p>
+          <p className="font-bold text-[8px] text-white/20">{normalizedActual}/10 normalized</p>
         </div>
         <div className="p-4 bg-white/[0.03] border border-white/10 rounded-2xl text-center">
-          <p className="font-mono text-[8px] text-white/25 uppercase tracking-widest mb-2">Delusion Gap</p>
-          <p className={cn('font-mono text-3xl font-light', delusionGap > 1 ? 'text-orange-400' : delusionGap < -1 ? 'text-[var(--stat-code)]' : 'text-[var(--success)]')}>
+          <p className="font-bold text-[8px] text-white/25 uppercase tracking-widest mb-2">Delusion Gap</p>
+          <p className={cn('font-bold text-3xl font-light', delusionGap > 1 ? 'text-orange-400' : delusionGap < -1 ? 'text-[var(--stat-code)]' : 'text-[var(--success)]')}>
             {delusionGap > 0 ? '+' : ''}{delusionGap}
           </p>
-          <p className={cn('font-mono text-[8px]', gapLabel().color)}>{gapLabel().text}</p>
+          <p className={cn('font-bold text-[8px]', gapLabel().color)}>{gapLabel().text}</p>
         </div>
       </div>
 
       {/* Perceived slider */}
       {!submitted ? (
         <div className="space-y-4">
-          <label className="block font-mono text-lg font-light text-white">
+          <label className="block font-bold text-lg font-light text-white">
             How productive do you feel you were this week?
           </label>
           <div className="flex items-center gap-4">
-            <span className="font-mono text-[9px] text-white/25">1</span>
+            <span className="font-bold text-[9px] text-white/25">1</span>
             <input
               type="range"
               min={1}
@@ -93,12 +93,12 @@ export function MirrorScore({ onComplete }: Props) {
               onChange={e => setPerceived(Number(e.target.value))}
               className="flex-1 accent-[var(--stat-mind)] h-1"
             />
-            <span className="font-mono text-[9px] text-white/25">10</span>
-            <span className="font-mono text-2xl font-black text-white w-8 text-center">{perceived}</span>
+            <span className="font-bold text-[9px] text-white/25">10</span>
+            <span className="font-bold text-2xl font-black text-white w-8 text-center">{perceived}</span>
           </div>
           <button
             onClick={handleSubmit}
-            className="w-full py-4 bg-white text-black font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all"
+            className="w-full py-4 bg-white text-black font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all"
           >
             Commit Score
           </button>
@@ -109,7 +109,7 @@ export function MirrorScore({ onComplete }: Props) {
           animate={{ opacity: 1 }}
           className="p-4 bg-[var(--stat-mind)]/5 border border-[var(--stat-mind)]/20 rounded-2xl"
         >
-          <p className="font-mono text-[10px] text-[var(--stat-mind)] text-center uppercase tracking-widest">
+          <p className="font-bold text-[10px] text-[var(--stat-mind)] text-center uppercase tracking-widest">
             Score recorded. {Math.abs(delusionGap) <= 1
               ? 'Rare calibration. You know yourself.'
               : delusionGap > 1
@@ -122,7 +122,7 @@ export function MirrorScore({ onComplete }: Props) {
       {/* Historical chart */}
       {last8.length >= 2 && (
         <div>
-          <p className="font-mono text-[8px] text-white/20 uppercase tracking-widest mb-3">History</p>
+          <p className="font-bold text-[8px] text-white/20 uppercase tracking-widest mb-3">History</p>
           <div className="flex items-end gap-2 h-20">
             {last8.map((score, i) => (
               <div key={score.id} className="flex-1 flex flex-col items-center gap-1">
@@ -138,7 +138,7 @@ export function MirrorScore({ onComplete }: Props) {
                     style={{ height: `${(score.normalizedActual / 10) * 60}px` }}
                   />
                 </div>
-                <span className="font-mono text-[6px] text-white/15">
+                <span className="font-bold text-[6px] text-white/15">
                   W{i + 1}
                 </span>
               </div>
@@ -147,11 +147,11 @@ export function MirrorScore({ onComplete }: Props) {
           <div className="flex items-center gap-4 mt-2">
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-sm bg-orange-400/60" />
-              <span className="font-mono text-[7px] text-white/20">Perceived</span>
+              <span className="font-bold text-[7px] text-white/20">Perceived</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-sm bg-[var(--success)]/60" />
-              <span className="font-mono text-[7px] text-white/20">Actual</span>
+              <span className="font-bold text-[7px] text-white/20">Actual</span>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export function MirrorScore({ onComplete }: Props) {
       {submitted && (
         <button
           onClick={onComplete}
-          className="w-full py-4 bg-white/5 border border-white/10 text-white font-mono text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+          className="w-full py-4 bg-white/5 border border-white/10 text-white font-bold text-[10px] font-black tracking-widest uppercase rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
         >
           Continue <ChevronRight size={14} />
         </button>
