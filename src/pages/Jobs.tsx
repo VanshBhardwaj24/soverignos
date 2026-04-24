@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { JobCard } from '../components/jobs/JobCard';
 import { JobAnalytics } from '../components/jobs/JobAnalytics';
+import { ModalPortal } from '../components/ui/ModalPortal';
 
 const LANES: JobApp['status'][] = ['RESEARCHING', 'APPLIED', 'INTERVIEWING', 'PENDING OFFER', 'ACCEPTED', 'REJECTED'];
 
@@ -64,9 +65,9 @@ export default function Jobs() {
         <div>
           <div className="flex items-center gap-3 mb-3">
             <span className="w-8 h-px bg-white/20" />
-            <span className="font-bold text-[10px] tracking-[0.4em] text-white/40 uppercase font-black">Job Hunt Engine</span>
+            <p className="eyebrow text-white/40">Job Hunt Engine</p>
           </div>
-          <h1 className="font-bold text-5xl font-black tracking-tighter text-white uppercase italic">
+          <h1 className="h-display italic">
             Ops <span className="text-white/20">Deployment</span>
           </h1>
         </div>
@@ -108,7 +109,7 @@ export default function Jobs() {
             placeholder="FILTER COMMANDS..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs font-bold text-white outline-none focus:border-white/40 transition-all"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 stat-label text-white outline-none focus:border-white/40 transition-all"
           />
         </div>
       </div>
@@ -132,17 +133,17 @@ export default function Jobs() {
                     <div className="flex items-center justify-between mb-4 px-2">
                       <div className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-focus-within/lane:bg-white transition-colors" />
-                        <span className="font-bold text-[10px] font-black text-white/40 tracking-[0.2em] uppercase">{lane}</span>
+                        <span className="stat-label text-white/40">{lane}</span>
                       </div>
-                      <span className="font-bold text-[10px] text-white/20">{laneJobs.length}</span>
+                      <span className="stat-label text-white/20">{laneJobs.length}</span>
                     </div>
 
                     {/* Lane Body */}
-                    <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-[32px] p-3 flex flex-col gap-3 overflow-y-auto no-scrollbar scroll-smooth">
+                    <div className="flex-1 surface-card p-3 flex flex-col gap-3 overflow-y-auto no-scrollbar scroll-smooth">
                       {laneJobs.length === 0 ? (
                         <div className="flex-1 border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center text-white/10 gap-3 opacity-50">
                           <Briefcase size={24} />
-                          <span className="font-bold text-[8px] tracking-widest uppercase italic">Empty Sector</span>
+                          <span className="stat-label italic">Empty Sector</span>
                         </div>
                       ) : (
                         laneJobs.map(job => (
@@ -176,24 +177,25 @@ export default function Jobs() {
       </div>
 
       {/* Modals */}
-      <AnimatePresence>
-        {isAdding && (
+      <ModalPortal>
+        <AnimatePresence>
+          {isAdding && (
           <div className="fixed inset-0 z-[600] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 relative shadow-2xl"
+              className="w-full max-w-md glass-premium p-8 relative shadow-2xl"
             >
               <button onClick={() => setIsAdding(false)} className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"><X size={20} /></button>
               <div className="flex items-center gap-3 mb-6">
                 <Target className="text-[var(--stat-brand)]" size={20} />
-                <h2 className="text-xl font-black text-white uppercase italic">Initialize <span className="text-white/20">Target</span></h2>
+                <h2 className="h-section italic">Initialize <span className="text-white/20">Target</span></h2>
               </div>
 
               <form onSubmit={handleAdd} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] font-black">Company Designation</label>
+                  <label className="stat-label opacity-30 mb-3 block">Company Designation</label>
                   <input
                     autoFocus
                     placeholder="E.G. NEURALINK / STARK IND."
@@ -203,7 +205,7 @@ export default function Jobs() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] font-black">Mission Role</label>
+                  <label className="stat-label opacity-30 mb-3 block">Mission Role</label>
                   <input
                     placeholder="E.G. SENIOR AI ARCHITECT"
                     value={newRole}
@@ -211,7 +213,7 @@ export default function Jobs() {
                     className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white outline-none focus:border-white/40 transition-all font-bold italic"
                   />
                 </div>
-                <button type="submit" className="w-full py-5 bg-white text-black font-black font-bold text-[10px] uppercase tracking-[0.3em] rounded-2xl hover:bg-white/90 transition-all shadow-xl">
+                <button type="submit" className="btn-primary w-full py-5">
                   Deploy Protocol
                 </button>
               </form>
@@ -225,7 +227,7 @@ export default function Jobs() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-[32px] p-8 relative shadow-2xl overflow-hidden"
+              className="w-full max-w-md glass-premium p-8 relative shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-[var(--stat-brand)] opacity-20" />
               <button onClick={() => setEditingJob(null)} className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"><X size={20} /></button>
@@ -235,14 +237,14 @@ export default function Jobs() {
                   <Briefcase className="text-white" size={20} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-white uppercase italic tracking-tight">{editingJob.company}</h3>
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{editingJob.role}</p>
+                  <h3 className="h-section italic">{editingJob.company}</h3>
+                  <p className="stat-label opacity-40">{editingJob.role}</p>
                 </div>
               </div>
 
               <div className="space-y-8">
                 <div className="space-y-3">
-                  <label className="flex items-center gap-2 text-[10px] font-bold text-white/30 uppercase tracking-widest font-black">
+                  <label className="stat-label opacity-30 mb-3 block flex items-center gap-2">
                     <Settings2 size={12} /> Mission Intelligence
                   </label>
                   <textarea
@@ -255,7 +257,7 @@ export default function Jobs() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest font-black">Status Sector</label>
+                    <label className="stat-label opacity-30 mb-3 block">Status Sector</label>
                     <select
                       value={editingJob.status}
                       onChange={e => setEditingJob({ ...editingJob, status: e.target.value as any })}
@@ -265,7 +267,7 @@ export default function Jobs() {
                     </select>
                   </div>
                   <div className="space-y-3">
-                    <label className="block text-[10px] font-bold text-white/30 uppercase tracking-widest font-black">Next Follow-up</label>
+                    <label className="stat-label opacity-30 mb-3 block">Next Follow-up</label>
                     <input
                       type="date"
                       value={editingJob.followUpDate || ''}
@@ -281,7 +283,7 @@ export default function Jobs() {
                       updateJobApp(editingJob.id, editingJob);
                       setEditingJob(null);
                     }}
-                    className="flex-1 py-5 bg-white text-black font-black font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-white/90 transition-all"
+                    className="btn-primary flex-1 py-5"
                   >
                     Commit Changes
                   </button>
@@ -301,7 +303,8 @@ export default function Jobs() {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </ModalPortal>
     </div>
   );
 }

@@ -91,13 +91,14 @@ export const GodModeTracker = () => {
           className="fixed inset-0 bg-[#0A0A0A] z-[500] flex flex-col items-center justify-center font-bold selection:bg-white/20"
         >
           {/* Top navigation */}
-          <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center opacity-50 hover:opacity-100 transition-opacity">
-            <span className="text-white tracking-[0.2em] text-xs">DIAGNOSTIC: GOD MODE</span>
+          <div className="absolute top-0 left-0 w-full p-8 flex justify-between items-center opacity-60 hover:opacity-100 transition-opacity">
+            <span className="eyebrow text-white">Diagnostic: God Mode</span>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-white hover:text-[var(--danger)] flex items-center gap-2"
+              className="text-white hover:text-danger flex items-center gap-2 group transition-all"
             >
-              <X size={20} /> <span className="text-xs">ABORT</span>
+              <X size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+              <span className="eyebrow">Abort</span>
             </button>
           </div>
 
@@ -106,29 +107,32 @@ export const GodModeTracker = () => {
             animate={{ scale: 1, filter: 'blur(0px)' }}
             className="flex flex-col items-center"
           >
-            <div className="text-[120px] md:text-[180px] leading-none font-light tracking-tighter text-white mb-8" style={{ textShadow: isActive ? '0 0 40px rgba(255,255,255,0.4)' : 'none' }}>
+            <div 
+              className="text-[120px] md:text-[200px] leading-none font-medium tracking-tighter text-white mb-12 font-display" 
+              style={{ textShadow: isActive ? '0 0 60px rgba(255,255,255,0.2)' : 'none' }}
+            >
               {formattedTime()}
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-10">
               <button
                 onClick={toggleTimer}
-                className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all hover:scale-110 active:scale-95"
               >
-                {isActive ? <Square size={24} className="fill-current" /> : <Play size={24} className="fill-current ml-1" />}
+                {isActive ? <Square size={28} className="fill-current" /> : <Play size={28} className="fill-current ml-1" />}
               </button>
 
-              <div className="flex gap-4">
+              <div className="flex gap-6">
                 {[25, 50, 90].map(m => (
                   <button
                     key={m}
                     onClick={() => startSession(m)}
                     className={cn(
-                      "text-[10px] font-black tracking-widest px-6 py-2 border rounded-full transition-all",
+                      "font-mono text-[10px] font-bold tracking-[0.2em] px-8 py-3 border rounded-full transition-all uppercase",
                       initialSeconds === m * 60 ? "bg-white text-black border-white" : "text-white/40 border-white/10 hover:border-white/30"
                     )}
                   >
-                    {m}M
+                    {m}m
                   </button>
                 ))}
               </div>
@@ -139,34 +143,34 @@ export const GodModeTracker = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-12 flex flex-col items-center gap-2"
+                  className="mt-16 flex flex-col items-center gap-4"
                 >
-                  <div className="h-12 w-12 rounded-full bg-[var(--success)] flex items-center justify-center text-white shadow-[0_0_20px_var(--success)] mb-2">
-                    <Zap size={24} />
+                  <div className="h-16 w-16 rounded-full bg-success flex items-center justify-center text-white shadow-[0_0_30px_rgba(74,222,128,0.4)] mb-4">
+                    <Zap size={32} />
                   </div>
-                  <span className="text-[var(--success)] font-black tracking-[0.3em] text-xs">OBJECTIVE ACHIEVED</span>
+                  <span className="eyebrow text-success text-sm">Objective Achieved</span>
 
-                  <div className="flex gap-8 mt-4 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                  <div className="flex gap-12 mt-6 p-8 glass-premium rounded-3xl">
                     <div className="text-center">
-                      <span className="block text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">Magnitude</span>
-                      <span className="text-xl font-bold font-black text-white">+{finalXp} XP</span>
+                      <span className="stat-label mb-2 block">Magnitude</span>
+                      <span className="stat-value text-white">+{finalXp} XP</span>
                     </div>
-                    <div className="w-px h-8 bg-white/10" />
+                    <div className="w-px h-12 bg-white/10" />
                     <div className="text-center">
-                      <span className="block text-[8px] text-white/30 uppercase tracking-[0.2em] mb-1">Efficiency</span>
-                      <span className="text-xl font-bold font-black text-[var(--stat-brand)]">{xpEfficiency} <span className="text-[10px] opacity-40">XP/HR</span></span>
+                      <span className="stat-label mb-2 block">Efficiency</span>
+                      <span className="stat-value text-[var(--stat-brand)]">{xpEfficiency} <span className="text-xs opacity-40">XP/HR</span></span>
                     </div>
                   </div>
 
-                  <span className="text-white/40 text-[10px] uppercase mt-6">Returning to Command...</span>
+                  <span className="eyebrow opacity-40 mt-8 animate-pulse">Returning to Command...</span>
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
 
           {/* Minimal distraction warnings */}
-          <div className="absolute bottom-10 shrink text-center">
-            <p className="text-[#555] text-xs tracking-widest uppercase">All external communications intercepted.</p>
+          <div className="absolute bottom-12 text-center">
+            <p className="eyebrow opacity-20">All external communications intercepted.</p>
           </div>
         </motion.div>
       )}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-  CreditCard, Calendar, Target, AlertTriangle,
+  CreditCard, Calendar, Target,
   ChevronRight, X, Shield, Info
 } from 'lucide-react';
 import { useSovereignStore } from '../../store/sovereign';
@@ -14,7 +14,7 @@ interface LoanModalProps {
 }
 
 export default function LoanModal({ itemId, onClose }: LoanModalProps) {
-  const { requestLoan, streaks } = useSovereignStore();
+  const { requestLoan } = useSovereignStore();
   const item = SHOP_ITEMS.find(i => i.id === itemId);
 
   const [duration, setDuration] = useState<1 | 3 | 6 | 12>(1);
@@ -27,7 +27,6 @@ export default function LoanModal({ itemId, onClose }: LoanModalProps) {
   const totalRepay = Math.floor(item.cost * (1 + interestRate));
   const interestAmount = totalRepay - item.cost;
   const monthlyRepayment = Math.floor(totalRepay / duration);
-  const associatedStat = item.stat || 'CODE';
 
   const handleRequest = async () => {
     setIsSubmitting(true);

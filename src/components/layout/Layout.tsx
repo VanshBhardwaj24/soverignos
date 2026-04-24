@@ -12,6 +12,7 @@ import { GodModeTracker } from './GodMode';
 import { LogModal } from '../log/LogModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LevelUpOverlay } from '../stats/LevelUpOverlay';
+import { LootDropOverlay } from '../stats/LootDropOverlay';
 import { QuestModal } from '../quests/QuestModal';
 import { ProofModal } from '../log/ProofModal';
 import { STATS } from '../../lib/constants';
@@ -25,6 +26,8 @@ export const Layout = () => {
   const theme = useSovereignStore(state => state.theme);
   const lastLeveledStat = useSovereignStore(state => state.lastLeveledStat);
   const setLastLeveledStat = useSovereignStore(state => state.setLastLeveledStat);
+  const pendingLootDrop = useSovereignStore(state => state.pendingLootDrop);
+  const setPendingLootDrop = useSovereignStore(state => state.setPendingLootDrop);
   const location = useLocation();
 
   const { modalMode, closeBriefing, date } = useDailyBriefing();
@@ -104,6 +107,12 @@ export const Layout = () => {
             newLevel={lastLeveledStat.newLevel}
             color={leveledStatInfo.colorVar}
             onClose={() => setLastLeveledStat(null)}
+          />
+        )}
+        {pendingLootDrop && (
+          <LootDropOverlay
+            drop={pendingLootDrop}
+            onClose={() => setPendingLootDrop(null)}
           />
         )}
       </AnimatePresence>

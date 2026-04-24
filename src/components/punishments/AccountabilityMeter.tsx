@@ -7,10 +7,10 @@ interface Props {
 
 export const AccountabilityMeter = ({ score }: Props) => {
   const getStatus = () => {
-    if (score >= 90) return { label: 'TRUSTED', color: 'var(--success)', icon: ShieldCheck };
-    if (score >= 60) return { label: 'STANDARD', color: 'var(--text-primary)', icon: ShieldCheck };
-    if (score >= 30) return { label: 'PAROLE', color: 'var(--warning)', icon: ShieldAlert };
-    return { label: 'EXILED', color: 'var(--danger)', icon: ShieldX };
+    if (score >= 90) return { label: 'Trusted', color: 'var(--success)', icon: ShieldCheck };
+    if (score >= 60) return { label: 'Standard', color: 'var(--text-primary)', icon: ShieldCheck };
+    if (score >= 30) return { label: 'Parole', color: 'var(--warning)', icon: ShieldAlert };
+    return { label: 'Exiled', color: 'var(--danger)', icon: ShieldX };
   };
 
   const status = getStatus();
@@ -22,7 +22,7 @@ export const AccountabilityMeter = ({ score }: Props) => {
   return (
     <div className="flex flex-col items-center justify-center p-8 bg-[var(--bg-elevated)]/40 rounded-[40px] border border-white/5 backdrop-blur-xl relative overflow-hidden group">
       {/* Background Glow */}
-      <div 
+      <div
         className="absolute inset-0 opacity-5 blur-3xl transition-colors duration-1000"
         style={{ backgroundColor: status.color }}
       />
@@ -52,7 +52,7 @@ export const AccountabilityMeter = ({ score }: Props) => {
             strokeLinecap="round"
           />
         </svg>
-        
+
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="font-bold text-3xl font-black text-white">{score}</span>
           <span className="font-bold text-[8px] text-white/40 tracking-[0.2em] font-black uppercase">Integrity</span>

@@ -220,6 +220,7 @@ interface PsychStore {
   // Streak Insurance
   streakInsurance: StreakInsurance;
   useStreakInsurance: () => boolean;
+  addStreakInsurance: () => void;
   resetInsuranceIfNewMonth: () => void;
 
   // Future Letters
@@ -555,6 +556,14 @@ export const usePsychStore = create<PsychStore>()(
           },
         });
         return true;
+      },
+      addStreakInsurance: () => {
+        set(state => ({
+          streakInsurance: {
+            ...state.streakInsurance,
+            usesThisMonth: Math.max(0, (state.streakInsurance.usesThisMonth || 0) - 1)
+          }
+        }));
       },
       resetInsuranceIfNewMonth: () => {
         const { streakInsurance } = get();

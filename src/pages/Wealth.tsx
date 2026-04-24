@@ -8,6 +8,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSovereignStore } from '../store/sovereign';
 import { cn } from '../lib/utils';
+import { ModalPortal } from '../components/ui/ModalPortal';
 
 export default function Wealth() {
   const {
@@ -172,7 +173,7 @@ export default function Wealth() {
         <div className="flex flex-wrap items-center gap-4">
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 bg-white/5 border border-white/10 hover:border-[var(--stat-wealth)] text-white px-6 py-3 rounded-2xl font-bold text-[10px] font-black tracking-widest transition-all shadow-xl hover:scale-[1.02]"
+            className="flex items-center gap-2 bg-white/5 border border-white/10 hover:border-[var(--stat-wealth)] text-white px-6 py-3 rounded-2xl font-bold text-[10px] font-black tracking-widest transition-all shadow-xl hover:scale-[1.02] surface-card"
           >
             <Plus size={16} /> ENTER
           </button>
@@ -475,165 +476,167 @@ export default function Wealth() {
           </div>
 
           {/* Add Modal */}
-          <AnimatePresence>
-            {isAdding && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setIsAdding(false)}
-                  className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-                />
-                <motion.div
-                  initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
-                  exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                  className="relative w-full max-w-lg bg-background border border-foreground/10 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-                    <Briefcase size={180} />
-                  </div>
-
-                  <div className="relative z-10 space-y-8">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase mb-1 italic">Log Ledger</h3>
-                        <p className="font-bold text-[10px] text-foreground/30 uppercase tracking-widest">Register financial movement into system matrix.</p>
-                      </div>
-                      <button onClick={() => setIsAdding(false)} className="p-2 hover:bg-foreground/5 rounded-xl transition-colors text-foreground/20 hover:text-foreground">
-                        <X size={20} />
-                      </button>
+          <ModalPortal>
+            <AnimatePresence>
+              {isAdding && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setIsAdding(false)}
+                    className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                  />
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    className="relative w-full max-w-lg bg-background border border-foreground/10 rounded-[2.5rem] p-10 shadow-2xl overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                      <Briefcase size={180} />
                     </div>
 
-                    <form onSubmit={handleAdd} className="space-y-6">
-                      <div className="flex gap-4">
-                        <div className="flex-1 space-y-2">
-                          <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Amount ($)</label>
-                          <input
-                            autoFocus
-                            type="number"
-                            step="0.01"
-                            value={formData.amount}
-                            onChange={e => setFormData({ ...formData, amount: e.target.value })}
-                            className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl p-4 text-foreground font-bold text-lg outline-none focus:border-[var(--stat-wealth)]/40 transition-all shadow-inner"
-                            placeholder="0.00"
-                          />
+                    <div className="relative z-10 space-y-8">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase mb-1 italic">Log Ledger</h3>
+                          <p className="font-bold text-[10px] text-foreground/30 uppercase tracking-widest">Register financial movement into system matrix.</p>
                         </div>
-                        <div className="flex-1 space-y-2">
-                          <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Direction</label>
-                          <div className="flex p-1 bg-foreground/5 rounded-2xl border border-foreground/10 h-[64px]">
-                            {(['income', 'expense'] as const).map(t => (
-                              <button
-                                key={t}
-                                type="button"
-                                onClick={() => setFormData({ ...formData, type: t })}
-                                className={cn(
-                                  "flex-1 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
-                                  formData.type === t
-                                    ? t === 'income' ? "bg-green-500 text-black" : "bg-red-500 text-black"
-                                    : "text-foreground/40 hover:text-foreground"
-                                )}
-                              >
-                                {t}
-                              </button>
-                            ))}
+                        <button onClick={() => setIsAdding(false)} className="p-2 hover:bg-foreground/5 rounded-xl transition-colors text-foreground/20 hover:text-foreground">
+                          <X size={20} />
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleAdd} className="space-y-6">
+                        <div className="flex gap-4">
+                          <div className="flex-1 space-y-2">
+                            <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Amount ($)</label>
+                            <input
+                              autoFocus
+                              type="number"
+                              step="0.01"
+                              value={formData.amount}
+                              onChange={e => setFormData({ ...formData, amount: e.target.value })}
+                              className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl p-4 text-foreground font-bold text-lg outline-none focus:border-[var(--stat-wealth)]/40 transition-all shadow-inner"
+                              placeholder="0.00"
+                            />
+                          </div>
+                          <div className="flex-1 space-y-2">
+                            <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Direction</label>
+                            <div className="flex p-1 bg-foreground/5 rounded-2xl border border-foreground/10 h-[64px]">
+                              {(['income', 'expense'] as const).map(t => (
+                                <button
+                                  key={t}
+                                  type="button"
+                                  onClick={() => setFormData({ ...formData, type: t })}
+                                  className={cn(
+                                    "flex-1 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
+                                    formData.type === t
+                                      ? t === 'income' ? "bg-green-500 text-black" : "bg-red-500 text-black"
+                                      : "text-foreground/40 hover:text-foreground"
+                                  )}
+                                >
+                                  {t}
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Memo / Description</label>
-                        <input
-                          value={formData.description}
-                          onChange={e => setFormData({ ...formData, description: e.target.value })}
-                          className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl p-4 text-foreground font-bold text-sm outline-none focus:border-[var(--stat-wealth)]/40 hover:bg-foreground/10 transition-all"
-                          placeholder="What was this for?"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Sector</label>
+                          <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Memo / Description</label>
                           <input
-                            value={formData.sector}
-                            onChange={e => setFormData({ ...formData, sector: e.target.value })}
-                            className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl p-4 text-foreground font-bold text-xs outline-none focus:border-[var(--stat-wealth)]/40"
-                            placeholder="Personal/Business"
+                            value={formData.description}
+                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                            className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl p-4 text-foreground font-bold text-sm outline-none focus:border-[var(--stat-wealth)]/40 hover:bg-foreground/10 transition-all"
+                            placeholder="What was this for?"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Pool ID</label>
-                          <select
-                            value={formData.poolId}
-                            onChange={e => setFormData({ ...formData, poolId: e.target.value as any })}
-                            className="w-full h-[58px] bg-foreground/5 border border-foreground/10 rounded-2xl px-4 text-foreground font-bold text-xs outline-none focus:border-[var(--stat-wealth)]/40 appearance-none uppercase"
-                          >
-                            <option value="personal">Personal</option>
-                            <option value="business">Business</option>
-                            <option value="trading">Trading</option>
-                            <option value="investment">Investment</option>
-                          </select>
-                        </div>
-                      </div>
 
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Sector</label>
+                            <input
+                              value={formData.sector}
+                              onChange={e => setFormData({ ...formData, sector: e.target.value })}
+                              className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl p-4 text-foreground font-bold text-xs outline-none focus:border-[var(--stat-wealth)]/40"
+                              placeholder="Personal/Business"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-bold font-black uppercase tracking-widest text-foreground/40">Pool ID</label>
+                            <select
+                              value={formData.poolId}
+                              onChange={e => setFormData({ ...formData, poolId: e.target.value as any })}
+                              className="w-full h-[58px] bg-foreground/5 border border-foreground/10 rounded-2xl px-4 text-foreground font-bold text-xs outline-none focus:border-[var(--stat-wealth)]/40 appearance-none uppercase"
+                            >
+                              <option value="personal">Personal</option>
+                              <option value="business">Business</option>
+                              <option value="trading">Trading</option>
+                              <option value="investment">Investment</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={!formData.amount || !formData.description}
+                          className="w-full py-5 bg-white text-black rounded-2xl font-bold text-[10px] font-black uppercase tracking-[0.3em] overflow-hidden group relative hover:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 shadow-[0_20px_40px_rgba(255,255,255,0.1)] mt-4"
+                        >
+                          <div className="relative z-10 flex items-center justify-center gap-2">
+                            <Check size={16} /> ENTER TRANSACTION
+                          </div>
+                        </button>
+                      </form>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+              {showRecurring && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowRecurring(false)}
+                    className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                  />
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    className="relative w-full max-w-lg bg-background border border-foreground/10 rounded-[2.5rem] p-10 shadow-2xl"
+                  >
+                    <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase mb-6 italic">Recurring Patterns</h3>
+                    <div className="space-y-4">
+                      {recurringTransactions.map(tx => (
+                        <div key={tx.id} className="flex items-center justify-between p-4 bg-foreground/5 rounded-2xl border border-foreground/10">
+                          <div>
+                            <div className="text-foreground font-bold text-sm">{tx.description}</div>
+                            <div className="text-[10px] text-foreground/40 font-bold uppercase">{tx.frequency} • ${tx.amount}</div>
+                          </div>
+                          <button onClick={() => removeRecurringTx(tx.id)} className="text-red-500/50 hover:text-red-500"><Trash2 size={14} /></button>
+                        </div>
+                      ))}
                       <button
-                        type="submit"
-                        disabled={!formData.amount || !formData.description}
-                        className="w-full py-5 bg-white text-black rounded-2xl font-bold text-[10px] font-black uppercase tracking-[0.3em] overflow-hidden group relative hover:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 shadow-[0_20px_40px_rgba(255,255,255,0.1)] mt-4"
+                        onClick={() => addRecurringTx({
+                          amount: 100,
+                          description: 'New Automated Entry',
+                          type: 'expense',
+                          frequency: 'monthly',
+                          category: 'Subscription'
+                        })}
+                        className="w-full p-4 border border-dashed border-foreground/10 rounded-2xl flex items-center justify-center gap-2 text-foreground/20 hover:text-foreground hover:bg-foreground/5 transition-all font-bold text-[9px] uppercase tracking-widest"
                       >
-                        <div className="relative z-10 flex items-center justify-center gap-2">
-                          <Check size={16} /> ENTER TRANSACTION
-                        </div>
+                        <Plus size={14} /> Add Pattern
                       </button>
-                    </form>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-            {showRecurring && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setShowRecurring(false)}
-                  className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-                />
-                <motion.div
-                  initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
-                  exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                  className="relative w-full max-w-lg bg-background border border-foreground/10 rounded-[2.5rem] p-10 shadow-2xl"
-                >
-                  <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase mb-6 italic">Recurring Patterns</h3>
-                  <div className="space-y-4">
-                    {recurringTransactions.map(tx => (
-                      <div key={tx.id} className="flex items-center justify-between p-4 bg-foreground/5 rounded-2xl border border-foreground/10">
-                        <div>
-                          <div className="text-foreground font-bold text-sm">{tx.description}</div>
-                          <div className="text-[10px] text-foreground/40 font-bold uppercase">{tx.frequency} • ${tx.amount}</div>
-                        </div>
-                        <button onClick={() => removeRecurringTx(tx.id)} className="text-red-500/50 hover:text-red-500"><Trash2 size={14} /></button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={() => addRecurringTx({
-                        amount: 100,
-                        description: 'New Automated Entry',
-                        type: 'expense',
-                        frequency: 'monthly',
-                        category: 'Subscription'
-                      })}
-                      className="w-full p-4 border border-dashed border-foreground/10 rounded-2xl flex items-center justify-center gap-2 text-foreground/20 hover:text-foreground hover:bg-foreground/5 transition-all font-bold text-[9px] uppercase tracking-widest"
-                    >
-                      <Plus size={14} /> Add Pattern
-                    </button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
+          </ModalPortal>
         </div>
 
       </div>

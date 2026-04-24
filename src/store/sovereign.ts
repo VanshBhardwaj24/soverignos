@@ -36,6 +36,9 @@ import {
   calculateComparativeBenchmarks
 } from '../lib/intelligence';
 import { usePsychStore } from './sovereign-psych';
+import type { LootDrop } from '../types/loot';
+import { rollLootDrop } from '../lib/loot';
+
 
 export interface Quest {
   id: string;
@@ -345,6 +348,7 @@ export interface Loan {
   associatedStat: string;
   status: 'active' | 'grace_period' | 'late' | 'repaid' | 'defaulted';
   lastRepaymentDate?: string;
+  monthlyTarget: number;
 }
 
 interface SovereignStore {
@@ -426,6 +430,13 @@ interface SovereignStore {
   restModeActive: boolean;
   notificationPreferences: { critical: boolean; informational: boolean; celebratory: boolean };
   weekScore: number;
+
+  lastLootDropDate: string;
+  pendingLootDrop: LootDrop | null;
+  setPendingLootDrop: (drop: LootDrop | null) => void;
+  nextSessionBoostStatId: string | null;
+  nextSessionBoostMultiplier: number;
+
 
   getActiveMultiplierBreakdown: (statId: string) => { sources: { name: string; value: number }[]; total: number };
   getDailyXPDiminishingFactor: () => number;
@@ -633,13 +644,17 @@ export const useSovereignStore = create<SovereignStore>()(
         } else if (quests) {
           set({
             dailyQuests: quests.map(q => {
-              // Default to IST midnight today if no deadline exists in DB
+              // Target 23:59:59 IST (= 18:29:59 UTC) of the current IST date
               const getISTMidnight = () => {
                 const now = new Date();
                 const istOffset = 5.5 * 60 * 60 * 1000;
-                const istTime = new Date(now.getTime() + istOffset);
-                istTime.setUTCHours(23, 59, 59, 999);
-                return new Date(istTime.getTime() - istOffset).toISOString();
+                const istNow = new Date(now.getTime() + istOffset);
+                const y = istNow.getUTCFullYear();
+                const m = istNow.getUTCMonth();
+                const d = istNow.getUTCDate();
+                let target = new Date(Date.UTC(y, m, d, 18, 29, 59, 999));
+                if (target <= now) target = new Date(Date.UTC(y, m, d + 1, 18, 29, 59, 999));
+                return target.toISOString();
               };
 
               return {
@@ -702,24 +717,26 @@ export const useSovereignStore = create<SovereignStore>()(
           get().recomputeFreedom();
         }
 
-        const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        const year = istNow.getFullYear();
-        const month = String(istNow.getMonth() + 1).padStart(2, '0');
-        const day = String(istNow.getDate()).padStart(2, '0');
-        const today = `${year}-${month}-${day}`; // ISO format: 2026-04-22
+        const getISTNow = () => {
+          const now = new Date();
+          const istOffset = 5.5 * 60 * 60 * 1000;
+          return new Date(now.getTime() + istOffset);
+        };
+        const istNow = getISTNow();
+        const today = `${istNow.getUTCFullYear()}-${String(istNow.getUTCMonth() + 1).padStart(2, '0')}-${String(istNow.getUTCDate()).padStart(2, '0')}`;
 
-        // Check if daily reset is needed
-        // Use DB value as source of truth - if DB has today's date, skip reset
+        // Hardened Reset Guard: Check BOTH local state and DB state
         const lastResetFromDB = stats?.last_daily_reset;
-        if (!lastResetFromDB || lastResetFromDB !== today) {
-          console.log(`[RESET] DB marker: "${lastResetFromDB}" vs today: "${today}"`);
+        const lastResetLocal = get().lastDailyReset;
+
+        if ((!lastResetFromDB || lastResetFromDB !== today) && lastResetLocal !== today) {
+          console.log(`[RESET_TRIGGER] DB: "${lastResetFromDB}", Local: "${lastResetLocal}", Today: "${today}"`);
           await get().resetDailyQuests();
+        } else {
+          console.log(`[RESET_SKIP] System already calibrated for ${today}`);
         }
 
-        // F-HIST: One-time backfill of quest history
         get().backfillQuestHistory();
-
-        // Initialize intelligence engine
         get().updateSurveillance();
         get().runCausalityAnalysis();
 
@@ -764,6 +781,12 @@ export const useSovereignStore = create<SovereignStore>()(
       restModeActive: false,
       notificationPreferences: { critical: true, informational: true, celebratory: true },
       weekScore: 0,
+
+      lastLootDropDate: '',
+      pendingLootDrop: null,
+      setPendingLootDrop: (drop) => set({ pendingLootDrop: drop }),
+      nextSessionBoostStatId: null,
+      nextSessionBoostMultiplier: 1,
 
       dailyQuests: [
         { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1' },
@@ -1031,21 +1054,27 @@ export const useSovereignStore = create<SovereignStore>()(
 
       // F1: Daily Reset
       resetDailyQuests: async () => {
-        const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        const year = istNow.getFullYear();
-        const month = String(istNow.getMonth() + 1).padStart(2, '0');
-        const day = String(istNow.getDate()).padStart(2, '0');
-        const today = `${year}-${month}-${day}`; // ISO format: 2026-04-22
+        const getISTNow = () => {
+          const now = new Date();
+          const istOffset = 5.5 * 60 * 60 * 1000;
+          return new Date(now.getTime() + istOffset);
+        };
+        const getISTDateString = (dateObj: Date) => {
+          const y = dateObj.getUTCFullYear();
+          const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+          const d = String(dateObj.getUTCDate()).padStart(2, '0');
+          return `${y}-${m}-${d}`;
+        };
+
+        const istNow = getISTNow();
+        const today = getISTDateString(istNow);
         const { lastDailyReset } = get();
 
-        // Trigger weekly reset check
-        get().resetWeeklyQuests();
-
         if (lastDailyReset === today) {
-          console.log('[RESET] Already reset today:', today);
+          console.log('[RESET_SKIP] Already reset today:', today);
           return;
         }
-        console.log('[RESET] Starting daily reset for', today);
+        console.log('[RESET_TRIGGER] Starting daily reset for', today);
 
         // F11: Process recurring transactions
         const { recurringTransactions } = get();
@@ -1119,8 +1148,6 @@ export const useSovereignStore = create<SovereignStore>()(
           const escalationFactor = Math.min(2, 1 + (newConsecutiveFailures * 0.2));
           const missedByStat: Record<string, number> = {};
 
-          let dailyAccountabilityLoss = 0;
-          let dailyGoldLoss = 0;
 
           missedQuests.forEach(quest => {
             missedByStat[quest.statId] = (missedByStat[quest.statId] || 0) + 1;
@@ -1189,19 +1216,19 @@ export const useSovereignStore = create<SovereignStore>()(
 
         // IST midnight = 23:59:59 IST = 18:29:59 UTC (IST is UTC+5:30, no DST)
         // We compute today's IST date and then find its UTC-equivalent midnight.
-        const istYear = istNow.getFullYear();
-        const istMonth = istNow.getMonth();
-        const istDate = istNow.getDate();
 
-        // IST midnight is 23:59:59.999 IST = 18:29:59.999 UTC on the SAME calendar date
-        let istMidnight = new Date(Date.UTC(istYear, istMonth, istDate, 18, 29, 59, 999));
+        const getNextISTMidnight = () => {
+          const now = new Date();
+          const istNowLocal = getISTNow();
+          const y = istNowLocal.getUTCFullYear();
+          const m = istNowLocal.getUTCMonth();
+          const d = istNowLocal.getUTCDate();
+          let target = new Date(Date.UTC(y, m, d, 18, 29, 59, 999));
+          if (target <= now) target = new Date(Date.UTC(y, m, d + 1, 18, 29, 59, 999));
+          return target.toISOString();
+        };
 
-        // Safety: if this IST midnight has already passed (i.e. it's already past 23:59 IST),
-        // target the next IST day's midnight instead.
-        if (istMidnight <= now) {
-          istMidnight = new Date(Date.UTC(istYear, istMonth, istDate + 1, 18, 29, 59, 999));
-        }
-        const defaultExpiry = istMidnight.toISOString();
+        const defaultExpiry = getNextISTMidnight();
 
         const questSyncPayload: any[] = [];
 
@@ -1214,7 +1241,7 @@ export const useSovereignStore = create<SovereignStore>()(
             // Stable IST-aware Shifting: Keep the same IST hour/min, but on TODAY's IST date
             // prevDue UTC hours encoded IST time, so we preserve them directly.
             let shifted = new Date(Date.UTC(
-              istNow.getFullYear(), istNow.getMonth(), istNow.getDate(),
+              istNow.getUTCFullYear(), istNow.getUTCMonth(), istNow.getUTCDate(),
               prevDue.getUTCHours(), prevDue.getUTCMinutes(), prevDue.getUTCSeconds()
             ));
 
@@ -1389,12 +1416,13 @@ export const useSovereignStore = create<SovereignStore>()(
 
       // F1b: Weekly Reset
       resetWeeklyQuests: async () => {
-        const istNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        const day = istNow.getDay();
-        const diff = istNow.getDate() - day + (day === 0 ? -6 : 1);
+        const istOffset = 5.5 * 60 * 60 * 1000;
+        const istNow = new Date(new Date().getTime() + istOffset);
+        const day = istNow.getUTCDay();
+        const diff = istNow.getUTCDate() - day + (day === 0 ? -6 : 1);
         const monday = new Date(istNow);
-        monday.setDate(diff);
-        const currentWeekString = `${monday.getFullYear()}-${monday.getMonth()}-${monday.getDate()}`;
+        monday.setUTCDate(diff);
+        const currentWeekString = `${monday.getUTCFullYear()}-${monday.getUTCMonth()}-${monday.getUTCDate()}`;
 
         const { lastWeeklyReset } = get();
         if (lastWeeklyReset === currentWeekString) return;
@@ -1417,12 +1445,7 @@ export const useSovereignStore = create<SovereignStore>()(
           iconType: 'milestone'
         });
 
-        const { user } = get();
-        if (user) {
-          await supabase.from('user_stats').update({
-            last_weekly_reset: currentWeekString
-          }).eq('id', user.id);
-        }
+        // last_weekly_reset column does not exist in DB yet, skipping sync to avoid errors
       },
 
       // F42: Real-time Cadence Monitor - Background Expiry Check
@@ -1472,7 +1495,7 @@ export const useSovereignStore = create<SovereignStore>()(
 
       // F2 + F3: logActivity with real multipliers and perk effects
       logActivity: async (statId, xp, questId?, metadata?) => {
-        const { inventory, user, statLevels, prestige, activeLoadout } = get();
+        const { inventory, user, statLevels, prestige, activeLoadout, nextSessionBoostStatId, nextSessionBoostMultiplier } = get();
         const { SHOP_ITEMS } = await import('../lib/constants');
 
         // 1. Calculate Base Multipliers (Legacy + Percs)
@@ -1553,6 +1576,11 @@ export const useSovereignStore = create<SovereignStore>()(
         }
 
         // Final Yield Calculation
+        if (nextSessionBoostStatId === statId) {
+          multiplier *= nextSessionBoostMultiplier;
+          set({ nextSessionBoostStatId: null, nextSessionBoostMultiplier: 1 });
+        }
+
         const boostedXP = Math.max(0, Math.floor(xp * multiplier));
         const bonusXP = boostedXP - xp; // Simple ROI tracking
 
@@ -1651,6 +1679,41 @@ export const useSovereignStore = create<SovereignStore>()(
         }
 
         get().recomputeFreedom();
+
+        // F50: Daily Loot Drop Check
+        const { statTodayXP, dailyGoalXP, lastLootDropDate } = get();
+        const prevTotal = Object.values(statTodayXP).reduce((a, b) => a + b, 0); // Before this update
+        const newTotal = prevTotal + boostedXP;
+        const wasAlreadyOver = prevTotal >= dailyGoalXP;
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        if (!wasAlreadyOver && newTotal >= dailyGoalXP && lastLootDropDate !== todayStr) {
+          const drop = rollLootDrop();
+          set({ pendingLootDrop: drop, lastLootDropDate: todayStr });
+          set(state => ({ gold: state.gold + drop.gc }));
+
+          drop.modifiers.forEach(mod => {
+            if (mod.type === 'streak_shield') {
+              usePsychStore.getState().addStreakInsurance();
+            } else if (mod.type === 'quest_skip') {
+              usePsychStore.getState().addStreakInsurance(); // Using streak insurance as quest skip
+            } else if (mod.type === 'xp_boost_next') {
+              set({ nextSessionBoostStatId: mod.boostStatId || null, nextSessionBoostMultiplier: 2 });
+            } else if (mod.type === 'xp_booster_2h') {
+              // Deploy booster logic
+              const expiresAt = new Date();
+              expiresAt.setHours(expiresAt.getHours() + 2);
+              set(state => ({
+                activeLoadout: [...state.activeLoadout, {
+                  itemId: 'loot_booster', // Dummy ID
+                  deployedAt: new Date().toISOString(),
+                  expiresAt: expiresAt.toISOString(),
+                  currentROI: 0
+                }]
+              }));
+            }
+          });
+        }
       },
 
       recomputeFreedom: () => {
@@ -2729,7 +2792,7 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
       requestLoan: async (itemId, durationMonths, repaymentType) => {
-        const { activeLoans, streaks, inventory, gold } = get();
+        const { activeLoans, inventory } = get();
         const { SHOP_ITEMS } = await import('../lib/constants');
         const item = SHOP_ITEMS.find(i => i.id === itemId);
 
@@ -2776,7 +2839,7 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
       checkLoanStatus: async () => {
-        const { activeLoans, streaks, statLevels, integrity, user } = get();
+        const { activeLoans, user } = get();
         const now = new Date();
         let changed = false;
         const updatedLoans = activeLoans.map(loan => {
@@ -3434,7 +3497,11 @@ export const useSovereignStore = create<SovereignStore>()(
         causalityDiscoveries: state.causalityDiscoveries,
         surveillanceMetrics: state.surveillanceMetrics,
         intelligenceLogs: state.intelligenceLogs,
-        projections: state.projections
+        projections: state.projections,
+        lastLootDropDate: state.lastLootDropDate,
+        pendingLootDrop: state.pendingLootDrop,
+        nextSessionBoostStatId: state.nextSessionBoostStatId,
+        nextSessionBoostMultiplier: state.nextSessionBoostMultiplier
       })
     }
   )

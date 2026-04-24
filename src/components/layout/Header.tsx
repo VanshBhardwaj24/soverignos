@@ -8,7 +8,7 @@ export const Header = () => {
   const {
     freedomScore, setQuestModalOpen, theme, setTheme,
     toggleNotifications, notifications, gold, statTodayXP, dailyGoalXP,
-    alias
+    alias,
   } = useSovereignStore();
 
   const getGreeting = () => {
@@ -24,25 +24,25 @@ export const Header = () => {
 
   const totalTodayXP = Object.values(statTodayXP).reduce((a, b) => a + b, 0);
   const goalProgress = Math.min((totalTodayXP / dailyGoalXP) * 100, 100);
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 border-b border-[var(--border-default)] bg-[var(--bg-primary)]/80 backdrop-blur-md z-50 px-4 md:px-8 flex items-center justify-between transition-colors">
+    <header className="fixed top-0 left-0 right-0 h-16 glass-header z-50 px-4 md:px-8 flex items-center justify-between transition-colors">
       <div className="flex-1 flex items-center gap-6">
         <span className="font-bold text-xl tracking-[0.15em] font-black text-[var(--text-primary)]">SOVEREIGN</span>
         <div className="hidden xl:flex flex-col border-l border-white/10 pl-6 group cursor-default">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent-primary)] font-bold ">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-[var(--accent-primary)] font-bold text-white/70 ">
             {greeting}
           </span>
-          <span className="text-xs font-bold font-black text-[var(--text-primary)] opacity-90 uppercase tracking-widest whitespace-nowrap">
+          <span className="text-xs font-semibold text-[var(--text-primary)] tracking-tight">
             {new Intl.DateTimeFormat('en-US', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
               day: 'numeric',
-              timeZone: 'Asia/Kolkata'
+              timeZone: 'Asia/Kolkata',
             }).format(new Date())}
           </span>
         </div>
@@ -62,18 +62,20 @@ export const Header = () => {
           <div className="font-bold text-[8px] tracking-[0.2em] text-[var(--text-secondary)] opacity-80 uppercase absolute -bottom-2 md:-bottom-3 text-center whitespace-nowrap">Freedom Score</div>
         </div>
 
-        <div className="hidden lg:flex flex-col items-center gap-1.5 pl-8 border-l border-border/50">
-          <div className="flex items-center justify-between w-32 font-bold text-[8px] tracking-widest text-foreground/40 uppercase">
+        <div className="hidden lg:flex flex-col items-center gap-1.5 pl-8 border-l border-[var(--border-default)]">
+          <div className="flex items-center justify-between w-32 font-mono text-[9px] text-[var(--text-muted)] uppercase tracking-wider">
             <span>Daily Goal</span>
-            <span className={cn(totalTodayXP >= dailyGoalXP ? "text-[var(--success)] font-black" : "")}>{totalTodayXP} / {dailyGoalXP}</span>
+            <span className={cn(totalTodayXP >= dailyGoalXP ? "text-[var(--success)] font-bold" : "")}>
+              {totalTodayXP} / {dailyGoalXP}
+            </span>
           </div>
-          <div className="w-32 h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
+          <div className="w-32 h-1 bg-[var(--xp-bar-track)] rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${goalProgress}%` }}
               className={cn(
                 "h-full transition-colors",
-                totalTodayXP >= dailyGoalXP ? "bg-[var(--success)] shadow-[0_0_10px_rgba(34,197,94,0.5)]" : "bg-white/40"
+                totalTodayXP >= dailyGoalXP ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/40"
               )}
             />
           </div>

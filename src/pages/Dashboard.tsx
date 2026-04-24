@@ -1,11 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSovereignStore } from '../store/sovereign';
-import { RadarStatChart } from '../components/stats/RadarStatChart';
 import { InteractiveHeatmap } from '../components/stats/InteractiveHeatmap';
 import { CheckSquare, Square, Coins, AlertCircle, Activity, Brain, Smile, Zap, Timer, Play, Pause, RotateCcw, RefreshCcw, Flame } from 'lucide-react';
 import { XPBar } from '../components/stats/XPBar';
-import { SystemRank } from '../components/stats/SystemRank';
 import { StabilityMeter } from '../components/stats/StabilityMeter';
 import { FreedomBreakdown } from '../components/stats/FreedomBreakdown';
 import { ActivityHistory } from '../components/stats/ActivityHistory';
@@ -153,29 +151,29 @@ export default function Dashboard() {
       <div className="flex flex-col gap-8 lg:grid lg:grid-cols-12 lg:gap-8">
 
         {/* Left Column (Stats Panel) */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              {/* <div className="px-2 py-0.5 bg-[var(--stat-brand)]/20 border border-[var(--stat-brand)]/30 rounded-md">
-                <span className="font-bold text-[9px] font-black tracking-widest text-[var(--stat-brand)] uppercase">Sovereignty Level {computeSovereigntyLevel(Object.values(statXP).reduce((a, b) => a + b, 0))}</span>
+        <div className="lg:col-span-3 flex flex-col gap-10">
+          {/* Flat Freedom Score HUD */}
+          <div className="relative pt-6">
+            <div className="flex items-start justify-between">
+              <div className="flex flex-col">
+                <div className="text-[100px] font-bold tracking-tighter text-white leading-none">
+                  {freedomScore.toFixed(1)}
+                </div>
+                <div className="eyebrow mt-4">
+                  FREEDOM SCORE
+                </div>
               </div>
-              <div className="h-1 w-1 rounded-full bg-white/20" />
-              <span className="font-bold text-[9px] text-white/30 uppercase tracking-widest">Protocol V2.4</span> */}
-            </div>
-            <div className="font-bold text-5xl md:text-7xl  text-foreground glow-text gap-4 ">
-              {freedomScore.toFixed(1)}
-            </div>
-            <div className="flex items-center justify-between mt-2">
-              <div className="font-bold text-[10px] tracking-[0.2em] text-[#999999] opacity-80 uppercase">FREEDOM SCORE</div>
-              <div className="flex items-center gap-1 text-[var(--stat-wealth)] font-bold text-xs font-bold px-2 py-0.5 bg-white/5 rounded-full">
-                <Coins size={12} /> {gold}
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 rounded-full mt-10">
+                <Coins size={14} className="text-yellow-400" />
+                <span className="text-sm font-bold text-yellow-400">{gold}</span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 p-4 bg-white/[0.02] border border-white/[0.05] rounded-3xl">
-            <h2 className="font-bold text-[10px] tracking-[0.2em] text-white opacity-40 uppercase mb-2">Capabilities Progression</h2>
-            <div className="space-y-4">
+          <div className="space-y-4 p-4 bg-white/[0.02] border border-white/[0.05] rounded-3xl relative overflow-hidden shadow-xl">
+            <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+            <h2 className="font-bold text-[10px] tracking-[0.2em] text-white opacity-40 uppercase mb-2 relative z-10">Capabilities Progression</h2>
+            <div className="space-y-4 relative z-10">
               {Object.values(STATS).map(stat => {
                 const isSovereignty = stat.id === 'sovereignty';
                 const currentXP = isSovereignty
@@ -200,14 +198,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="mt-4">
-            <h2 className="font-bold text-sm tracking-[0.1em] text-white opacity-80 mb-4">CAPABILITIES RADAR</h2>
-            <RadarStatChart />
-          </div>
-
-          <div className="mt-2">
-            <SystemRank />
-          </div>
         </div>
 
         {/* Center Column (Quest Board & Main Metrics) */}
@@ -252,16 +242,16 @@ export default function Dashboard() {
           <div>
             <div className="flex items-center gap-4 mb-4">
               <div className="flex items-center gap-2">
-                <h2 className="font-bold text-xs font-black tracking-[0.2em] text-[var(--text-primary)] uppercase">Today's Protocols</h2>
+                <h2 className="h-card text-[var(--text-primary)]">Today's Protocols</h2>
 
                 {/* Global Streak Indicator */}
-                <div className="flex items-center gap-1.5 ml-2 px-3 py-1 bg-white/[0.03] border border-white/[0.05] rounded-full group cursor-pointer hover:border-white/20 transition-all">
+                <div className="flex items-center gap-1.5 ml-2 px-3 py-1 bg-white/[0.03] border border-white/[0.05] rounded-full group cursor-pointer hover:border-white/20 transition-all shadow-sm">
                   <Flame
                     size={20}
                     className={cn("transition-all duration-700", getStreakStyles())}
                   />
                   <span className="font-bold text-xs font-black tracking-tight opacity-90">{currentStreak}</span>
-                  <div className="hidden group-hover:block ml-2 font-bold text-[8px] text-white/30 uppercase tracking-widest animate-in fade-in slide-in-from-left-1">
+                  <div className="hidden group-hover:block ml-2 eyebrow animate-in fade-in slide-in-from-left-1">
                     GLOBAL STREAK
                   </div>
                 </div>
@@ -274,17 +264,19 @@ export default function Dashboard() {
                   onChange={(e) => setQuickQuest(e.target.value)}
                   placeholder="QUICK DEPLOY MISSION..."
                   aria-label="Quick deploy mission"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[11px] font-bold text-white outline-none focus:border-[var(--text-primary)]/40 focus:ring-4 focus:ring-[var(--text-primary)]/5 transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[11px] font-bold text-white outline-none focus:border-[var(--text-primary)]/40 focus:ring-4 focus:ring-[var(--text-primary)]/5 transition-all shadow-inner"
                 />
                 <button type="submit" aria-label="Deploy mission" className="absolute right-2 top-2 text-white/20 hover:text-white transition-colors">
                   <CheckSquare size={16} />
                 </button>
               </form>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 relative">
               <AnimatePresence mode="popLayout">
                 {dailyQuests.filter(q => q.type === 'daily' && q.repeating).map((quest, idx) => {
                   const frame = IDENTITY_FRAMES[quest.statId];
+                  const isBoss = quest.type === 'boss';
+
                   return (
                     <motion.div
                       key={quest.id}
@@ -297,13 +289,16 @@ export default function Dashboard() {
                         ease: [0.2, 0.8, 0.2, 1]
                       }}
                       className={cn(
-                        "flex items-center justify-between p-4 rounded-3xl border transition-all duration-500 group relative overflow-hidden",
-                        quest.completed ? (quest.repeating ? 'bg-[var(--success)]/[0.03] border-[var(--success)]/10 opacity-70' : 'bg-[var(--bg-primary)] border-[var(--border-subtle)] opacity-40') :
-                          quest.type === 'boss'
+                        "flex items-center justify-between p-4 surface-card hover-lift group relative overflow-hidden",
+                        quest.completed
+                          ? (quest.repeating ? 'bg-[var(--success)]/[0.03] border-[var(--success)]/10 opacity-70' : 'bg-[var(--bg-primary)] border-[var(--border-subtle)] opacity-40')
+                          : isBoss
                             ? 'bg-gradient-to-br from-[#111] to-[#222] border-[#7C3AED]/50 shadow-[0_0_30px_rgba(124,58,237,0.15)] ring-1 ring-[#7C3AED]/20'
-                            : 'bg-white/[0.03] border-white/[0.05] hover:border-white/20'
+                            : 'bg-white/[0.03] border-white/[0.05] hover:border-white/20 hover:shadow-lg'
                       )}>
-                      <div className="flex items-center gap-4">
+
+
+                      <div className="flex items-center gap-4 relative z-10">
                         <button
                           onClick={() => {
                             setTargetQuestId(quest.id);
@@ -318,7 +313,7 @@ export default function Dashboard() {
                           className={cn(
                             "h-10 w-10 rounded-xl flex items-center justify-center transition-all",
                             quest.completed ? 'bg-[var(--success)]/10 text-[var(--success)] shadow-[0_0_10px_var(--success)]' :
-                              quest.type === 'boss' ? 'bg-[#7C3AED]/20 text-[#7C3AED] border border-[#7C3AED]/30' : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10'
+                              isBoss ? 'bg-[#7C3AED]/20 text-[#7C3AED] border border-[#7C3AED]/30 shadow-[0_0_15px_rgba(124,58,237,0.3)]' : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10 shadow-sm'
                           )}
                         >
                           {quest.completed ? <CheckSquare size={18} /> : <Square size={18} />}
@@ -333,7 +328,7 @@ export default function Dashboard() {
                           <div className="flex items-center gap-3 mb-1">
                             <span className={cn(
                               "font-bold text-[9px] font-black tracking-widest uppercase px-1.5 rounded",
-                              quest.type === 'boss' ? 'text-[#7C3AED] bg-[#7C3AED]/20' : 'text-white/20 bg-white/5'
+                              isBoss ? 'text-[#7C3AED] bg-[#7C3AED]/20' : 'text-white/20 bg-white/5'
                             )}>
                               {quest.type}
                             </span>
@@ -351,7 +346,7 @@ export default function Dashboard() {
                           </div>
                           <div className="flex items-center gap-2">
                             <span className={cn(
-                              "font-bold text-sm font-bold tracking-tight",
+                              "h-card",
                               quest.completed || quest.failed ? 'line-through text-white/20' : 'text-white'
                             )}>
                               {quest.title}
@@ -365,11 +360,11 @@ export default function Dashboard() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 relative z-10">
                         <div className="text-right">
                           <span className={cn(
                             "font-bold text-xs font-black block",
-                            quest.type === 'boss' ? 'text-[#7C3AED]' : 'text-[var(--stat-code)]'
+                            isBoss ? 'text-[#7C3AED]' : 'text-[var(--stat-code)]'
                           )}>+{quest.xpReward} XP</span>
                           <span className="font-bold text-[8px] text-white/10 uppercase font-black">UNLOCKED</span>
                         </div>
@@ -402,8 +397,8 @@ export default function Dashboard() {
         {/* Right Column (Intel) */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           <div className="flex items-center justify-between">
-            <h2 className="font-bold text-sm tracking-[0.1em] text-white">INTEL</h2>
-            <div className="flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/20 px-2 py-0.5 rounded-lg">
+            <h2 className="h-card">INTEL</h2>
+            <div className="flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/20 px-2 py-0.5 rounded-lg shadow-sm">
               <Coins size={10} className="text-yellow-400" />
               <span className="font-bold text-[10px] text-yellow-400 font-bold">+{goldToday.toFixed(1)} TODAY</span>
             </div>
@@ -417,12 +412,13 @@ export default function Dashboard() {
             <StabilityMeter />
             <FreedomBreakdown />
             <ActivityHistory />
-            <div className="p-4 rounded-[24px] border border-white/5 bg-white/[0.02] flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <AlertCircle size={14} className="text-[var(--stat-brand)]" />
+            <div className="p-4 rounded-[24px] border border-white/5 bg-white/[0.02] flex flex-col gap-3 shadow-lg relative overflow-hidden">
+              <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+              <div className="flex items-center gap-2 relative z-10">
+                <AlertCircle size={14} className="text-[var(--stat-brand)] drop-shadow-glow" />
                 <span className="font-bold text-[9px] tracking-[0.3em] text-[var(--text-muted)] uppercase font-black">System Oracle</span>
               </div>
-              <p className="text-[10px] text-white/40 leading-relaxed font-medium">
+              <p className="text-[10px] text-white/40 leading-relaxed font-medium relative z-10">
                 Analysis indicates a 12% increase in Code Capability. Network nexus is currently under-utilized.
                 Recommend deploying to "APPLY" phase in Job Hunt.
               </p>
@@ -443,22 +439,23 @@ function BioSync() {
   const [energy, setEnergy] = React.useState(3);
 
   if (todayEntry) return (
-    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-[32px] overflow-hidden relative group">
-      <div className="flex items-center gap-4 mb-4">
-        <div className="h-10 w-10 rounded-xl bg-[var(--success)]/10 flex items-center justify-center text-[var(--success)]">
+    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-[32px] overflow-hidden relative group shadow-lg">
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+      <div className="flex items-center gap-4 mb-4 relative z-10">
+        <div className="h-10 w-10 rounded-xl bg-[var(--success)]/10 flex items-center justify-center text-[var(--success)] shadow-[0_0_15px_rgba(34,197,94,0.2)]">
           <Activity size={20} />
         </div>
         <div>
-          <h3 className="font-bold text-[10px] text-white/20 uppercase tracking-[0.2em]">Bio-Sync Status</h3>
-          <span className="font-bold text-xs font-black text-[var(--success)] tracking-widest">SYNCHRONIZED</span>
+          <h3 className="eyebrow">Bio-Sync Status</h3>
+          <span className="stat-label text-[var(--success)] drop-shadow-glow">SYNCHRONIZED</span>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 relative z-10">
         <div className="bg-white/5 p-3 rounded-2xl border border-white/5">
           <span className="block text-[8px] text-white/20 uppercase mb-1">Mood</span>
           <div className="flex gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className={cn("h-1 flex-1 rounded-full", i < todayEntry.mood ? "bg-[var(--success)]" : "bg-white/10")} />
+              <div key={i} className={cn("h-1 flex-1 rounded-full", i < todayEntry.mood ? "bg-[var(--success)] shadow-[0_0_5px_var(--success)]" : "bg-white/10")} />
             ))}
           </div>
         </div>
@@ -466,7 +463,7 @@ function BioSync() {
           <span className="block text-[8px] text-white/20 uppercase mb-1">Energy</span>
           <div className="flex gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className={cn("h-1 flex-1 rounded-full", i < todayEntry.energy ? "bg-[var(--stat-mind)]" : "bg-white/10")} />
+              <div key={i} className={cn("h-1 flex-1 rounded-full", i < todayEntry.energy ? "bg-[var(--stat-mind)] shadow-[0_0_5px_var(--stat-mind)]" : "bg-white/10")} />
             ))}
           </div>
         </div>
@@ -476,13 +473,14 @@ function BioSync() {
 
   return (
     <div className="p-6 bg-white/[0.03] border border-white/10 rounded-[32px] relative overflow-hidden group shadow-2xl">
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
       <div className="absolute -right-4 -top-4 text-white/[0.03] group-hover:text-white/[0.05] transition-colors pointer-events-none">
         <Brain size={100} />
       </div>
 
-      <h3 className="font-bold text-[10px] text-[var(--stat-mind)] uppercase tracking-[0.3em] font-black mb-6">Bio-Sync required</h3>
+      <h3 className="h-card text-[var(--stat-mind)] mb-6 relative z-10 drop-shadow-glow">Bio-Sync required</h3>
 
-      <div className="space-y-6">
+      <div className="space-y-6 relative z-10">
         <div>
           <div className="flex justify-between items-center mb-2">
             <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Mood</span>
@@ -495,7 +493,7 @@ function BioSync() {
                 onClick={() => setMood(v)}
                 className={cn(
                   "flex-1 h-8 rounded-lg border transition-all flex items-center justify-center",
-                  mood === v ? "bg-white border-white text-black shadow-lg" : "bg-white/5 border-white/5 text-white/20 hover:border-white/20"
+                  mood === v ? "bg-white border-white text-black shadow-lg shadow-white/20" : "bg-white/5 border-white/5 text-white/20 hover:border-white/20"
                 )}
               >
                 <Smile size={14} />
@@ -516,7 +514,7 @@ function BioSync() {
                 onClick={() => setEnergy(v)}
                 className={cn(
                   "flex-1 h-8 rounded-lg border transition-all flex items-center justify-center",
-                  energy === v ? "bg-[var(--stat-mind)] border-[var(--stat-mind)] text-white shadow-lg" : "bg-white/5 border-white/5 text-white/20 hover:border-white/20"
+                  energy === v ? "bg-[var(--stat-mind)] border-[var(--stat-mind)] text-white shadow-lg shadow-[var(--stat-mind)]/20" : "bg-white/5 border-white/5 text-white/20 hover:border-white/20"
                 )}
               >
                 <Zap size={14} />
@@ -527,7 +525,7 @@ function BioSync() {
 
         <button
           onClick={() => addMoodEntry({ mood, energy, intensity: 5, notes: '', date: new Date().toISOString() })}
-          className="w-full py-3 bg-white text-black font-bold font-black tracking-widest uppercase rounded-xl hover:brightness-90 transition-all text-[9px] shadow-xl"
+          className="w-full py-3 bg-white text-black font-bold font-black tracking-widest uppercase rounded-xl hover:brightness-90 transition-all text-[9px] shadow-xl hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
         >
           COMMIT BIO-METRICS
         </button>
@@ -574,35 +572,53 @@ function FocusTimer() {
     setSeconds(0);
   };
 
+  const totalSeconds = mode === 'focus' ? 25 * 60 : 5 * 60;
+  const currentSeconds = minutes * 60 + seconds;
+  const progress = ((totalSeconds - currentSeconds) / totalSeconds) * 100;
+  const ringColor = mode === 'focus' ? 'var(--danger)' : 'var(--success)';
+
   return (
-    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-[32px] overflow-hidden relative group shadow-inner">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-6 bg-white/[0.02] border border-white/5 rounded-[32px] overflow-hidden relative group shadow-lg">
+      <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+      <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-xl bg-white/5 flex items-center justify-center text-white/40">
+          <div className="h-8 w-8 rounded-xl bg-white/5 flex items-center justify-center text-white/40 shadow-inner">
             <Timer size={16} />
           </div>
           <span className="font-bold text-[9px] text-white/40 uppercase tracking-[0.2em]">Neural Lock</span>
         </div>
         <div className={cn(
           "px-3 py-1 rounded-full text-[8px] font-black font-bold tracking-widest uppercase border",
-          mode === 'focus' ? "border-red-500/20 text-red-500 bg-red-500/5" : "border-green-500/20 text-green-500 bg-green-500/5"
+          mode === 'focus' ? "border-red-500/20 text-red-500 bg-red-500/5 shadow-[0_0_10px_rgba(239,68,68,0.2)]" : "border-green-500/20 text-green-500 bg-green-500/5 shadow-[0_0_10px_rgba(34,197,94,0.2)]"
         )}>
           {mode} mode
         </div>
       </div>
 
-      <div className="text-center mb-8">
-        <div className="text-6xl font-bold font-light tracking-tighter text-white">
+      <div className="relative flex items-center justify-center mb-8 h-40 relative z-10">
+        <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+          <motion.circle
+            cx="50" cy="50" r="45" fill="transparent"
+            stroke={ringColor} strokeWidth="4" strokeLinecap="round"
+            strokeDasharray="282.7"
+            initial={{ strokeDashoffset: 282.7 }}
+            animate={{ strokeDashoffset: 282.7 - (282.7 * (progress / 100)) }}
+            transition={{ duration: 1, ease: "linear" }}
+            style={{ filter: `drop-shadow(0 0 4px ${ringColor})` }}
+          />
+        </svg>
+        <div className="text-5xl font-bold font-light tracking-tighter text-white drop-shadow-glow">
           {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 relative z-10">
         <button
           onClick={toggle}
           className={cn(
-            "flex-1 py-4 rounded-2xl flex items-center justify-center gap-2 transition-all",
-            isActive ? "bg-white/5 text-white border border-white/10" : "bg-white text-black font-black"
+            "flex-1 py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-md",
+            isActive ? "bg-white/5 text-white border border-white/10 hover:bg-white/10" : "bg-white text-black font-black hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
           )}
         >
           {isActive ? <Pause size={16} /> : <Play size={16} />}
@@ -610,7 +626,7 @@ function FocusTimer() {
         </button>
         <button
           onClick={reset}
-          className="w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 hover:text-white transition-colors"
+          className="w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20 hover:text-white hover:bg-white/10 transition-colors shadow-sm"
         >
           <RotateCcw size={16} />
         </button>

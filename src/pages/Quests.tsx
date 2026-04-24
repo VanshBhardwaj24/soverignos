@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSovereignStore } from '../store/sovereign';
 import {
   AlertTriangle, Trash2, CheckCircle, List, Pencil, RefreshCcw,
-  Plus, Search, Zap, Flame, CheckSquare, ChevronUp, ChevronDown, RotateCcw
+  Plus, Search, Zap, Flame, CheckSquare, ChevronUp, ChevronDown, RotateCcw, Target
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { STATS, IDENTITY_FRAMES } from '../lib/constants';
@@ -120,23 +120,31 @@ export default function Quests() {
       </AnimatePresence>
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 relative z-10">
         <div>
-          <h1 className="font-bold text-[11px] tracking-[0.2em] text-[var(--text-muted)] uppercase font-semibold mb-2">System Protocols</h1>
-          <div className="font-bold text-4xl font-light tracking-tight text-foreground flex items-center gap-3">
-            MISSION BOARD <span className="text-foreground/20">/</span> <span className="text-muted-foreground">{activeTab.toUpperCase()}</span>
+          <div>
+            <p className="eyebrow text-white/40 mb-4">System Protocols</p>
+            <div className="flex flex-col">
+              <h2 className="text-5xl font-bold tracking-tighter text-white leading-none">MISSION BOARD</h2>
+              <div className="flex items-center gap-4 mt-4">
+                <span className="text-4xl text-white/10 font-light">/</span>
+                <span className="text-4xl h-display text-white/40">{activeTab}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden lg:flex flex-col items-end px-6 border-r border-white/5">
-            <span className="font-bold text-[10px] text-white/30 uppercase tracking-widest mb-1">Operational Health</span>
-            <span className="font-bold text-xs font-black text-[var(--success)]">NOMINAL // 98.2%</span>
+        <div className="flex items-center gap-4 pt-5">
+          <div className="hidden lg:flex items-center gap-6 px-6 border-r border-white/5">
+            <Metric label="Active" value={stats.active} />
+            <Metric label="Success Rate" value={`${(100 - stats.failureRate).toFixed(1)}%`} color="text-[var(--success)]" />
+            <Metric label="XP Today" value={stats.totalXP} color="text-[var(--stat-code)]" />
+            <Metric label="Gold Today" value={stats.goldEarned} color="text-[var(--stat-gold)]" />
           </div>
           <button
             onClick={() => setQuestModalOpen(true)}
             aria-label="Add new mission"
-            className="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded text-sm font-bold font-black hover:brightness-90 transition-all active:scale-95 shadow-[0_0_25px_rgba(255,255,255,0.15)]"
+            className="flex items-center gap-2 bg-white text-black px-6 py-2.5 rounded text-sm font-bold font-black hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all active:scale-95 shadow-md mt-4"
           >
             <Plus size={16} /> ADD MISSION
           </button>
@@ -144,26 +152,27 @@ export default function Quests() {
       </div>
 
       {/* Main Container */}
-      <div className="space-y-8">
+      <div className="space-y-8 relative z-10">
 
         {/* Search & Filters Row */}
-        <div className="flex flex-col md:flex-row items-center gap-4 bg-white/[0.02] border border-white/10 p-3 rounded-2xl">
-          <div className="relative w-full md:w-64">
+        <div className="flex flex-col md:flex-row items-center gap-4 surface-card p-3 shadow-lg relative overflow-hidden">
+          <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+          <div className="relative w-full md:w-64 z-10">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
             <input
               placeholder="Search ID..."
               aria-label="Search missions"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-3 text-[11px] outline-none focus:border-white/20 transition-all font-bold text-white"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-3 text-[11px] outline-none focus:border-white/20 transition-all font-bold text-white shadow-inner"
             />
           </div>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 ml-auto z-10">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-[11px] font-bold text-white outline-none focus:border-white/20"
+              className="bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-[11px] font-bold text-white outline-none focus:border-white/20 shadow-sm"
             >
               <option value="date" className="bg-[#111]">SORT: DATE</option>
               <option value="xp" className="bg-[#111]">SORT: XP</option>
@@ -176,39 +185,33 @@ export default function Quests() {
                 setSelectedQuestIds([]);
               }}
               className={cn(
-                "px-4 py-2 rounded-xl border font-bold text-[10px] tracking-widest uppercase transition-all",
-                isSelectMode ? "bg-white text-black font-black" : "bg-white/5 border-white/10 text-white/40 hover:text-white"
+                "px-4 py-2 rounded-xl border font-bold text-[10px] tracking-widest uppercase transition-all shadow-sm",
+                isSelectMode ? "bg-white text-black font-black" : "bg-white/5 border-white/10 text-white/40 hover:text-white hover:bg-white/10"
               )}
             >
               {isSelectMode ? 'EXIT SELECT' : 'SELECT MODE'}
             </button>
           </div>
 
-          <div className="h-4 w-px bg-white/10 hidden md:block" />
+          <div className="h-4 w-px bg-white/10 hidden md:block z-10" />
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 z-10">
             {Object.values(STATS).map(pillar => (
               <button
                 key={pillar.id}
                 onClick={() => setSelectedPillar(selectedPillar === pillar.id ? null : pillar.id)}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all active:scale-95 group",
+                  "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all active:scale-95 group shadow-sm",
                   selectedPillar === pillar.id
-                    ? "bg-white/10 border-white/30 text-white"
+                    ? "text-white shadow-[0_0_10px_rgba(255,255,255,0.1)]"
                     : "bg-white/5 border-transparent text-white/40 hover:bg-white/10"
                 )}
+                style={selectedPillar === pillar.id ? { backgroundColor: `color-mix(in srgb, ${pillar.colorVar} 20%, transparent)`, borderColor: pillar.colorVar } : undefined}
               >
-                <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: pillar.colorVar }} />
+                <div className={cn("h-2 w-2 rounded-full", selectedPillar === pillar.id && "shadow-[0_0_5px_currentColor]")} style={{ backgroundColor: pillar.colorVar }} />
                 <span className="text-[10px] font-bold tracking-tight uppercase">{pillar.name}</span>
               </button>
             ))}
-          </div>
-
-          <div className="ml-auto hidden xl:flex items-center gap-6 px-4 border-l border-white/10">
-            <Metric label="Cleared" value={stats.completed} />
-            <Metric label="Active" value={stats.active} />
-            <Metric label="Total XP" value={stats.totalXP} color="text-[var(--stat-code)]" />
-            <Metric label="Gold" value={`${stats.goldEarned} GC`} color="text-yellow-400" />
           </div>
         </div>
 
@@ -229,33 +232,49 @@ export default function Quests() {
                   width: '25%'
                 }}
               />
-              {(['strategic', 'operational', 'campaigns', 'archived'] as QuestTab[]).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={cn(
-                    "relative z-10 px-5 py-1.5 font-bold text-[9px] font-bold tracking-[0.2em] uppercase transition-colors whitespace-nowrap",
-                    activeTab === tab ? "text-white" : "text-white/20 hover:text-white/40"
-                  )}
-                >
-                  {tab}
-                </button>
-              ))}
+              {(['strategic', 'operational', 'campaigns', 'archived'] as QuestTab[]).map((tab) => {
+                const count = dailyQuests.filter(q => {
+                  const isArchived = q.archived === true;
+                  const isCompleted = q.completed === true;
+                  if (tab === 'archived') return isArchived || (isCompleted && !q.repeating);
+                  return !isArchived && (!isCompleted || q.repeating) && (
+                    (tab === 'strategic' && q.type === 'daily') ||
+                    (tab === 'operational' && q.type === 'weekly') ||
+                    (tab === 'campaigns' && (q.type === 'boss' || q.type === 'raid'))
+                  );
+                }).length;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={cn(
+                      "relative z-10 px-5 py-1.5 font-bold text-[9px] font-bold tracking-[0.2em] uppercase transition-colors whitespace-nowrap",
+                      activeTab === tab ? "text-white" : "text-white/20 hover:text-white/40"
+                    )}
+                  >
+                    {tab}
+                    <span className="bg-white/10 px-1.5 rounded text-[8px] ml-2">{count}</span>
+                  </button>
+                )
+              })}
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-[var(--danger)] animate-pulse" />
-              <span className="font-bold text-[9px] text-white/40 uppercase tracking-[0.2em]">Risk Coefficient: {stats.failureRate.toFixed(1)}%</span>
+              <div className="h-2 w-2 rounded-full bg-[var(--danger)] animate-pulse shadow-[0_0_5px_var(--danger)]" />
+              <span className="font-bold text-[9px] text-white/40 uppercase tracking-[0.2em]">Risk Coefficient: <span className="text-[var(--danger)] drop-shadow-[0_0_2px_var(--danger)] font-black">{stats.failureRate.toFixed(1)}%</span></span>
             </div>
           </div>
 
           <div className="space-y-2">
             <AnimatePresence mode="popLayout">
               {filteredQuests.length === 0 ? (
-                <div className="py-20 text-center border border-dashed border-white/5 rounded-3xl opacity-20">
-                  <AlertTriangle size={32} className="mx-auto mb-4" />
-                  <p className="font-bold text-[10px] uppercase tracking-[0.3em]">No active missions in this sector</p>
-                </div>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-24 flex flex-col items-center justify-center text-center border border-dashed border-white/10 rounded-3xl bg-white/[0.01] relative overflow-hidden group shadow-inner">
+                  <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                  <Target size={48} strokeWidth={1} className="text-white/10 mb-6 group-hover:scale-110 group-hover:text-white/20 transition-all duration-700 drop-shadow-glow" />
+                  <p className="font-bold text-[12px] uppercase tracking-[0.4em] text-white/30 font-black mb-2">NO MISSIONS DETECTED</p>
+                  <p className="text-[10px] text-white/20 font-mono">Sector {activeTab.toUpperCase()} is currently clear.</p>
+                </motion.div>
               ) : (
                 filteredQuests.map((quest, index) => (
                   <QuestEntry
@@ -341,9 +360,9 @@ export default function Quests() {
 
 function Metric({ label, value, color = "text-white/80" }: { label: string, value: string | number, color?: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="font-bold text-[9px] text-white/30 uppercase tracking-widest">{label}</span>
-      <span className={cn("font-bold text-xs font-bold", color)}>{value}</span>
+    <div className="flex flex-col gap-1.5 min-w-[100px]">
+      <span className="font-bold text-[10px] text-white/30 uppercase tracking-[0.2em] font-black">{label}</span>
+      <span className={cn("text-3xl font-bold tabular-nums", color)}>{value}</span>
     </div>
   );
 }
@@ -374,7 +393,7 @@ function QuestEntry({
       transition={{ delay: index * 0.03 }}
       exit={{ opacity: 0, scale: 0.98 }}
       className={cn(
-        "relative rounded-xl border transition-all duration-300 group overflow-hidden",
+        "relative surface-card transition-all duration-300 group overflow-hidden hover-lift",
         quest.completed ? (quest.repeating ? "bg-[var(--success)]/[0.03] border-[var(--success)]/10 opacity-70" : "bg-white/[0.01] border-white/5 opacity-40") :
           quest.failed ? "bg-red-500/[0.05] border-red-500/20 grayscale-[0.5]" :
             isBoss ? "bg-[var(--bg-elevated)] border-[#7649C9]/30 shadow-[0_0_20px_rgba(118,73,201,0.1)]" :
@@ -388,8 +407,8 @@ function QuestEntry({
             <button
               onClick={onToggleSelect}
               className={cn(
-                "h-7 w-7 rounded-lg flex items-center justify-center border transition-all",
-                isSelected ? "bg-white text-black border-white" : "bg-white/5 border-white/10 text-white/20"
+                "h-7 w-7 rounded-lg flex items-center justify-center border transition-all shadow-sm",
+                isSelected ? "bg-white text-black border-white shadow-[0_0_10px_rgba(255,255,255,0.4)]" : "bg-white/5 border-white/10 text-white/20"
               )}
             >
               {isSelected ? <CheckSquare size={14} /> : <div className="h-3 w-3 border-2 border-white/10 rounded" />}
@@ -488,7 +507,7 @@ function QuestEntry({
               </h3>
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-white/20 hover:text-white transition-all"
+                className="text-white/20 hover:text-white transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded-sm"
               >
                 {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               </button>
@@ -526,7 +545,18 @@ function QuestEntry({
                   })()
                 )}>
                   Remaining: {(() => {
-                    const targetDate = quest.dueDate || quest.expiresAt || new Date().setHours(23, 59, 59, 999);
+                    const getISTMidnight = () => {
+                      const now = new Date();
+                      const istOffset = 5.5 * 60 * 60 * 1000;
+                      const istNow = new Date(now.getTime() + istOffset);
+                      const y = istNow.getUTCFullYear();
+                      const m = istNow.getUTCMonth();
+                      const d = istNow.getUTCDate();
+                      let target = new Date(Date.UTC(y, m, d, 18, 29, 59, 999));
+                      if (target <= now) target = new Date(Date.UTC(y, m, d + 1, 18, 29, 59, 999));
+                      return target;
+                    };
+                    const targetDate = quest.dueDate || quest.expiresAt || getISTMidnight();
                     const diff = new Date(targetDate).getTime() - new Date().getTime();
                     if (diff <= 0) return 'EXPIRED';
                     const h = Math.floor(diff / 3600000);
@@ -668,7 +698,7 @@ function QuestEntry({
                       const newSubtasks = quest.subtasks.filter((s: any) => s.id !== st.id);
                       onUpdateNotes(notes, newSubtasks);
                     }}
-                    className="text-white/10 hover:text-[var(--danger)]"
+                    className="text-white/10 hover:text-[var(--danger)] transition-colors"
                   >
                     <Trash2 size={10} />
                   </button>

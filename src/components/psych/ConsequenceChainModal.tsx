@@ -4,6 +4,7 @@ import { X, AlertTriangle, ArrowRight, ShieldAlert } from 'lucide-react';
 import { usePsychStore } from '../../store/sovereign-psych';
 import { IDENTITY_FRAMES } from '../../lib/constants';
 import { cn } from '../../lib/utils';
+import { ModalPortal } from '../ui/ModalPortal';
 
 interface Props {
   open: boolean;
@@ -27,7 +28,8 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
   }, [open]);
 
   return (
-    <AnimatePresence>
+    <ModalPortal>
+      <AnimatePresence>
       {open && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -40,7 +42,7 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.92, y: 20 }}
             transition={{ type: 'spring', bounce: 0.25 }}
-            className="w-full max-w-md bg-[#0d0d0d] border border-red-500/20 rounded-[28px] overflow-hidden shadow-[0_0_80px_rgba(239,68,68,0.15)] mt-12"
+            className="w-full max-w-md bg-[#0d0d0d] border border-red-500/20 rounded-[28px] overflow-hidden shadow-[0_0_80px_rgba(239,68,68,0.15)]"
           >
             {/* Header */}
             <div className="px-6 pt-6 pb-4 border-b border-white/5">
@@ -151,5 +153,6 @@ export function ConsequenceChainModal({ open, statId, questTitle, onConfirmSkip,
         </motion.div>
       )}
     </AnimatePresence>
+    </ModalPortal>
   );
 }

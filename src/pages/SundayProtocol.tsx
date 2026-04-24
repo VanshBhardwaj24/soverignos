@@ -57,7 +57,7 @@ export default function SundayProtocol() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-[#0a0a0a] border border-white/10 rounded-[40px] p-10 text-center relative overflow-hidden"
+          className="max-w-md w-full surface-card p-10 text-center relative overflow-hidden"
         >
           {/* Ambient Glow */}
           {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[var(--stat-mind)]/5 blur-[80px] rounded-full" /> */}
@@ -68,10 +68,10 @@ export default function SundayProtocol() {
               <div className="absolute inset-0 bg-white/5 animate-pulse rounded-3xl" />
             </div>
 
-            <h2 className="font-bold text-[10px] tracking-[0.3em] text-white/30 uppercase font-black mb-2">System Protocol</h2>
-            <h1 className="font-bold text-2xl font-light text-white mb-4">LOCKED</h1>
+            <p className="eyebrow text-white/30 mb-2">System Protocol</p>
+            <h1 className="h-display mb-4">Locked</h1>
 
-            <p className="font-bold text-[11px] text-white/20 leading-relaxed mb-8">
+            <p className="stat-label text-white/20 mb-8">
               The Sunday Protocol is a weekly terminal for system-wide reflection and recalibration. It only unlocks when the cycle completes.
             </p>
 
@@ -160,7 +160,7 @@ export default function SundayProtocol() {
       <div className="mb-10">
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-white/20 hover:text-white/50 transition-colors mb-6 font-bold text-[10px] uppercase tracking-widest"
+          className="flex items-center gap-2 text-white/20 hover:text-white/50 transition-colors mb-6 stat-label"
         >
           <ChevronLeft size={14} /> Back to Dashboard
         </button>

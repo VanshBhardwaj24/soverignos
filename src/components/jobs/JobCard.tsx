@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Building2, Calendar, 
+import {
+  Building2, Calendar,
   Trash2, ChevronRight, ChevronLeft,
   ExternalLink,
   Target
@@ -18,10 +18,10 @@ interface JobCardProps {
   isLast: boolean;
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ 
-  job, 
-  onMove, 
-  onDelete, 
+export const JobCard: React.FC<JobCardProps> = ({
+  job,
+  onMove,
+  onDelete,
   onClick,
   isFirst,
   isLast
@@ -47,7 +47,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider line-clamp-1">{job.role}</p>
           </div>
         </div>
-        
+
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -66,15 +66,15 @@ export const JobCard: React.FC<JobCardProps> = ({
           {new Date(job.date).toLocaleDateString()}
         </div>
         {job.followUpDate && (
-           <div className={cn(
-             "flex items-center gap-1 text-[8px] font-bold px-1.5 py-0.5 rounded-full border",
-             new Date(job.followUpDate) <= new Date() 
-               ? "bg-red-400/10 border-red-400/20 text-red-400 font-bold" 
-               : "bg-white/5 border-white/10 text-white/40"
-           )}>
-             <Target size={10} />
-             FOLLOW-UP
-           </div>
+          <div className={cn(
+            "flex items-center gap-1 text-[8px] font-bold px-1.5 py-0.5 rounded-full border",
+            new Date(job.followUpDate) <= new Date()
+              ? "bg-red-400/10 border-red-400/20 text-red-400 font-bold"
+              : "bg-white/5 border-white/10 text-white/40"
+          )}>
+            <Target size={10} />
+            FOLLOW-UP
+          </div>
         )}
       </div>
 

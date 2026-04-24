@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, X, Clock, Flame } from 'lucide-react';
+import { ShieldAlert, Clock, Flame } from 'lucide-react';
 import { usePsychStore } from '../../store/sovereign-psych';
 
 const EMBARGO_RULES = [
@@ -32,67 +32,58 @@ export function EmbargoHUD() {
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="overflow-hidden"
         >
-          <div className="relative mb-8 rounded-[28px] border border-red-500/40 bg-red-500/5 backdrop-blur-md overflow-hidden">
-            {/* Animated warning stripe */}
-            <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(239,68,68,0.03)_10px,rgba(239,68,68,0.03)_20px)]" />
-
-            <div className="relative z-10 p-6 md:p-8">
+          <div className="relative mb-8 rounded-[48px] border border-red-500/20 bg-black overflow-hidden shadow-2xl">
+            <div className="relative z-10 p-10">
               <div className="flex items-start justify-between gap-6">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center shrink-0">
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ repeat: Infinity, duration: 2 }}
-                    >
-                      <ShieldAlert size={24} className="text-red-400" />
-                    </motion.div>
+                  <div className="h-10 w-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                    <ShieldAlert size={20} className="text-red-400" />
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-bold text-sm font-black text-red-400 uppercase tracking-[0.2em]">
-                        ⚠ DIGITAL FORTRESS ACTIVE
+                      <h3 className="font-bold text-sm font-black text-red-400 uppercase tracking-[0.3em]">
+                        DIGITAL FORTRESS
                       </h3>
-                      <div className="px-2 py-0.5 bg-red-500/20 border border-red-500/30 rounded-full">
-                        <span className="font-bold text-[8px] text-red-400 uppercase font-black tracking-widest">EMBARGO DAY {daysActive + 1}</span>
+                      <div className="px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-full">
+                        <span className="font-bold text-[8px] text-red-400 uppercase font-black tracking-widest">DAY {daysActive + 1}</span>
                       </div>
                     </div>
-                    <p className="font-bold text-[10px] text-white/40 uppercase tracking-widest">
-                      CREATE stat was zero for 3+ days. All dopamine sources are locked.
+                    <p className="font-bold text-[10px] text-white/30 uppercase tracking-[0.1em]">
+                      Dopamine sources restricted.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4 shrink-0">
                   <div className="text-right">
-                    <div className="flex items-center gap-2 text-orange-400 mb-1">
+                    <div className="flex items-center gap-1 text-orange-400">
                       <Clock size={14} />
-                      <span className="font-bold text-xl font-black">{daysRemaining}d</span>
+                      <span className="font-bold text-lg font-black">{daysRemaining}d</span>
                     </div>
-                    <p className="font-bold text-[8px] text-white/30 uppercase tracking-widest">to release</p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-2">
-                {EMBARGO_RULES.map((rule, i) => (
-                  <div key={i} className="flex items-center gap-3 py-2 px-4 bg-white/[0.02] border border-white/5 rounded-xl">
-                    <span className="font-bold text-[11px] text-white/50">{rule}</span>
+              <div className="mt-8 grid grid-cols-1 gap-2">
+                {EMBARGO_RULES.slice(0, 3).map((rule, i) => (
+                  <div key={i} className="flex items-center gap-3 py-1 text-white/40">
+                    <span className="font-bold text-[10px] uppercase tracking-widest">{rule}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-6 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-white/20">
-                  <Flame size={14} className="text-orange-500/50" />
-                  <p className="font-bold text-[9px] uppercase tracking-widest">
-                    Log CREATE activity daily to end the embargo early.
+              <div className="mt-8 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-white/10">
+                  <Flame size={14} className="text-orange-500/30" />
+                  <p className="font-bold text-[8px] uppercase tracking-[0.2em] font-black">
+                    LOG CREATE ACTIVITY TO RELEASE
                   </p>
                 </div>
                 <button
                   onClick={clearEmbargo}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl font-bold text-[9px] uppercase font-black tracking-widest text-white/30 hover:text-white hover:border-white/20 transition-all flex items-center gap-2"
+                  className="font-bold text-[8px] uppercase font-black tracking-widest text-white/10 hover:text-white/30 transition-all"
                 >
-                  <X size={12} /> Override (Admin)
+                  Override
                 </button>
               </div>
             </div>

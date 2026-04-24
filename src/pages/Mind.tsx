@@ -12,8 +12,9 @@ import { cn } from '../lib/utils';
 import { KnowledgeCard } from '../components/mind/KnowledgeCard';
 import { useSearchParams } from 'react-router-dom';
 import { GrowthTab } from '../components/mind/GrowthTab';
-import { DecisionJournal } from '../components/psych/DecisionJournal';
 import { FutureLetters } from '../components/psych/FutureLetters';
+import { ModalPortal } from '../components/ui/ModalPortal';
+import { DecisionJournal } from '../components/psych/DecisionJournal';
 
 type MindTab = 'journal' | 'vault' | 'archives' | 'nexus' | 'decisions' | 'letters';
 
@@ -144,8 +145,8 @@ export default function Mind() {
       {/* Top Navigation */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
-          <h1 className="font-bold text-[11px] tracking-[0.2em] text-[var(--stat-mind)] uppercase font-semibold mb-2">Cognitive Command</h1>
-          <div className="font-bold text-4xl font-light tracking-tight text-white flex items-center gap-3 lowercase">
+          <p className="eyebrow text-[var(--stat-mind)] mb-2">Cognitive Command</p>
+          <div className="h-display flex items-center gap-3 lowercase">
             MIND <span className="text-white/20">/</span> <span className="text-white/40">{activeTab}</span>
           </div>
         </div>
@@ -179,7 +180,7 @@ export default function Mind() {
                       <div className="h-8 w-8 rounded-xl bg-[var(--stat-mind)]/20 flex items-center justify-center text-[var(--stat-mind)]">
                         <Book size={18} />
                       </div>
-                      <h1 className="font-sans font-black text-lg tracking-tight">Notebook</h1>
+                      <h3 className="h-section">Notebook</h3>
                     </div>
                     <button
                       onClick={handleCreate}
@@ -203,7 +204,7 @@ export default function Mind() {
 
                 <div className="flex-1 overflow-y-auto no-scrollbar px-3 space-y-1 pb-6">
                   <div className="px-3 mb-2">
-                    <h3 className="text-[9px] font-bold tracking-[0.3em] text-[var(--text-muted)] uppercase font-black opacity-40">Taxonomy</h3>
+                    <h3 className="eyebrow opacity-40">Taxonomy</h3>
                   </div>
                   {folders.map(folder => (
                     <button
@@ -220,35 +221,35 @@ export default function Mind() {
                           {folder.icon}
                         </div>
                         <span className={cn(
-                          "text-xs font-bold tracking-tight",
+                          "stat-label",
                           selectedFolder === folder.id ? "text-[var(--text-primary)] font-black" : ""
                         )}>
                           {folder.id}
                         </span>
                       </div>
-                      <span className="text-[10px] text-[var(--text-muted)] font-bold">{folder.count}</span>
+                      <span className="stat-label opacity-40">{folder.count}</span>
                     </button>
                   ))}
 
                   <div className="px-3 mt-8 mb-2">
-                    <h3 className="text-[9px] font-bold tracking-[0.3em] text-[var(--text-muted)] uppercase font-black opacity-40">Daily Reflection</h3>
+                    <h3 className="eyebrow opacity-40">Daily Reflection</h3>
                   </div>
                   <button
                     onClick={() => setShowReflection(true)}
                     className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-all text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                   >
                     <Smile size={16} />
-                    <span className="text-xs font-bold">Log Mood & Gratitude</span>
+                    <span className="stat-label">Log Mood & Gratitude</span>
                   </button>
 
                   <div className="px-3 mt-8 mb-2">
-                    <h3 className="text-[9px] font-bold tracking-[0.3em] text-[var(--text-muted)] uppercase font-black opacity-40">Entries</h3>
+                    <h3 className="eyebrow opacity-40">Entries</h3>
                   </div>
                   <div className="space-y-1">
                     {filteredNotes.length === 0 ? (
                       <div className="p-8 text-center opacity-20">
                         <Book size={24} className="mx-auto mb-2" />
-                        <p className="text-[9px] font-bold uppercase">Vault Empty</p>
+                        <p className="eyebrow">Vault Empty</p>
                       </div>
                     ) : (
                       filteredNotes.map(note => (
@@ -256,19 +257,19 @@ export default function Mind() {
                           key={note.id}
                           onClick={() => setActiveNoteId(note.id)}
                           className={cn(
-                            "w-full text-left p-4 rounded-2xl transition-all border border-transparent animate-in slide-in-from-left-2 duration-300",
+                            "w-full text-left p-4 surface-card transition-all animate-in slide-in-from-left-2 duration-300",
                             activeNoteId === note.id ? "bg-[var(--text-primary)]/10 border-[var(--text-primary)]/20" : "hover:bg-white/5"
                           )}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <h4 className={cn(
-                              "text-[11px] font-black tracking-tight line-clamp-1",
+                              "h-card line-clamp-1",
                               activeNoteId === note.id ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
                             )}>
                               {note.title || 'Untitled Entry'}
                             </h4>
                           </div>
-                          <p className="text-[10px] text-[var(--text-muted)] line-clamp-1 opacity-60">
+                          <p className="stat-label opacity-40 line-clamp-1">
                             {note.content || 'Awaiting thought sequence...'}
                           </p>
                         </button>
@@ -330,10 +331,8 @@ export default function Mind() {
                             onClick={handleSave}
                             disabled={isSaving}
                             className={cn(
-                              "flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black tracking-widest transition-all uppercase whitespace-nowrap shadow-lg active:scale-95",
-                              isSaving
-                                ? "bg-[var(--success)] text-white"
-                                : "bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90"
+                              "btn-primary px-6",
+                              isSaving && "bg-[var(--success)] text-white"
                             )}
                           >
                             {isSaving ? <CheckSquare size={14} /> : <Save size={14} />}
@@ -352,12 +351,12 @@ export default function Mind() {
                     <div className="flex-1 p-16 overflow-y-auto no-scrollbar">
                       <div className="max-w-3xl mx-auto space-y-10 animate-in fade-in zoom-in-95 duration-500">
                         <div className="space-y-4">
-                          <h3 className="text-[10px] font-bold tracking-[0.5em] text-[var(--stat-mind)] uppercase font-black opacity-60">System Entry</h3>
+                          <p className="eyebrow opacity-60">System Entry</p>
                           <input
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             placeholder="Protocol Title..."
-                            className="w-full bg-transparent text-5xl font-black tracking-tighter text-[var(--text-primary)] outline-none border-none placeholder:opacity-10"
+                            className="w-full bg-transparent h-display text-[var(--text-primary)] outline-none border-none placeholder:opacity-10"
                           />
                         </div>
 
@@ -408,12 +407,12 @@ export default function Mind() {
             >
               <div className="flex items-center justify-between mb-12">
                 <div>
-                  <h3 className="font-sans text-2xl font-black text-white">KNOWLEDGE VAULT</h3>
-                  <p className="text-sm text-white/30 font-bold uppercase tracking-widest mt-1">Spaced Repetition Engine // {knowledgeCards.length} active units</p>
+                  <h3 className="h-section">KNOWLEDGE VAULT</h3>
+                  <p className="stat-label opacity-40 mt-1">Spaced Repetition Engine // {knowledgeCards.length} active units</p>
                 </div>
                 <button
                   onClick={() => setIsAddingCard(true)}
-                  className="px-6 py-3 bg-[var(--stat-mind)] text-white rounded-2xl font-bold text-[10px] font-black tracking-widest uppercase hover:brightness-110 transition-all shadow-[0_0_20px_rgba(102,126,234,0.3)]"
+                  className="btn-primary"
                 >
                   Deploy New Unit
                 </button>
@@ -426,37 +425,38 @@ export default function Mind() {
                 {knowledgeCards.length === 0 && (
                   <div className="col-span-full py-24 border border-dashed border-white/10 rounded-[40px] flex flex-col items-center justify-center opacity-20">
                     <Brain size={48} className="mb-4" />
-                    <p className="font-bold text-xs uppercase tracking-[0.4em]">Vault Decompressed // No Units Detected</p>
+                    <p className="eyebrow">Vault Decompressed // No Units Detected</p>
                   </div>
                 )}
               </div>
 
-              <AnimatePresence>
-                {isAddingCard && (
+              <ModalPortal>
+                <AnimatePresence>
+                  {isAddingCard && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className="fixed inset-0 z-[600] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"
                   >
-                    <form onSubmit={handleAddCard} className="w-full max-w-xl bg-[#111] border border-white/10 rounded-[40px] p-10 shadow-2xl relative">
+                    <form onSubmit={handleAddCard} className="w-full max-w-xl glass-premium rounded-[40px] p-10 relative">
                       <button onClick={() => setIsAddingCard(false)} className="absolute top-8 right-8 text-white/20 hover:text-white transition-colors">
                         <X size={24} />
                       </button>
 
-                      <h4 className="text-2xl font-black text-white uppercase italic mb-8">Register Knowledge Unit</h4>
+                      <h4 className="h-section italic mb-8">Register Knowledge Unit</h4>
 
                       <div className="space-y-6">
                         <div>
-                          <label className="block text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mb-3">Unit Prompt / Question</label>
+                          <label className="stat-label opacity-40 mb-3">Unit Prompt / Question</label>
                           <input value={cardQ} onChange={e => setCardQ(e.target.value)} placeholder="E.g. The first principle of tactical code architecture?" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)]" />
                         </div>
                         <div>
-                          <label className="block text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mb-3">Unit Resolution / Answer</label>
+                          <label className="stat-label opacity-40 mb-3">Unit Resolution / Answer</label>
                           <textarea value={cardA} onChange={e => setCardA(e.target.value)} placeholder="Explain the concept in high-density clarity..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)] h-32 resize-none" />
                         </div>
                         <div>
-                          <label className="block text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mb-3">Taxonomy Class</label>
+                          <label className="stat-label opacity-40 mb-3">Taxonomy Class</label>
                           <select value={cardCat} onChange={e => setCardCat(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)] appearance-none font-bold text-xs uppercase">
                             <option value="philosophy">Philosophy</option>
                             <option value="code">Code</option>
@@ -464,12 +464,13 @@ export default function Mind() {
                             <option value="vitality">Vitality</option>
                           </select>
                         </div>
-                        <button type="submit" className="w-full py-5 bg-white text-black font-bold font-black tracking-widest uppercase rounded-2xl hover:brightness-90 transition-all text-xs">Commit to Vault</button>
+                        <button type="submit" className="btn-primary w-full">Commit to Vault</button>
                       </div>
                     </form>
                   </motion.div>
                 )}
-              </AnimatePresence>
+                  </AnimatePresence>
+              </ModalPortal>
             </motion.div>
           ) : activeTab === 'archives' ? (
             <motion.div
@@ -480,15 +481,15 @@ export default function Mind() {
               className="flex-1 p-12 overflow-y-auto"
             >
               <div className="mb-12">
-                <h3 className="font-sans text-2xl font-black text-white">MISSION ARCHIVES</h3>
-                <p className="text-sm text-white/30 font-bold uppercase tracking-widest mt-1">Boss Encounter Records // High Command Clearance Only</p>
+                <h3 className="h-section">MISSION ARCHIVES</h3>
+                <p className="stat-label opacity-40 mt-1">Boss Encounter Records // High Command Clearance Only</p>
               </div>
 
               <div className="flex flex-col gap-4">
                 {journalEntries.filter(e => e.folder === 'Archives').length === 0 ? (
                   <div className="py-24 border border-dashed border-white/10 rounded-[40px] flex flex-col items-center justify-center opacity-20">
                     <Target size={48} className="mb-4" />
-                    <p className="font-bold text-xs uppercase tracking-[0.4em]">No Encounters Logged in Archives</p>
+                    <p className="eyebrow">No Encounters Logged in Archives</p>
                   </div>
                 ) : (
                   journalEntries.filter(e => e.folder === 'Archives').map(entry => (
@@ -498,9 +499,9 @@ export default function Mind() {
                           <div className="p-2 rounded-lg bg-[var(--stat-mind)]/20 text-[var(--stat-mind)]">
                             <Target size={18} />
                           </div>
-                          <span className="font-bold text-[10px] text-white/40 uppercase tracking-widest">{new Date(entry.date).toLocaleDateString()}</span>
+                          <span className="stat-label opacity-40">{new Date(entry.date).toLocaleDateString()}</span>
                         </div>
-                        <h4 className="text-xl font-black text-white uppercase italic group-hover:text-[var(--stat-mind)] transition-colors">{entry.title}</h4>
+                        <h4 className="h-card group-hover:text-[var(--stat-mind)] transition-colors">{entry.title}</h4>
                         <p className="text-xs text-white/30 mt-2 max-w-xl">{entry.content.substring(0, 120)}...</p>
                       </div>
                       <button className="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center text-white/20 group-hover:text-white group-hover:border-white/30 transition-all">
@@ -546,24 +547,25 @@ export default function Mind() {
       </div>
 
       {/* F16/17: Reflection Modal */}
-      <AnimatePresence>
-        {showReflection && (
+      <ModalPortal>
+        <AnimatePresence>
+          {showReflection && (
           <div className="fixed inset-0 z-[700] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-[40px] p-10 relative shadow-2xl">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="w-full max-w-lg glass-premium rounded-[40px] p-10 relative shadow-2xl">
               <button onClick={() => setShowReflection(false)} className="absolute top-8 right-8 text-white/20 hover:text-white"><X size={24} /></button>
-              <h3 className="text-2xl font-black text-white uppercase italic mb-8">System Recalibration</h3>
+              <h3 className="h-section italic mb-8">System Recalibration</h3>
 
               <div className="space-y-8">
                 <div className="space-y-4">
-                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest">Mood Magnitude ({mood}/10)</label>
+                  <label className="stat-label opacity-40">Mood Magnitude ({mood}/10)</label>
                   <input type="range" min="1" max="10" value={mood} onChange={e => setMood(Number(e.target.value))} className="w-full" />
                 </div>
                 <div className="space-y-4">
-                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest">Cognitive Intensity ({intensity}/10)</label>
+                  <label className="stat-label opacity-40">Cognitive Intensity ({intensity}/10)</label>
                   <input type="range" min="1" max="10" value={intensity} onChange={e => setIntensity(Number(e.target.value))} className="w-full" />
                 </div>
                 <div className="space-y-4">
-                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest">Gratitude List (3 Tactical Wins)</label>
+                  <label className="stat-label opacity-40">Gratitude List (3 Tactical Wins)</label>
                   {gratitude.map((g, i) => (
                     <input
                       key={i}
@@ -578,14 +580,15 @@ export default function Mind() {
                     />
                   ))}
                 </div>
-                <button onClick={handleMoodSubmit} className="w-full py-5 bg-white text-black font-black font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:scale-[0.98] transition-all">
+                <button onClick={handleMoodSubmit} className="btn-primary w-full">
                   COMMIT RECALIBRATION
                 </button>
               </div>
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </ModalPortal>
     </div>
   );
 }
@@ -595,7 +598,7 @@ function TabButton({ active, onClick, label }: { active: boolean, onClick: () =>
     <button
       onClick={onClick}
       className={cn(
-        "px-6 py-2.5 rounded-xl font-bold text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap",
+        "px-6 py-2.5 rounded-xl stat-label transition-all whitespace-nowrap",
         active ? "bg-white text-black shadow-lg" : "text-white/30 hover:text-white/60"
       )}
     >
