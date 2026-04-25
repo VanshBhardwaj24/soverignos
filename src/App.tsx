@@ -20,9 +20,11 @@ import { AuthOverlay } from './components/auth/AuthOverlay';
 import { Toaster, toast } from 'sonner';
 import { Calendar } from 'lucide-react';
 import { useCadenceStore } from './store/cadence';
+import { useAppearance } from './hooks/useAppearance';
 
 function App() {
   const { checkCadence } = useCadenceStore();
+  useAppearance(); // Initialize theme and visual preferences
 
   useEffect(() => {
     // Initial heartbeat

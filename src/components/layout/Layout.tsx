@@ -19,8 +19,10 @@ import { STATS } from '../../lib/constants';
 import { cn } from '../../lib/utils';
 import { useDailyBriefing } from '../../hooks/useDailyBriefing';
 import { ReminderModal } from '../ui/ReminderModal';
+import { useKeyboardEngine } from '../../hooks/useKeyboardEngine';
 
 export const Layout = () => {
+  useKeyboardEngine();
   const setLogModalOpen = useSovereignStore(state => state.setLogModalOpen);
   const setQuestModalOpen = useSovereignStore(state => state.setQuestModalOpen);
   const theme = useSovereignStore(state => state.theme);
@@ -56,6 +58,9 @@ export const Layout = () => {
     };
     const aura = mainStatRoutes[path] || 'dashboard';
     document.documentElement.setAttribute('data-aura', aura);
+    
+    // Scroll to top on page change
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname]);
 
   useEffect(() => {

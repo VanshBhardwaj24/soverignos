@@ -63,6 +63,7 @@ export default {
           network: 'var(--stat-network)',
           freedom: 'var(--stat-freedom)',
         },
+        'theme-accent': 'var(--accent-primary)',
         system: {
           success: 'var(--success)',
           danger: 'var(--danger)',

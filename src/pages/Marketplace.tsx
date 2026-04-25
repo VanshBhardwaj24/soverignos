@@ -132,26 +132,26 @@ export default function Marketplace() {
 
         <div className="flex items-center gap-6">
           {activeLoans.length > 0 && (
-            <div className="hidden xl:flex items-center gap-4 px-6 py-4 glass-premium">
+            <div className="">
               {activeLoans.map(loan => (
-                <div key={loan.id} className="flex flex-col items-start min-w-[120px]">
-                  <span className="stat-label block">{loan.itemName}</span>
+                <div key={loan.id} className="">
+                  {/* <span className="stat-label block">{loan.itemName}</span> */}
                   <div className="flex items-center gap-2 mt-1">
-                    <div className="h-1.5 w-16 bg-white/5 rounded-full overflow-hidden">
-                      <div
+                    <div className="">
+                      {/* <div
                         className="h-full bg-[var(--stat-wealth)]"
                         style={{ width: `${(loan.amountRepaid / loan.totalRepay) * 100}%` }}
-                      />
+                      /> */}
                     </div>
-                    <span className="stat-value text-[10px] text-white">{Math.floor((loan.amountRepaid / loan.totalRepay) * 100)}%</span>
+                    {/* <span className="stat-value text-[10px] text-white">{Math.floor((loan.amountRepaid / loan.totalRepay) * 100)}%</span> */}
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="px-8 py-4 bg-white/10 border border-white/20 rounded-2xl flex flex-col items-end shadow-xl">
-            <span className="font-bold text-[9px] text-white/40 uppercase tracking-widest mb-1 font-black">Current Balance</span>
+          <div className="px-8 py-5 bg-white/5 border border-white/10 rounded-3xl flex flex-col items-end shadow-2xl min-w-[180px]">
+            <span className="font-bold text-[9px] text-white/30 uppercase tracking-[0.2em] mb-1 font-black">Current Balance</span>
             <div className="flex items-center gap-3">
               <Coins size={20} className="text-[var(--stat-wealth)] animate-pulse" />
               <span className="stat-value text-4xl">{gold} <span className="text-xs font-bold text-white/40">GC</span></span>
@@ -161,7 +161,7 @@ export default function Marketplace() {
       </header>
 
       {/* Main Tabs */}
-      <nav className="flex items-center justify-center gap-2 mb-12 bg-white/5 p-1.5 rounded-2xl border border-white/5 w-fit mx-auto backdrop-blur-xl relative">
+      < nav className="flex items-center justify-center gap-2 mb-12 bg-white/5 p-1.5 rounded-2xl border border-white/5 w-fit mx-auto backdrop-blur-xl relative" >
         {(['market', 'inventory', 'rewards', 'history'] as Tab[]).map(tab => (
           <button
             key={tab}
@@ -180,27 +180,30 @@ export default function Marketplace() {
             )}
             <span className="relative z-20">{tab}</span>
           </button>
-        ))}
-      </nav>
+        ))
+        }
+      </nav >
 
       {/* Rewards Creation Trigger */}
-      {activeTab === 'rewards' && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="flex justify-center mb-12"
-        >
-          <button
-            onClick={() => {
-              setEditingReward(null);
-              setIsRewardModalOpen(true);
-            }}
-            className="flex items-center gap-3 px-10 py-5 bg-white text-black rounded-[24px] font-bold text-xs font-black tracking-[0.2em] uppercase hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-white/10"
+      {
+        activeTab === 'rewards' && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="flex justify-center mb-12"
           >
-            <Plus size={18} /> Initialize New Reward Protocol
-          </button>
-        </motion.div>
-      )}
+            <button
+              onClick={() => {
+                setEditingReward(null);
+                setIsRewardModalOpen(true);
+              }}
+              className="flex items-center gap-3 px-10 py-5 bg-white text-black rounded-[24px] font-bold text-xs font-black tracking-[0.2em] uppercase hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-white/10"
+            >
+              <Plus size={18} /> Initialize New Reward Protocol
+            </button>
+          </motion.div>
+        )
+      }
 
       {/* Active Loadout Overlay (Visible on Market/Inventory) */}
       <AnimatePresence>
@@ -212,26 +215,26 @@ export default function Marketplace() {
             className="mb-12 flex flex-wrap gap-4"
           >
             {timers.map(timer => {
-              const item = SHOP_ITEMS.find(i => i.id === timer.itemId);
+              const item = [...SHOP_ITEMS, ...customRewards].find(i => i.id === timer.itemId);
               return (
-                <div key={timer.itemId} className="flex-1 min-w-[280px] p-6 bg-gradient-to-br from-white/10 to-white/[0.02] border border-white/10 rounded-3xl backdrop-blur-2xl shadow-xl overflow-hidden relative group">
+                <div key={timer.itemId} className="flex-1 min-w-[300px] p-6 bg-gradient-to-br from-[var(--accent-primary)]/10 to-transparent border border-[var(--accent-primary)]/20 rounded-[32px] backdrop-blur-2xl shadow-xl overflow-hidden relative group">
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
                     {getIcon(item?.iconName || '', 60)}
                   </div>
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h4 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
-                        {item?.name} <span className="text-[var(--stat-brand)] animate-pulse inline-block w-1.5 h-1.5 rounded-full bg-current" />
+                      <h4 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                        {item?.name} <span className="text-[var(--accent-primary)] animate-pulse inline-block w-2 h-2 rounded-full bg-current" />
                       </h4>
-                      <p className="font-bold text-[10px] text-white/40 uppercase mt-1">ROI: +{timer.currentROI} XP gained</p>
+                      <p className="font-bold text-[10px] text-[var(--accent-primary)] uppercase mt-1 tracking-widest"> ROI: +{timer.currentROI} XP</p>
                     </div>
-                    <div className="font-bold text-xs font-black text-white px-2 py-1 bg-white/10 rounded-lg">
+                    <div className="font-bold text-xs font-black text-black px-3 py-1.5 bg-[var(--accent-primary)] rounded-xl shadow-lg">
                       {timer.timeLeft}
                     </div>
                   </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mt-6">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-[var(--stat-brand)] to-purple-500"
+                      className="h-full bg-[var(--accent-primary)]"
                       initial={{ width: 0 }}
                       animate={{ width: `${timer.progress}%` }}
                       transition={{ duration: 1 }}
@@ -245,300 +248,301 @@ export default function Marketplace() {
       </AnimatePresence>
 
       {/* Content Area */}
-      {activeTab === 'market' || activeTab === 'rewards' ? (
-        <>
-          {/* Controls Bar */}
-          <div className="flex flex-col md:flex-row gap-6 mb-12 items-center">
-            <div className="relative flex-1 group w-full">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={18} />
-              <input
-                type="text"
-                placeholder="SEARCH PROTOCOLS..."
-                aria-label="Search items"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 stat-label text-white outline-none focus:border-[var(--text-primary)]/40 focus:ring-4 focus:ring-[var(--text-primary)]/5 transition-all placeholder:text-white/10"
-              />
+      {
+        activeTab === 'market' || activeTab === 'rewards' ? (
+          <>
+            {/* Controls Bar */}
+            <div className="flex flex-col md:flex-row gap-6 mb-12 items-center">
+              <div className="relative flex-1 group w-full">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={18} />
+                <input
+                  type="text"
+                  placeholder="SEARCH PROTOCOLS..."
+                  aria-label="Search items"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 stat-label text-white outline-none focus:border-[var(--text-primary)]/40 focus:ring-4 focus:ring-[var(--text-primary)]/5 transition-all placeholder:text-white/10"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 overflow-x-auto pb-2 w-full md:w-auto no-scrollbar">
+                <button
+                  onClick={() => setShowAffordable(!showAffordable)}
+                  aria-label="Filter by affordable items"
+                  className={cn(
+                    "px-6 py-4 rounded-2xl border stat-label whitespace-nowrap transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20",
+                    showAffordable ? "bg-[var(--stat-wealth)]/20 border-[var(--stat-wealth)] text-white" : "bg-white/5 border-white/10 text-white/40"
+                  )}
+                >
+                  <Coins size={14} /> CAN AFFORD
+                </button>
+
+                <select
+                  value={filterType}
+                  onChange={(e) => setFilterType(e.target.value as any)}
+                  className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 stat-label text-white/60 focus:outline-none focus:border-white/30 cursor-pointer"
+                >
+                  <option value="all">ALL TYPES</option>
+                  <option value="equipment">EQUIPMENT</option>
+                  <option value="consumable">BOOSTERS</option>
+                  <option value="special">SPECIAL</option>
+                </select>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 stat-label text-white/60 focus:outline-none focus:border-white/30 cursor-pointer"
+                >
+                  <option value="new">SORT: NEWEST</option>
+                  <option value="price">SORT: PRICE</option>
+                  <option value="rarity">SORT: RARITY</option>
+                </select>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 w-full md:w-auto no-scrollbar">
-              <button
-                onClick={() => setShowAffordable(!showAffordable)}
-                aria-label="Filter by affordable items"
-                className={cn(
-                  "px-6 py-4 rounded-2xl border stat-label whitespace-nowrap transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20",
-                  showAffordable ? "bg-[var(--stat-wealth)]/20 border-[var(--stat-wealth)] text-white" : "bg-white/5 border-white/10 text-white/40"
-                )}
-              >
-                <Coins size={14} /> CAN AFFORD
-              </button>
+            {/* Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <AnimatePresence mode="popLayout">
+                {filteredItems.map((item, idx) => {
+                  const owned = inventory.includes(item.id) && item.type === 'permanent';
+                  const isWishlisted = wishlist.includes(item.id);
+                  const canAfford = gold >= item.cost;
+                  const progress = Math.min(100, (gold / item.cost) * 100);
 
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value as any)}
-                className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 stat-label text-white/60 focus:outline-none focus:border-white/30 cursor-pointer"
-              >
-                <option value="all">ALL TYPES</option>
-                <option value="equipment">EQUIPMENT</option>
-                <option value="consumable">BOOSTERS</option>
-                <option value="special">SPECIAL</option>
-              </select>
-
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 stat-label text-white/60 focus:outline-none focus:border-white/30 cursor-pointer"
-              >
-                <option value="new">SORT: NEWEST</option>
-                <option value="price">SORT: PRICE</option>
-                <option value="rarity">SORT: RARITY</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <AnimatePresence mode="popLayout">
-              {filteredItems.map((item, idx) => {
-                const owned = inventory.includes(item.id) && item.type === 'permanent';
-                const isWishlisted = wishlist.includes(item.id);
-                const canAfford = gold >= item.cost;
-                const progress = Math.min(100, (gold / item.cost) * 100);
-
-                return (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
-                    transition={{
-                      duration: 0.6,
-                      delay: idx * 0.05,
-                      ease: [0.2, 0.8, 0.2, 1]
-                    }}
-                    whileHover={{ y: -8, scale: 1.02 }}
-                    className={cn(
-                      "group relative p-8 surface-card transition-all duration-500 flex flex-col justify-between min-h-[480px] shadow-lg hover-lift overflow-hidden border-glow-professional",
-                      getRarityStyles(item.rarity),
-                      owned ? "opacity-30 grayscale" : ""
-                    )}
-                  >
-                    {/* Background Shine */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                    {/* Card Header */}
-                    <div className="relative z-10">
-                      <div className="flex items-start justify-between mb-8">
-                        <div className="h-16 w-16 bg-white/10 rounded-3xl flex items-center justify-center text-white border border-white/10 group-hover:scale-110 transition-transform duration-500">
-                          {getIcon(item.iconName, 24)}
-                        </div>
-                        <button
-                          onClick={() => toggleWishlist(item.id)}
-                          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                          className={cn(
-                            "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-500/40",
-                            isWishlisted ? "bg-red-500 text-white shadow-lg" : "bg-white/5 text-white/20 hover:bg-white/10 hover:scale-110"
-                          )}
-                        >
-                          <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
-                        </button>
-
-                        {item.isRealWorld && (item as any).id.startsWith('custom') && (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setEditingReward(item);
-                                setIsRewardModalOpen(true);
-                              }}
-                              className="h-10 w-10 rounded-full bg-white/5 text-white/20 hover:bg-white/10 hover:text-white flex items-center justify-center transition-all"
-                            >
-                              <Edit3 size={16} />
-                            </button>
-                            <button
-                              onClick={() => deleteReward(item.id)}
-                              className="h-10 w-10 rounded-full bg-red-500/10 text-red-500/40 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mb-2 flex items-center gap-2">
-                        <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-40">{item.rarity}</span>
-                        <span className="h-1 w-1 rounded-full bg-white/20" />
-                        <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-40">{item.type}</span>
-                      </div>
-
-                      <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-4 group-hover:translate-x-1 transition-transform duration-500">
-                        {item.name}
-                      </h3>
-
-                      <p className="text-xs text-white/50 leading-relaxed font-medium mb-6 min-h-[60px]">
-                        {item.description}
-                      </p>
-
-                      {item.multiplier && (
-                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 w-fit mb-6">
-                          <span className="text-[10px] font-black text-[var(--stat-brand)] tracking-widest">+{((item.multiplier - 1) * 100).toFixed(0)}% GAIN</span>
-                        </div>
+                  return (
+                    <motion.div
+                      key={item.id}
+                      layout
+                      initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+                      transition={{
+                        duration: 0.6,
+                        delay: idx * 0.05,
+                        ease: [0.2, 0.8, 0.2, 1]
+                      }}
+                      whileHover={{ y: -8, scale: 1.02 }}
+                      className={cn(
+                        "group relative p-8 surface-card transition-all duration-500 flex flex-col justify-between min-h-[480px] shadow-lg hover-lift overflow-hidden border-glow-professional",
+                        getRarityStyles(item.rarity),
+                        owned ? "opacity-30 grayscale" : ""
                       )}
-                    </div>
+                    >
+                      {/* Background Shine */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-                    {/* Card Footer */}
-                    <div className="relative z-10 space-y-6 pt-6 border-t border-white/5">
-                      {/* Progress Bar (if expensive) */}
-                      {!canAfford && !owned && (
-                        <div className="space-y-2">
-                          <div className="flex justify-between font-bold text-[8px] tracking-widest text-white/30 uppercase font-black">
-                            <span>Target Progress</span>
-                            <span>{progress.toFixed(0)}%</span>
+                      {/* Card Header */}
+                      <div className="relative z-10">
+                        <div className="flex items-start justify-between mb-8">
+                          <div className="h-16 w-16 bg-white/10 rounded-3xl flex items-center justify-center text-white border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                            {getIcon(item.iconName, 24)}
                           </div>
-                          <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                            <motion.div
-                              className="h-full bg-white/20"
-                              initial={{ width: 0 }}
-                              animate={{ width: `${progress}%` }}
-                              transition={{ duration: 1, ease: "easeOut" }}
-                            />
-                          </div>
-                          <p className="font-bold text-[8px] text-white/20 uppercase italic mt-1">System Estimating Acquisition...</p>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-baseline gap-1">
-                          <span className={cn(
-                            "text-4xl font-black tracking-tighter font-bold transition-colors duration-500",
-                            canAfford ? "text-white" : "text-white/20"
-                          )}>{item.cost}</span>
-                          <span className="text-[10px] font-bold text-white/20">GC</span>
-                        </div>
-
-                        <div className="flex-1 flex flex-col gap-2">
                           <button
-                            disabled={owned || !canAfford}
-                            onClick={() => buyItem(item.id, item.cost)}
-                            aria-label={owned ? "Item already owned" : `Acquire for ${item.cost} GC`}
+                            onClick={() => toggleWishlist(item.id)}
+                            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                             className={cn(
-                              "w-full py-4 rounded-2xl font-black font-bold text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/40",
-                              owned ? "bg-white/5 text-white/20 border border-white/5 cursor-default" :
-                                canAfford ? "bg-white text-black hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg" :
-                                  "bg-white/5 text-white/20 border border-white/5"
+                              "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-500/40",
+                              isWishlisted ? "bg-red-500 text-white shadow-lg" : "bg-white/5 text-white/20 hover:bg-white/10 hover:scale-110"
                             )}
                           >
-                            {owned ? <Lock size={12} /> : canAfford ? <ArrowUpRight size={12} /> : null}
-                            {owned ? 'OWNED' : canAfford ? 'ACQUIRE' : 'LOCKED'}
+                            <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
                           </button>
 
-                          {!owned && !canAfford && (
-                            <button
-                              onClick={() => setSelectedLoanItem(item.id)}
-                              aria-label="Request GC loan for this item"
-                              className="w-full py-3 rounded-xl font-black font-bold text-[8px] tracking-[0.2em] uppercase bg-[var(--stat-wealth)]/10 text-[var(--stat-wealth)] border border-[var(--stat-wealth)]/20 hover:bg-[var(--stat-wealth)] hover:text-black hover:scale-[1.02] transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--stat-wealth)]/40"
-                            >
-                              Request GC Loan
-                            </button>
+                          {item.isRealWorld && (item as any).id.startsWith('custom') && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setEditingReward(item);
+                                  setIsRewardModalOpen(true);
+                                }}
+                                className="h-10 w-10 rounded-full bg-white/5 text-white/20 hover:bg-white/10 hover:text-white flex items-center justify-center transition-all"
+                              >
+                                <Edit3 size={16} />
+                              </button>
+                              <button
+                                onClick={() => deleteReward(item.id)}
+                                className="h-10 w-10 rounded-full bg-red-500/10 text-red-500/40 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
 
-            {filteredItems.length === 0 && (
-              <div className="col-span-full py-40 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[60px]">
-                <Search size={40} className="mx-auto mb-6 text-white/10" />
-                <h3 className="font-bold text-xl text-white/20 uppercase tracking-widest">No matching protocols found</h3>
-                <p className="text-white/10 text-xs mt-2 uppercase tracking-widest font-bold">adjust your filters to expand the search.</p>
-              </div>
-            )}
-          </div>
-        </>
-      ) : activeTab === 'inventory' ? (
-        <div className="space-y-12">
-          {/* Section 1: Boosters & Consumables */}
-          <section>
-            <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/30 uppercase mb-8 flex items-center gap-3">
-              <BarChart3 size={16} /> Loadout Management
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {inventory.filter(id => SHOP_ITEMS.find(i => i.id === id)?.type === 'consumable').map(itemId => {
-                const item = SHOP_ITEMS.find(i => i.id === itemId);
-                if (!item) return null;
-                const cooldown = useSovereignStore.getState().itemCooldowns[itemId];
-                const isOnCooldown = !!(cooldown && new Date(cooldown) > new Date());
+                        <div className="mb-2 flex items-center gap-2">
+                          <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-40">{item.rarity}</span>
+                          <span className="h-1 w-1 rounded-full bg-white/20" />
+                          <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-40">{item.type}</span>
+                        </div>
 
-                return (
-                  <div key={Math.random()} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] hover:border-white/20 transition-all flex flex-col justify-between h-[240px]">
-                    <div>
-                      <h4 className="text-lg font-black text-white italic uppercase tracking-tighter">{item.name}</h4>
-                      <p className="text-xs text-white/40 mt-2 line-clamp-2">{item.description}</p>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="font-bold text-[10px] text-white/20 uppercase">{item.duration}h Duration</div>
-                      <button
-                        disabled={isOnCooldown}
-                        onClick={() => deployItem(itemId)}
-                        className={cn(
-                          "px-6 py-3 rounded-xl font-bold text-[9px] font-black tracking-widest uppercase transition-all",
-                          isOnCooldown ? "bg-white/5 text-white/20" : "bg-[var(--stat-brand)] text-white hover:scale-105"
+                        <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-4 group-hover:translate-x-1 transition-transform duration-500">
+                          {item.name}
+                        </h3>
+
+                        <p className="text-xs text-white/50 leading-relaxed font-medium mb-6 min-h-[60px]">
+                          {item.description}
+                        </p>
+
+                        {item.multiplier && (
+                          <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 w-fit mb-6">
+                            <span className="text-[10px] font-black text-[var(--stat-brand)] tracking-widest">+{((item.multiplier - 1) * 100).toFixed(0)}% GAIN</span>
+                          </div>
                         )}
-                      >
-                        {isOnCooldown ? 'ON COOLDOWN' : 'DEPLOY // ACTIVATE'}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-              {inventory.filter(id => SHOP_ITEMS.find(i => i.id === id)?.type === 'consumable').length === 0 && (
-                <div className="col-span-full py-20 text-center border border-dashed border-white/5 rounded-[40px]">
-                  <p className="font-bold text-[10px] text-white/20 uppercase tracking-[0.4em]">No Consumable Assets Available</p>
+                      </div>
+
+                      {/* Card Footer */}
+                      <div className="relative z-10 space-y-6 pt-6 border-t border-white/5">
+                        {/* Progress Bar (if expensive) */}
+                        {!canAfford && !owned && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between font-bold text-[8px] tracking-widest text-white/30 uppercase font-black">
+                              <span>Target Progress</span>
+                              <span>{progress.toFixed(0)}%</span>
+                            </div>
+                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                              <motion.div
+                                className="h-full bg-white/20"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress}%` }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                              />
+                            </div>
+                            <p className="font-bold text-[8px] text-white/20 uppercase italic mt-1">System Estimating Acquisition...</p>
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-baseline gap-1">
+                            <span className={cn(
+                              "text-4xl font-black tracking-tighter font-bold transition-colors duration-500",
+                              canAfford ? "text-white" : "text-white/20"
+                            )}>{item.cost}</span>
+                            <span className="text-[10px] font-bold text-white/20">GC</span>
+                          </div>
+
+                          <div className="flex-1 flex flex-col gap-2">
+                            <button
+                              disabled={owned || !canAfford}
+                              onClick={() => buyItem(item.id, item.cost)}
+                              aria-label={owned ? "Item already owned" : `Acquire for ${item.cost} GC`}
+                              className={cn(
+                                "w-full py-4 rounded-2xl font-black font-bold text-[10px] tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/40",
+                                owned ? "bg-white/5 text-white/20 border border-white/5 cursor-default" :
+                                  canAfford ? "bg-white text-black hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg" :
+                                    "bg-white/5 text-white/20 border border-white/5"
+                              )}
+                            >
+                              {owned ? <Lock size={12} /> : canAfford ? <ArrowUpRight size={12} /> : null}
+                              {owned ? 'OWNED' : canAfford ? 'ACQUIRE' : 'LOCKED'}
+                            </button>
+
+                            {!owned && !canAfford && (
+                              <button
+                                onClick={() => setSelectedLoanItem(item.id)}
+                                aria-label="Request GC loan for this item"
+                                className="w-full py-3 rounded-xl font-black font-bold text-[8px] tracking-[0.2em] uppercase bg-[var(--stat-wealth)]/10 text-[var(--stat-wealth)] border border-[var(--stat-wealth)]/20 hover:bg-[var(--stat-wealth)] hover:text-black hover:scale-[1.02] transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--stat-wealth)]/40"
+                              >
+                                Request GC Loan
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+
+              {filteredItems.length === 0 && (
+                <div className="col-span-full py-40 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[60px]">
+                  <Search size={40} className="mx-auto mb-6 text-white/10" />
+                  <h3 className="font-bold text-xl text-white/20 uppercase tracking-widest">No matching protocols found</h3>
+                  <p className="text-white/10 text-xs mt-2 uppercase tracking-widest font-bold">adjust your filters to expand the search.</p>
                 </div>
               )}
             </div>
-          </section>
+          </>
+        ) : activeTab === 'inventory' ? (
+          <div className="space-y-12">
+            {/* Section 1: Boosters & Consumables */}
+            <section>
+              <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/30 uppercase mb-8 flex items-center gap-3">
+                <BarChart3 size={16} /> Loadout Management
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {inventory.filter(id => SHOP_ITEMS.find(i => i.id === id)?.type === 'consumable').map(itemId => {
+                  const item = SHOP_ITEMS.find(i => i.id === itemId);
+                  if (!item) return null;
+                  const cooldown = useSovereignStore.getState().itemCooldowns[itemId];
+                  const isOnCooldown = !!(cooldown && new Date(cooldown) > new Date());
 
-          {/* Section 2: Permanent Equipment */}
-          <section>
-            <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/30 uppercase mb-8 flex items-center gap-3">
-              <Shield size={16} /> Biological Augmentations
-            </h3>
-            <div className="space-y-4">
-              {inventory.filter(id => SHOP_ITEMS.find(i => i.id === id)?.type === 'permanent').map(itemId => {
-                const item = SHOP_ITEMS.find(i => i.id === itemId);
-                if (!item) return null;
-                return (
-                  <div key={itemId} className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl flex items-center justify-between group hover:bg-white/[0.02] transition-all">
-                    <div className="flex items-center gap-6">
-                      <div className="h-12 w-12 bg-white/5 rounded-xl flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
-                        {getIcon(item.iconName, 20)}
-                      </div>
+                  return (
+                    <div key={Math.random()} className="p-8 bg-white/[0.02] border border-white/5 rounded-[40px] hover:border-white/20 transition-all flex flex-col justify-between h-[240px]">
                       <div>
-                        <h4 className="text-white font-black uppercase text-sm italic">{item.name}</h4>
-                        <p className="text-[10px] text-white/30 mt-1 uppercase font-bold tracking-widest">{item.stat} MODULE // PERMANENT EFFECT</p>
+                        <h4 className="text-lg font-black text-white italic uppercase tracking-tighter">{item.name}</h4>
+                        <p className="text-xs text-white/40 mt-2 line-clamp-2">{item.description}</p>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="font-bold text-[10px] text-white/20 uppercase">{item.duration}h Duration</div>
+                        <button
+                          disabled={isOnCooldown}
+                          onClick={() => deployItem(itemId)}
+                          className={cn(
+                            "px-6 py-3 rounded-xl font-bold text-[9px] font-black tracking-widest uppercase transition-all",
+                            isOnCooldown ? "bg-white/5 text-white/20" : "bg-[var(--accent-primary)] text-black hover:scale-105"
+                          )}
+                        >
+                          {isOnCooldown ? 'ON COOLDOWN' : 'DEPLOY // ACTIVATE'}
+                        </button>
                       </div>
                     </div>
-                    <div className="px-4 py-2 rounded-lg bg-[var(--stat-brand)]/10 border border-[var(--stat-brand)]/20 text-[var(--stat-brand)] font-bold text-[10px] font-black uppercase tracking-widest">
-                      OPERATIONAL
-                    </div>
+                  );
+                })}
+                {inventory.filter(id => SHOP_ITEMS.find(i => i.id === id)?.type === 'consumable').length === 0 && (
+                  <div className="col-span-full py-20 text-center border border-dashed border-white/5 rounded-[40px]">
+                    <p className="font-bold text-[10px] text-white/20 uppercase tracking-[0.4em]">No Consumable Assets Available</p>
                   </div>
-                );
-              })}
-            </div>
-          </section>
-        </div>
-      ) : (
-        <div className="py-40 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[60px]">
-          <Gift size={40} className="mx-auto mb-6 text-white/10" />
-          <h3 className="font-bold text-xl text-white/20 uppercase tracking-widest">Archive Content Restricted</h3>
-          <p className="text-white/10 text-xs mt-2 uppercase tracking-widest font-bold">deployment history and audit logs are clearing...</p>
-        </div>
-      )}
+                )}
+              </div>
+            </section>
+
+            {/* Section 2: Permanent Equipment */}
+            <section>
+              <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/30 uppercase mb-8 flex items-center gap-3">
+                <Shield size={16} /> Biological Augmentations
+              </h3>
+              <div className="space-y-4">
+                {inventory.filter(id => SHOP_ITEMS.find(i => i.id === id)?.type === 'permanent').map(itemId => {
+                  const item = SHOP_ITEMS.find(i => i.id === itemId);
+                  if (!item) return null;
+                  return (
+                    <div key={itemId} className="p-6 bg-white/[0.01] border border-white/5 rounded-3xl flex items-center justify-between group hover:bg-white/[0.02] transition-all">
+                      <div className="flex items-center gap-6">
+                        <div className="h-12 w-12 bg-white/5 rounded-xl flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                          {getIcon(item.iconName, 20)}
+                        </div>
+                        <div>
+                          <h4 className="text-white font-black uppercase text-sm italic">{item.name}</h4>
+                          <p className="text-[10px] text-white/30 mt-1 uppercase font-bold tracking-widest">{item.stat} MODULE // PERMANENT EFFECT</p>
+                        </div>
+                      </div>
+                      <div className="px-4 py-2 rounded-lg bg-[var(--stat-brand)]/10 border border-[var(--stat-brand)]/20 text-[var(--stat-brand)] font-bold text-[10px] font-black uppercase tracking-widest">
+                        OPERATIONAL
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+        ) : (
+          <div className="py-40 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[60px]">
+            <Gift size={40} className="mx-auto mb-6 text-white/10" />
+            <h3 className="font-bold text-xl text-white/20 uppercase tracking-widest">Archive Content Restricted</h3>
+            <p className="text-white/10 text-xs mt-2 uppercase tracking-widest font-bold">deployment history and audit logs are clearing...</p>
+          </div>
+        )}
 
       {/* Footer Disclaimer */}
       <footer className="mt-24 p-8 rounded-[40px] bg-white/[0.01] border border-white/5 text-center">
@@ -551,28 +555,28 @@ export default function Marketplace() {
       <ModalPortal>
         <AnimatePresence>
           {isRewardModalOpen && (
-          <RewardModal
-            reward={editingReward}
-            onClose={() => setIsRewardModalOpen(false)}
-            onSave={async (data) => {
-              if (editingReward) {
-                await updateReward(editingReward.id, data);
-              } else {
-                await addReward(data);
-              }
-              setIsRewardModalOpen(false);
-            }}
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {selectedLoanItem && (
-          <LoanModal
-            itemId={selectedLoanItem}
-            onClose={() => setSelectedLoanItem(null)}
-          />
-        )}
-      </AnimatePresence>
+            <RewardModal
+              reward={editingReward}
+              onClose={() => setIsRewardModalOpen(false)}
+              onSave={async (data) => {
+                if (editingReward) {
+                  await updateReward(editingReward.id, data);
+                } else {
+                  await addReward(data);
+                }
+                setIsRewardModalOpen(false);
+              }}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {selectedLoanItem && (
+            <LoanModal
+              itemId={selectedLoanItem}
+              onClose={() => setSelectedLoanItem(null)}
+            />
+          )}
+        </AnimatePresence>
       </ModalPortal>
 
     </div>

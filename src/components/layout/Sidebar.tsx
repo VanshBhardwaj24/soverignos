@@ -103,7 +103,7 @@ export const Sidebar = () => {
                     'transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
                     sidebarCollapsed ? 'justify-center px-0' : 'px-3 gap-3',
                     isActive
-                      ? 'text-[var(--text-primary)] bg-[var(--bg-elevated)]'
+                      ? 'text-[var(--accent-primary)] bg-[var(--bg-elevated)]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]',
                     isLocked && 'opacity-50 hover:opacity-90',
                   )}
@@ -111,7 +111,7 @@ export const Sidebar = () => {
                   {isActive && (
                     <motion.div
                       layoutId="sidebar-active"
-                      className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-[var(--text-primary)]"
+                      className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-[var(--accent-primary)]"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}

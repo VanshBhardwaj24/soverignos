@@ -13,7 +13,7 @@ export const ProofModal = () => {
   const quests = useSovereignStore(state => state.dailyQuests);
   const pendingActivity = useSovereignStore(state => state.pendingActivity);
   const setPendingActivity = useSovereignStore(state => state.setPendingActivity);
-  const logActivity = useSovereignStore(state => state.logActivity);
+  const completeQuest = useSovereignStore(state => state.completeQuest);
 
   const [learnings, setLearnings] = useState('');
   const [achievement, setAchievement] = useState('100');
@@ -47,11 +47,10 @@ export const ProofModal = () => {
     setIsSubmitting(true);
     setError(null);
     try {
-      await logActivity(
-        pendingActivity.statId,
-        pendingActivity.xp,
-        pendingActivity.questId,
-        { 
+      await completeQuest(
+        pendingActivity.questId!,
+        false,
+        {
           ...pendingActivity.metadata,
           learnings: learnings.trim(),
           achievement: achievement,
@@ -126,7 +125,7 @@ export const ProofModal = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Achievement Level</label>
-                  <Select 
+                  <Select
                     options={achievementOptions}
                     value={achievement}
                     onChange={setAchievement}
@@ -139,7 +138,7 @@ export const ProofModal = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Execution Speed</label>
-                    <Select 
+                    <Select
                       options={speedOptions}
                       value={speed}
                       onChange={setSpeed}
@@ -147,7 +146,7 @@ export const ProofModal = () => {
                   </div>
                   <div>
                     <label className="font-bold text-[10px] uppercase text-[var(--text-muted)] mb-3 block tracking-widest font-bold">Session Quality</label>
-                    <Select 
+                    <Select
                       options={qualityOptions}
                       value={quality}
                       onChange={setQuality}
@@ -187,7 +186,7 @@ export const ProofModal = () => {
                 </div>
 
                 {error && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold flex items-center gap-2"
@@ -216,7 +215,7 @@ export const ProofModal = () => {
                       </>
                     )}
                   </button>
-                  
+
                   <button
                     type="button"
                     onClick={handleClose}

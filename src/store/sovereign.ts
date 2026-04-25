@@ -53,7 +53,15 @@ export interface Quest {
   lastCompletedAt?: string;
   difficulty?: 'easy' | 'medium' | 'hard' | 'legendary';
   expiresAt?: string;
-  subtasks?: { id: string; text: string; completed: boolean }[];
+  subtasksEnabled?: boolean;
+  subtasks?: {
+    id: string;
+    text: string;
+    completed: boolean;
+    priority: 'P0' | 'P1' | 'P2' | 'P3';
+    xpReward: number;
+    penaltyXP: number;
+  }[];
   isTimed?: boolean;
   timeLeft?: number; // in seconds
   dueDate?: string; // ISO 8601
@@ -485,7 +493,7 @@ interface SovereignStore {
   theme: 'dark' | 'light';
 
   logActivity: (statId: string, xp: number, questId?: string, metadata?: Record<string, any>) => Promise<void>;
-  completeQuest: (questId: string, skipLog?: boolean) => Promise<void>;
+  completeQuest: (questId: string, skipLog?: boolean, metadata?: Record<string, any>) => Promise<void>;
   failQuest: (questId: string) => Promise<void>;
   addQuest: (quest: Omit<Quest, 'id' | 'completed' | 'streak'>) => Promise<string>;
   protectQuest: (questId: string) => Promise<void>;
@@ -544,7 +552,8 @@ interface SovereignStore {
   addMoodEntry: (entry: Omit<MoodEntry, 'id'>) => void;
   bulkCompleteQuests: (ids: string[]) => Promise<void>;
   bulkDeleteQuests: (ids: string[]) => Promise<void>;
-  updateQuestNotes: (id: string, notes: string, subtasks: Quest['subtasks']) => Promise<void>;
+  updateQuestNotes: (id: string, notes: string, subtasks: Quest['subtasks'], subtasksEnabled: boolean) => Promise<void>;
+  completeSubtask: (questId: string, subtaskId: string) => Promise<void>;
   updateQuest: (id: string, data: Partial<Omit<Quest, 'id'>>) => Promise<void>;
   postponeQuest: (id: string, newDate: string, reason: string) => Promise<void>;
 
@@ -673,6 +682,9 @@ export const useSovereignStore = create<SovereignStore>()(
                 dueDate: q.due_date,
                 repeating: q.repeating !== null ? q.repeating : true,
                 archived: q.archived || false,
+                subtasksEnabled: q.subtasks_enabled || false,
+                subtasks: q.subtasks || [],
+                notes: q.notes || '',
                 postponeCount: q.postpone_count || 0,
                 postponeHistory: q.postpone_history || []
               };
@@ -943,6 +955,86 @@ export const useSovereignStore = create<SovereignStore>()(
             { title: 'Clean Diet & 4L Water', statId: 'spirit', xpReward: 40, priority: 'P1' },
             { title: 'Portfolio Build', statId: 'code', xpReward: 80, priority: 'P1' },
             { title: 'Market Analysis', statId: 'wealth', xpReward: 50, priority: 'P2' }
+          ]
+        },
+        {
+          id: 'code_warrior',
+          title: 'Code Warrior',
+          tasks: [
+            { title: 'Algorithmic Mastery (2 Problems)', statId: 'code', xpReward: 60, priority: 'P0' },
+            { title: 'Core Project Development (4h)', statId: 'code', xpReward: 150, priority: 'P0' },
+            { title: 'Technical Documentation', statId: 'code', xpReward: 40, priority: 'P2' },
+            { title: 'Quick Gym Session (30m)', statId: 'body', xpReward: 30, priority: 'P2' }
+          ]
+        },
+        {
+          id: 'wealth_engine',
+          title: 'Wealth Engine',
+          tasks: [
+            { title: 'Market Analysis & Trade Log', statId: 'wealth', xpReward: 50, priority: 'P0' },
+            { title: 'Business Dev / Outreach', statId: 'network', xpReward: 100, priority: 'P1' },
+            { title: 'Capital Allocation Strategy', statId: 'wealth', xpReward: 70, priority: 'P1' },
+            { title: 'Revenue Stream Audit', statId: 'wealth', xpReward: 40, priority: 'P2' }
+          ]
+        },
+        {
+          id: 'viking_protocol',
+          title: 'Viking Protocol',
+          tasks: [
+            { title: 'Strength Training (Heavy)', statId: 'body', xpReward: 100, priority: 'P0' },
+            { title: 'Cold Immersion / Shock', statId: 'body', xpReward: 50, priority: 'P1' },
+            { title: 'High Protein Intake', statId: 'spirit', xpReward: 30, priority: 'P2' },
+            { title: 'Mental Resilience Reading', statId: 'mind', xpReward: 40, priority: 'P2' }
+          ]
+        },
+        {
+          id: 'social_gravity',
+          title: 'Social Gravity',
+          tasks: [
+            { title: 'High-Value Outreach (5)', statId: 'network', xpReward: 80, priority: 'P0' },
+            { title: 'Content Signal (3 Threads)', statId: 'brand', xpReward: 100, priority: 'P0' },
+            { title: 'Nexus Relationship Upkeep', statId: 'network', xpReward: 50, priority: 'P1' },
+            { title: 'Profile / Bio Refinement', statId: 'brand', xpReward: 30, priority: 'P2' }
+          ]
+        },
+        {
+          id: 'creator_loop',
+          title: 'Creator Loop',
+          tasks: [
+            { title: 'Core Creation / Ship (3h)', statId: 'create', xpReward: 120, priority: 'P0' },
+            { title: 'Editing & Polishing', statId: 'create', xpReward: 60, priority: 'P1' },
+            { title: 'Community Distribution', statId: 'brand', xpReward: 50, priority: 'P1' },
+            { title: 'Next Concept Ideation', statId: 'create', xpReward: 30, priority: 'P2' }
+          ]
+        },
+        {
+          id: 'neural_synthesis',
+          title: 'Neural Synthesis',
+          tasks: [
+            { title: 'Deep Theoretical Reading', statId: 'mind', xpReward: 70, priority: 'P0' },
+            { title: 'Critical Writing / Essay', statId: 'mind', xpReward: 100, priority: 'P1' },
+            { title: 'Information Audit', statId: 'mind', xpReward: 40, priority: 'P2' },
+            { title: 'Strategic Meditation', statId: 'spirit', xpReward: 50, priority: 'P1' }
+          ]
+        },
+        {
+          id: 'zen_balance',
+          title: 'Zen Balance',
+          tasks: [
+            { title: 'Digital Isolation (1h)', statId: 'spirit', xpReward: 50, priority: 'P0' },
+            { title: 'Mobility & Stretching', statId: 'body', xpReward: 40, priority: 'P1' },
+            { title: 'Gratitude / Reflection', statId: 'spirit', xpReward: 30, priority: 'P2' },
+            { title: 'Nature Connection Walk', statId: 'body', xpReward: 40, priority: 'P1' }
+          ]
+        },
+        {
+          id: 'comeback_surge',
+          title: 'Comeback Surge',
+          tasks: [
+            { title: 'Resolve All P0 Backlog', statId: 'mind', xpReward: 150, priority: 'P0' },
+            { title: 'Debt Clearance Action', statId: 'wealth', xpReward: 100, priority: 'P0' },
+            { title: 'System Compliance Check', statId: 'mind', xpReward: 50, priority: 'P1' },
+            { title: 'Accountability Log', statId: 'spirit', xpReward: 40, priority: 'P2' }
           ]
         }
       ],
@@ -1273,7 +1365,10 @@ export const useSovereignStore = create<SovereignStore>()(
               due_date: shiftedDueDate,
               streak: q.streak,
               repeating: true,
-              archived: false
+              archived: false,
+              subtasks_enabled: q.subtasksEnabled,
+              subtasks: q.subtasks?.map(s => ({ ...s, completed: false })),
+              notes: q.notes
             });
             return {
               ...q,
@@ -1303,7 +1398,10 @@ export const useSovereignStore = create<SovereignStore>()(
               due_date: q.dueDate,
               streak: q.streak,
               repeating: false,
-              archived: true
+              archived: true,
+              subtasks_enabled: q.subtasksEnabled,
+              subtasks: q.subtasks,
+              notes: q.notes
             });
             return {
               ...q,
@@ -1527,7 +1625,7 @@ export const useSovereignStore = create<SovereignStore>()(
           .filter(Boolean);
 
         const multipliers = currentActiveItems
-          .filter(i => i!.multiplier && (!i!.stat || i!.stat === statId))
+          .filter(i => i!.multiplier && (!i!.stat || i!.stat.toLowerCase() === statId.toLowerCase()))
           .map(i => i!.multiplier || 1.0);
 
         if (multipliers.length > 0) {
@@ -1539,14 +1637,13 @@ export const useSovereignStore = create<SovereignStore>()(
           if (maxCount > 1) {
             boosterMultiplier += (maxMult - 1) * 0.5;
           }
-
           multiplier *= boosterMultiplier;
         }
 
         // PERMANENT EQUIPMENT
         inventory.forEach(itemId => {
           const item = SHOP_ITEMS.find(i => i.id === itemId);
-          if (item?.type === 'permanent' && item.multiplier && (!item.stat || item.stat === statId)) {
+          if (item?.type === 'permanent' && item.multiplier && (!item.stat || item.stat.toLowerCase() === statId.toLowerCase())) {
             multiplier *= item.multiplier;
           }
         });
@@ -1628,8 +1725,9 @@ export const useSovereignStore = create<SovereignStore>()(
           level = Math.max(1, level - 1);
 
           const oldLevel = state.statLevels[statId] || 1;
+          let levelUpData = state.lastLeveledStat;
           if (level > oldLevel) {
-            set({ lastLeveledStat: { statId, oldLevel, newLevel: level } });
+            levelUpData = { statId, oldLevel, newLevel: level };
           }
 
           finalStatUpdate[`${statId}_level`] = level;
@@ -1639,6 +1737,7 @@ export const useSovereignStore = create<SovereignStore>()(
             statXP: { ...state.statXP, [statId]: newXP },
             statTodayXP: { ...state.statTodayXP, [statId]: newTodayXP },
             statLevels: { ...state.statLevels, [statId]: level },
+            lastLeveledStat: levelUpData,
             activityLog: [logEntry, ...state.activityLog].slice(0, 500)
           };
         });
@@ -1857,7 +1956,7 @@ export const useSovereignStore = create<SovereignStore>()(
         }));
       },
 
-      completeQuest: async (questId, skipLog = false) => {
+      completeQuest: async (questId, skipLog = false, metadata) => {
         const questToComplete = get().dailyQuests.find(q => q.id === questId);
         if (!questToComplete || questToComplete.completed) return;
 
@@ -1895,18 +1994,19 @@ export const useSovereignStore = create<SovereignStore>()(
 
           return {
             dailyQuests: updatedQuests,
-            gold: state.gold + (state.activeLoans.length > 0 ? 0 : goldEarned),
+            // Gold will be added after loan processing to preserve leftovers
             punishments: updatedPunishments,
             integrity: Math.min(100, state.integrity + integrityBonus),
             accountabilityScore: Math.min(100, state.accountabilityScore + integrityBonus)
           };
         });
 
-        // Handle Loan Repayment
+        // Handle Loan Repayment & Gold Distribution
         const { activeLoans } = get();
+        let remainingGold = goldEarned;
+
         if (activeLoans.length > 0) {
           const updatedLoans = [...activeLoans];
-          let remainingGold = goldEarned;
 
           for (let i = 0; i < updatedLoans.length; i++) {
             if (remainingGold <= 0) break;
@@ -1914,27 +2014,46 @@ export const useSovereignStore = create<SovereignStore>()(
             if (loan.status === 'repaid' || loan.status === 'defaulted') continue;
 
             const needed = loan.totalRepay - loan.amountRepaid;
-            const repayment = Math.min(remainingGold, needed);
+            
+            // Repayment logic based on strategy
+            let repaymentAmount = 0;
+            if (loan.repaymentType === 'all_earnings') {
+              repaymentAmount = Math.min(remainingGold, needed);
+            } else if (loan.repaymentType === 'monthly_target') {
+              // Target strategy: Divert 25% of earnings to the loan
+              repaymentAmount = Math.min(Math.floor(remainingGold * 0.25), needed);
+            } else {
+              // Fallback just in case
+              repaymentAmount = Math.min(remainingGold, needed);
+            }
 
-            updatedLoans[i] = {
-              ...loan,
-              amountRepaid: loan.amountRepaid + repayment,
-              lastRepaymentDate: now.toISOString(),
-              status: (loan.amountRepaid + repayment >= loan.totalRepay) ? 'repaid' : loan.status
-            };
+            if (repaymentAmount > 0) {
+              updatedLoans[i] = {
+                ...loan,
+                amountRepaid: loan.amountRepaid + repaymentAmount,
+                lastRepaymentDate: now.toISOString(),
+                status: (loan.amountRepaid + repaymentAmount >= loan.totalRepay) ? 'repaid' : loan.status
+              };
 
-            remainingGold -= repayment;
+              remainingGold -= repaymentAmount;
 
-            if (updatedLoans[i].status === 'repaid') {
-              get().addNotification({
-                title: 'DEBT CLEARED',
-                description: `Loan for ${loan.itemName} has been fully settled. Trust restored.`,
-                status: 'NOW',
-                iconType: 'milestone'
-              });
+              if (updatedLoans[i].status === 'repaid') {
+                get().addNotification({
+                  title: 'DEBT CLEARED',
+                  description: `Loan for ${loan.itemName} has been fully settled. Trust restored.`,
+                  status: 'NOW',
+                  iconType: 'milestone'
+                });
+              }
             }
           }
+
           set({ activeLoans: updatedLoans });
+        }
+
+        // Add any remaining gold that wasn't consumed by loans to the global balance
+        if (remainingGold > 0) {
+          set(state => ({ gold: state.gold + remainingGold }));
         }
 
         const { user } = get();
@@ -1977,7 +2096,7 @@ export const useSovereignStore = create<SovereignStore>()(
         set(state => ({ questHistory: [historyEntry, ...state.questHistory].slice(0, 1000) }));
 
         if (!skipLog) {
-          await get().logActivity(questToComplete.statId, finalXP, questId);
+          await get().logActivity(questToComplete.statId, finalXP, questId, metadata);
         }
 
         get().addNotification({
@@ -2061,11 +2180,16 @@ export const useSovereignStore = create<SovereignStore>()(
         const newViolationStreaks = { ...violationStreaks };
         newViolationStreaks[questToFail.statId] = (newViolationStreaks[questToFail.statId] || 0) + 1;
 
+        // Subtask Penalties
+        const incompletedSubtasks = (questToFail.subtasks || []).filter(st => !st.completed);
+        const subtaskPenaltyTotal = incompletedSubtasks.reduce((sum, st) => sum + (st.penaltyXP || 0), 0);
+        const cappedSubtaskPenalty = Math.min(subtaskPenaltyTotal, questToFail.xpReward * 0.5);
+
         const priorityWeights = { P0: 3, P1: 2, P2: 1, P3: 0.5 };
         const penaltyWeight = (priorityWeights[questToFail.priority] || 1) * penaltyMultiplier;
         const scoreLoss = 2 * penaltyWeight;
 
-        xpPenalty = Math.floor((questToFail.xpReward / 2) * penaltyWeight);
+        xpPenalty = Math.floor((questToFail.xpReward / 2) * penaltyWeight) + cappedSubtaskPenalty;
         const currentStatXP = statXP[questToFail.statId] || 0;
         const newXP = Math.max(0, currentStatXP - xpPenalty);
 
@@ -2529,8 +2653,21 @@ export const useSovereignStore = create<SovereignStore>()(
       addTransaction: async (tx) => {
         const newId = Math.random().toString(36).substr(2, 9);
         const newTx: Transaction = { ...tx, id: newId };
-        set((state) => ({ transactions: [newTx, ...state.transactions] }));
-        const { user } = get();
+        
+        set((state) => {
+          let newGold = state.gold;
+          if (tx.type === 'income') {
+            newGold += Number(tx.amount);
+          } else if (tx.type === 'expense') {
+            newGold = Math.max(0, newGold - Number(tx.amount));
+          }
+          return { 
+            transactions: [newTx, ...state.transactions],
+            gold: newGold
+          };
+        });
+
+        const { user, gold } = get();
 
         if (user) {
           console.log('SYNCING_TRANSACTION:', { id: newId, pool_id: tx.poolId });
@@ -2549,6 +2686,9 @@ export const useSovereignStore = create<SovereignStore>()(
 
           if (error) {
             console.error('SUPABASE_TRANSACTION_ERROR:', error);
+          } else {
+            // Sync gold update to db
+            await supabase.from('user_stats').update({ gold }).eq('id', user.id);
           }
         }
 
@@ -2681,6 +2821,7 @@ export const useSovereignStore = create<SovereignStore>()(
 
       deployItem: async (itemId) => {
         const { inventory, activeLoadout, itemCooldowns, user } = get();
+        // Use global SHOP_ITEMS instead of dynamic import to avoid race conditions
         const { SHOP_ITEMS } = await import('../lib/constants');
         const item = SHOP_ITEMS.find(i => i.id === itemId);
 
@@ -2734,11 +2875,21 @@ export const useSovereignStore = create<SovereignStore>()(
         set({ activeLoadout: newLoadout, itemCooldowns: newCooldowns, inventory: newInventory });
 
         if (user) {
-          await supabase.from('user_stats').update({
+          const { error } = await supabase.from('user_stats').update({
             active_loadout: newLoadout,
             item_cooldowns: newCooldowns,
             inventory: newInventory
           }).eq('id', user.id);
+
+          if (error) {
+            console.error('[DEPLOY_ITEM_SYNC_ERROR]:', error);
+            get().addNotification({
+              title: 'SYNC FAILED',
+              description: 'Item deployed locally but failed to sync with cloud. Check your database schema.',
+              status: 'URGENT',
+              iconType: 'alert'
+            });
+          }
         }
 
         get().addNotification({
@@ -2956,12 +3107,67 @@ export const useSovereignStore = create<SovereignStore>()(
         }));
       },
 
-      updateQuestNotes: async (id, notes, subtasks) => {
+      updateQuestNotes: async (id, notes, subtasks, subtasksEnabled) => {
         set(state => ({
           dailyQuests: state.dailyQuests.map(q =>
-            q.id === id ? { ...q, notes, subtasks } : q
+            q.id === id ? { ...q, notes, subtasks, subtasksEnabled } : q
           )
         }));
+
+        const quest = get().dailyQuests.find(q => q.id === id);
+        if (quest && !quest.completed && subtasks && subtasks.length > 0 && subtasks.every(st => st.completed)) {
+          await get().completeQuest(id);
+        }
+
+        const { user } = get();
+        if (user) {
+          const { error } = await supabase.from('quests')
+            .update({ notes, subtasks, subtasks_enabled: subtasksEnabled })
+            .eq('id', id)
+            .eq('user_id', user.id);
+
+          if (error) {
+            console.error('[DB_ERROR] updateQuestNotes:', error);
+            get().addNotification({
+              title: 'SUBTASK SYNC FAILED',
+              description: 'Subtask changes saved locally but cloud sync failed.',
+              status: 'URGENT',
+              iconType: 'alert'
+            });
+          }
+        }
+      },
+
+      completeSubtask: async (questId, subtaskId) => {
+        const quest = get().dailyQuests.find(q => q.id === questId);
+        if (!quest || !quest.subtasks) return;
+
+        const subtask = quest.subtasks.find(st => st.id === subtaskId);
+        if (!subtask || subtask.completed) return;
+
+        const newSubtasks = quest.subtasks.map(st =>
+          st.id === subtaskId ? { ...st, completed: true } : st
+        );
+
+        set(state => ({
+          dailyQuests: state.dailyQuests.map(q =>
+            q.id === questId ? { ...q, subtasks: newSubtasks } : q
+          )
+        }));
+
+        if (subtask.xpReward > 0) {
+          await get().logActivity(quest.statId, subtask.xpReward, questId, {
+            type: 'subtask_complete',
+            subtaskId,
+            subtaskText: subtask.text
+          });
+        }
+
+        if (newSubtasks.every(st => st.completed)) {
+          await get().completeQuest(questId);
+        }
+
+        await get().updateQuestNotes(questId, quest.notes || '', newSubtasks, quest.subtasksEnabled ?? false);
       },
 
       updateQuest: async (id, data) => {
@@ -3000,9 +3206,28 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
       deleteTransaction: async (id) => {
-        set(state => ({
-          transactions: state.transactions.filter(t => t.id !== id)
-        }));
+        set(state => {
+          const txToDelete = state.transactions.find(t => t.id === id);
+          if (!txToDelete) return state;
+
+          let newGold = state.gold;
+          if (txToDelete.type === 'income') {
+            newGold = Math.max(0, newGold - Number(txToDelete.amount));
+          } else if (txToDelete.type === 'expense') {
+            newGold += Number(txToDelete.amount);
+          }
+
+          return {
+            transactions: state.transactions.filter(t => t.id !== id),
+            gold: newGold
+          };
+        });
+
+        const { user, gold } = get();
+        if (user) {
+          await supabase.from('transactions').delete().eq('id', id);
+          await supabase.from('user_stats').update({ gold }).eq('id', user.id);
+        }
       },
 
       updateTransaction: async (id, tx) => {

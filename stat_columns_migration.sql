@@ -1,0 +1,29 @@
+-- Run this in your Supabase SQL Editor to fix XP persistence for all stats
+
+ALTER TABLE user_stats 
+ADD COLUMN IF NOT EXISTS wealth_xp INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS wealth_level INTEGER DEFAULT 1,
+ADD COLUMN IF NOT EXISTS body_xp INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS body_level INTEGER DEFAULT 1,
+ADD COLUMN IF NOT EXISTS mind_xp INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS mind_level INTEGER DEFAULT 1,
+ADD COLUMN IF NOT EXISTS brand_xp INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS brand_level INTEGER DEFAULT 1,
+ADD COLUMN IF NOT EXISTS network_xp INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS network_level INTEGER DEFAULT 1,
+ADD COLUMN IF NOT EXISTS spirit_xp INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS spirit_level INTEGER DEFAULT 1,
+ADD COLUMN IF NOT EXISTS create_xp INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS create_level INTEGER DEFAULT 1;
+
+-- Also ensure the activity_log table exists as it's referenced in logActivity
+CREATE TABLE IF NOT EXISTS activity_log (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id),
+  stat_id TEXT NOT NULL,
+  xp INTEGER NOT NULL,
+  quest_id TEXT,
+  multiplier NUMERIC DEFAULT 1.0,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  timestamp TIMESTAMPTZ DEFAULT now()
+);

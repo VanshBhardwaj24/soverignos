@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSovereignStore } from '../store/sovereign';
 import {
-  AlertTriangle, Trash2, CheckCircle, List, Pencil, RefreshCcw,
+  AlertTriangle, Trash2, CheckCircle, Pencil, RefreshCcw,
   Plus, Search, Zap, Flame, CheckSquare, ChevronUp, ChevronDown, RotateCcw, Target
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,6 +10,7 @@ import { cn } from '../lib/utils';
 import { PostponeModal } from '../components/quests/PostponeModal';
 import { ConsequenceChainModal } from '../components/psych/ConsequenceChainModal';
 import { StreakInsuranceModal } from '../components/psych/StreakInsuranceModal';
+import { SubtaskPanel } from '../components/quests/SubtaskPanel';
 import { usePsychStore } from '../store/sovereign-psych';
 import { useCadenceStore } from '../store/cadence';
 
@@ -298,7 +299,7 @@ export default function Quests() {
                       useSovereignStore.getState().setProofModalOpen(true);
                     }}
                     onFail={() => handleQuestFail({ id: quest.id, statId: quest.statId, title: quest.title })}
-                    onUpdateNotes={(notes, subtasks) => updateQuestNotes(quest.id, notes, subtasks)}
+                    onUpdateNotes={(notes, subtasks, subtasksEnabled) => updateQuestNotes(quest.id, notes, subtasks, subtasksEnabled)}
                     onPostpone={() => setPostponeId(quest.id)}
                     activeTab={activeTab}
                   />
@@ -372,7 +373,7 @@ function QuestEntry({
 }: {
   quest: any, onExecute: () => void, onFail: () => void, index: number,
   isSelected: boolean, onToggleSelect: () => void, isSelectMode: boolean,
-  onUpdateNotes: (notes: string, subtasks: any[]) => void,
+  onUpdateNotes: (notes: string, subtasks: any, subtasksEnabled: boolean) => void,
   onPostpone: () => void,
   activeTab: string
 }) {
@@ -380,11 +381,11 @@ function QuestEntry({
   const isWeekly = quest.type === 'weekly';
   const isArchivedTab = activeTab === 'archived';
   const [expanded, setExpanded] = useState(false);
-  const [notes, setNotes] = useState(quest.notes || '');
   const setTargetQuestId = useSovereignStore(state => state.setTargetQuestId);
   const setQuestModalOpen = useSovereignStore(state => state.setQuestModalOpen);
   const restoreQuest = useSovereignStore(state => state.restoreQuest);
   const deleteQuest = useSovereignStore(state => state.deleteQuest);
+  const completeSubtask = useSovereignStore(state => state.completeSubtask);
 
   return (
     <motion.div
@@ -504,6 +505,11 @@ function QuestEntry({
               )}>
                 {quest.failed && <span className="mr-2 text-red-500 font-black">[FAILED]</span>}
                 {quest.title}
+                {quest.subtasksEnabled && (quest.subtasks?.length || 0) > 0 && (
+                  <span className="ml-3 font-bold text-[9px] bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-white/40 tracking-widest">
+                    {quest.subtasks?.filter((s: any) => s.completed).length || 0}/{quest.subtasks?.length || 0} ✓
+                  </span>
+                )}
               </h3>
               <button
                 onClick={() => setExpanded(!expanded)}
@@ -585,6 +591,11 @@ function QuestEntry({
             )}>
               {quest.failed ? "-" : "+"}{quest.xpReward} XP
             </span>
+            {quest.subtasksEnabled && (quest.subtasks?.length || 0) > 0 && (
+              <span className="text-[9px] font-bold text-white/30 block tracking-widest uppercase">
+                ({quest.subtasks?.reduce((sum: number, st: any) => sum + (st.xpReward || 0), 0) || 0} via tasks)
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -637,75 +648,12 @@ function QuestEntry({
 
       <AnimatePresence>
         {expanded && (
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: 'auto' }}
-            exit={{ height: 0 }}
-            className="border-t border-white/5 bg-black/20 p-4"
-          >
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              onBlur={() => onUpdateNotes(notes, quest.subtasks || [])}
-              placeholder="Operational notes, tactical subtasks, or mission logs..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] font-bold text-white/60 min-h-[80px] outline-none focus:border-white/20 transition-all resize-none"
-            />
-
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <List size={12} className="text-white/20" />
-                <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Procedural Checkpoint(s)</span>
-              </div>
-              <button
-                onClick={() => {
-                  const newTask = { id: Math.random().toString(36).substr(2, 9), text: 'New checkpoint...', completed: false };
-                  onUpdateNotes(notes, [...(quest.subtasks || []), newTask]);
-                }}
-                className="text-[9px] font-bold text-white/40 hover:text-white uppercase tracking-widest"
-              >
-                + Add Step
-              </button>
-            </div>
-
-            <div className="mt-3 space-y-2">
-              {(quest.subtasks || []).map((st: any) => (
-                <div key={st.id} className="flex items-center gap-3 bg-white/[0.02] p-2 rounded-lg border border-white/5">
-                  <button
-                    onClick={() => {
-                      const newSubtasks = quest.subtasks.map((s: any) => s.id === st.id ? { ...s, completed: !s.completed } : s);
-                      onUpdateNotes(notes, newSubtasks);
-                    }}
-                    className={cn(
-                      "h-4 w-4 rounded border flex items-center justify-center transition-all",
-                      st.completed ? "bg-[var(--success)] border-[var(--success)] text-white" : "border-white/20"
-                    )}
-                  >
-                    {st.completed && <CheckSquare size={10} />}
-                  </button>
-                  <input
-                    value={st.text}
-                    onChange={(e) => {
-                      const newSubtasks = quest.subtasks.map((s: any) => s.id === st.id ? { ...s, text: e.target.value } : s);
-                      onUpdateNotes(notes, newSubtasks);
-                    }}
-                    className={cn(
-                      "bg-transparent border-none outline-none text-[10px] font-bold text-white/50 w-full",
-                      st.completed && "line-through opacity-30"
-                    )}
-                  />
-                  <button
-                    onClick={() => {
-                      const newSubtasks = quest.subtasks.filter((s: any) => s.id !== st.id);
-                      onUpdateNotes(notes, newSubtasks);
-                    }}
-                    className="text-white/10 hover:text-[var(--danger)] transition-colors"
-                  >
-                    <Trash2 size={10} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          <SubtaskPanel 
+            quest={quest}
+            onUpdateNotes={(notes, subtasks, enabled) => onUpdateNotes(notes, subtasks, enabled)}
+            onCompleteSubtask={(subtaskId) => completeSubtask(quest.id, subtaskId)}
+            isArchived={isArchivedTab}
+          />
         )}
       </AnimatePresence>
 
