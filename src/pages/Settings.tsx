@@ -57,7 +57,7 @@ export default function Settings() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto pb-12">
       <div className="mb-12">
-        <p className="eyebrow text-white/40 mb-2">System Preferences</p>
+        <p className="eyebrow text-white/60 mb-2">System Preferences</p>
         <h1 className="h-display">Core Settings</h1>
       </div>
 
@@ -70,21 +70,21 @@ export default function Settings() {
             </div>
             <div>
               <h3 className="h-card text-white">Identity Module</h3>
-              <p className="stat-label text-white/40">{user?.email || 'Unauthorized session'}</p>
+              <p className="stat-label text-white/60">{user?.email || 'Unauthorized session'}</p>
             </div>
           </div>
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between py-2 border-b border-white/5">
               <div className="flex items-center gap-3">
-                <Shield size={16} className="text-white/40" />
-                <span className="stat-label text-white/60">Security Level</span>
+                <Shield size={16} className="text-white/60" />
+                <span className="stat-label text-white/80">Security Level</span>
               </div>
               <span className="stat-label px-2 py-1 rounded bg-white/5 border border-white/10 text-[var(--success)]">ENCRYPTED</span>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-white/5">
               <div className="flex items-center gap-3">
-                <Database size={16} className="text-white/40" />
-                <span className="stat-label text-white/60">Cloud Synchronization</span>
+                <Database size={16} className="text-white/60" />
+                <span className="stat-label text-white/80">Cloud Synchronization</span>
               </div>
               <span className="stat-label px-2 py-1 rounded bg-white/5 border border-white/10 text-[var(--success)]">ACTIVE</span>
             </div>
@@ -95,10 +95,10 @@ export default function Settings() {
         <section className="surface-card p-8 shadow-xl space-y-8 border-glow-professional">
           <div className="space-y-6">
             <div className="flex items-center gap-4 mb-4">
-              <Eye size={20} className="text-white/40" />
+              <Eye size={20} className="text-white/60" />
               <div>
                 <h4 className="h-card text-white">Immersion Theme</h4>
-                <p className="stat-label text-white/40 italic">Select operational environment palette.</p>
+                <p className="stat-label text-white/60 italic">Select operational environment palette.</p>
               </div>
             </div>
 
@@ -123,7 +123,7 @@ export default function Settings() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-bold text-xs text-white">{t.name}</div>
-                      <div className="text-[9px] font-black tracking-widest text-white/40">{t.label}</div>
+                      <div className="text-[9px] font-black tracking-widest text-white/60">{t.label}</div>
                     </div>
                     {theme === t.id && (
                       <div className="h-4 w-4 rounded-full bg-[var(--accent-primary)] flex items-center justify-center">
@@ -136,12 +136,12 @@ export default function Settings() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Bell size={20} className="text-white/40" />
+              <Bell size={20} className="text-white/60" />
               <div>
                 <h4 className="h-card text-white">Neural Alerts</h4>
-                <p className="stat-label text-white/40 italic">System-wide notifications for quest timers.</p>
+                <p className="stat-label text-white/60 italic">System-wide notifications for quest timers.</p>
               </div>
             </div>
             <div className="flex h-5 w-10 items-center rounded-full bg-white/5 p-1 cursor-pointer">
@@ -151,15 +151,15 @@ export default function Settings() {
 
           <div className="pt-8 border-t border-white/5 space-y-6">
             <div className="flex items-center gap-4 mb-4">
-              <Paintbrush size={20} className="text-white/40" />
+              <Paintbrush size={20} className="text-white/60" />
               <div>
                 <h4 className="h-card text-white">Visual Preferences</h4>
-                <p className="stat-label text-white/40 italic">Customize system accent color and glassmorphism.</p>
+                <p className="stat-label text-white/60 italic">Customize system accent color and glassmorphism.</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <h5 className="eyebrow text-white/40">Accent Color</h5>
+              <h5 className="eyebrow text-white/60">Accent Color</h5>
               <div className="flex gap-3">
                 {ACCENT_COLORS.map(color => (
                   <button
@@ -179,9 +179,9 @@ export default function Settings() {
             </div>
 
             <div className="space-y-4">
-              <h5 className="eyebrow text-white/40">Glass Opacity: {Math.round(glassOpacity * 100)}%</h5>
+              <h5 className="eyebrow text-white/60">Glass Opacity: {Math.round(glassOpacity * 100)}%</h5>
               <div className="flex items-center gap-4">
-                <Droplet size={16} className="text-white/40" />
+                <Droplet size={16} className="text-white/60" />
                 <input 
                   type="range" 
                   min="0.1" 
@@ -196,7 +196,7 @@ export default function Settings() {
           </div>
 
           <div className="pt-8 border-t border-white/5 space-y-4">
-            <h4 className="eyebrow text-white/20">Data Management</h4>
+            <h4 className="eyebrow text-white/40">Data Management</h4>
             <div className="flex gap-4">
               <button
                 onClick={handleExport}
@@ -235,8 +235,8 @@ export default function Settings() {
         </section>
       </div>
 
-      <div className="mt-12 text-center opacity-30 select-none">
-        <span className="font-bold text-[9px] tracking-[0.5em] text-[var(--text-muted)] uppercase">Sovereign OS · v1.0.4-alpha</span>
+      <div className="mt-12 text-center opacity-50 select-none">
+        <span className="font-bold text-[9px] tracking-[0.5em] text-white/60 uppercase">Sovereign OS · v1.0.4-alpha</span>
       </div>
     </div>
   );

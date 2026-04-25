@@ -65,10 +65,10 @@ export default function Jobs() {
         <div>
           <div className="flex items-center gap-3 mb-3">
             <span className="w-8 h-px bg-white/20" />
-            <p className="eyebrow text-white/40">Job Hunt Engine</p>
+            <p className="eyebrow text-white/60">Job Hunt Engine</p>
           </div>
           <h1 className="h-display italic">
-            Ops <span className="text-white/20">Deployment</span>
+            Ops <span className="text-white/40">Deployment</span>
           </h1>
         </div>
 
@@ -77,7 +77,7 @@ export default function Jobs() {
             onClick={() => setActiveTab('board')}
             className={cn(
               "p-3 rounded-2xl border transition-all",
-              activeTab === 'board' ? "bg-white text-black border-white" : "bg-white/5 text-white/40 border-white/5 hover:border-white/10"
+              activeTab === 'board' ? "bg-white text-black border-white" : "bg-white/5 text-white/60 border-white/5 hover:border-white/10"
             )}
           >
             <LayoutGrid size={20} />
@@ -86,7 +86,7 @@ export default function Jobs() {
             onClick={() => setActiveTab('analytics')}
             className={cn(
               "p-3 rounded-2xl border transition-all",
-              activeTab === 'analytics' ? "bg-white text-black border-white" : "bg-white/5 text-white/40 border-white/5 hover:border-white/10"
+              activeTab === 'analytics' ? "bg-white text-black border-white" : "bg-white/5 text-white/60 border-white/5 hover:border-white/10"
             )}
           >
             <BarChart3 size={20} />
@@ -104,7 +104,7 @@ export default function Jobs() {
       {/* Toolbar */}
       <div className="flex flex-col md:flex-row gap-4 mb-6 shrink-0">
         <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={16} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-white transition-colors" size={16} />
           <input
             placeholder="FILTER COMMANDS..."
             value={searchQuery}
@@ -132,16 +132,16 @@ export default function Jobs() {
                     {/* Lane Header */}
                     <div className="flex items-center justify-between mb-4 px-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-focus-within/lane:bg-white transition-colors" />
-                        <span className="stat-label text-white/40">{lane}</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/40 group-focus-within/lane:bg-white transition-colors" />
+                        <span className="stat-label text-white/60">{lane}</span>
                       </div>
-                      <span className="stat-label text-white/20">{laneJobs.length}</span>
+                      <span className="stat-label text-white/40">{laneJobs.length}</span>
                     </div>
 
                     {/* Lane Body */}
                     <div className="flex-1 surface-card p-3 flex flex-col gap-3 overflow-y-auto no-scrollbar scroll-smooth">
                       {laneJobs.length === 0 ? (
-                        <div className="flex-1 border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center text-white/10 gap-3 opacity-50">
+                        <div className="flex-1 border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-white/30 gap-3 opacity-50">
                           <Briefcase size={24} />
                           <span className="stat-label italic">Empty Sector</span>
                         </div>
@@ -190,7 +190,7 @@ export default function Jobs() {
               <button onClick={() => setIsAdding(false)} className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"><X size={20} /></button>
               <div className="flex items-center gap-3 mb-6">
                 <Target className="text-[var(--stat-brand)]" size={20} />
-                <h2 className="h-section italic">Initialize <span className="text-white/20">Target</span></h2>
+                <h2 className="h-section italic">Initialize <span className="text-white/40">Target</span></h2>
               </div>
 
               <form onSubmit={handleAdd} className="space-y-6">
@@ -238,7 +238,7 @@ export default function Jobs() {
                 </div>
                 <div>
                   <h3 className="h-section italic">{editingJob.company}</h3>
-                  <p className="stat-label opacity-40">{editingJob.role}</p>
+                  <p className="stat-label opacity-60">{editingJob.role}</p>
                 </div>
               </div>
 

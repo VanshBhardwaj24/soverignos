@@ -19,12 +19,12 @@ type Tab = 'market' | 'inventory' | 'rewards' | 'history';
 // --- Utility: Rarity Styles ---
 const getRarityStyles = (rarity: Rarity) => {
   switch (rarity) {
-    case 'common': return 'border-white/10 text-white/60 bg-white/[0.02]';
+    case 'common': return 'border-white/10 text-white/80 bg-white/[0.02]';
     case 'uncommon': return 'border-blue-500/40 text-blue-400 bg-blue-500/5 shadow-[0_12px_40px_rgba(59,130,246,0.1)]';
     case 'rare': return 'border-purple-500/50 text-purple-400 bg-purple-500/5 shadow-[0_12px_40px_rgba(168,85,247,0.15)] scale-[1.01]';
     case 'epic': return 'border-amber-500/60 text-amber-400 bg-amber-500/5 shadow-[0_12px_40px_rgba(245,158,11,0.2)] scale-[1.02]';
     case 'legendary': return 'border-red-500/70 text-red-500 bg-red-500/5 shadow-[0_12px_40px_rgba(239,68,68,0.25)] scale-[1.03]';
-    default: return 'border-white/10 text-white/60 bg-white/[0.02]';
+    default: return 'border-white/10 text-white/80 bg-white/[0.02]';
   }
 };
 
@@ -117,7 +117,7 @@ export default function Marketplace() {
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-[1300px] mx-auto pb-24 px-4 font-sans">
 
       {/* Header HUD */}
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12 bg-white/[0.01] border border-white/5 p-8 rounded-[40px] backdrop-blur-3xl shadow-2xl">
+      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-12 bg-white/[0.03] border border-white/10 p-8 rounded-[40px] backdrop-blur-3xl shadow-2xl">
         <div className="flex items-center gap-6">
           <div className="h-16 w-16 bg-[var(--stat-wealth)]/20 rounded-3xl flex items-center justify-center text-[var(--stat-wealth)] border border-[var(--stat-wealth)]/30 shadow-[0_0_30px_rgba(0,255,100,0.1)]">
             <ShoppingBag size={32} />
@@ -125,7 +125,7 @@ export default function Marketplace() {
           <div>
 
             <div className="h-display flex items-center gap-3">
-              Marketplace <span className="text-white/10 font-thin">|</span> <span className="italic font-light opacity-50">{activeTab}</span>
+              Marketplace <span className="text-white/40 font-thin">|</span> <span className="italic font-light opacity-80">{activeTab}</span>
             </div>
           </div>
         </div>
@@ -150,25 +150,25 @@ export default function Marketplace() {
             </div>
           )}
 
-          <div className="px-8 py-5 bg-white/5 border border-white/10 rounded-3xl flex flex-col items-end shadow-2xl min-w-[180px]">
-            <span className="font-bold text-[9px] text-white/30 uppercase tracking-[0.2em] mb-1 font-black">Current Balance</span>
+          <div className="px-8 py-5 bg-white/10 border border-white/20 rounded-3xl flex flex-col items-end shadow-2xl min-w-[180px]">
+            <span className="font-bold text-[9px] text-white/70 uppercase tracking-[0.2em] mb-1 font-black">Current Balance</span>
             <div className="flex items-center gap-3">
               <Coins size={20} className="text-[var(--stat-wealth)] animate-pulse" />
-              <span className="stat-value text-4xl">{gold} <span className="text-xs font-bold text-white/40">GC</span></span>
+              <span className="stat-value text-4xl">{gold} <span className="text-xs font-bold text-white/80">GC</span></span>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Tabs */}
-      < nav className="flex items-center justify-center gap-2 mb-12 bg-white/5 p-1.5 rounded-2xl border border-white/5 w-fit mx-auto backdrop-blur-xl relative" >
+      < nav className="flex items-center justify-center gap-2 mb-12 bg-white/10 p-1.5 rounded-2xl border border-white/10 w-fit mx-auto backdrop-blur-xl relative" >
         {(['market', 'inventory', 'rewards', 'history'] as Tab[]).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={cn(
               "px-8 py-3 rounded-xl font-bold text-[11px] font-black tracking-[0.2em] uppercase transition-all relative z-10",
-              activeTab === tab ? "text-black" : "text-white/40 hover:text-white"
+              activeTab === tab ? "text-black" : "text-white/70 hover:text-white"
             )}
           >
             {activeTab === tab && (
@@ -197,7 +197,7 @@ export default function Marketplace() {
                 setEditingReward(null);
                 setIsRewardModalOpen(true);
               }}
-              className="flex items-center gap-3 px-10 py-5 bg-white text-black rounded-[24px] font-bold text-xs font-black tracking-[0.2em] uppercase hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-white/10"
+              className="flex items-center gap-3 px-10 py-5 bg-white text-black rounded-[24px] font-bold text-xs font-black tracking-[0.2em] uppercase hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-white/20"
             >
               <Plus size={18} /> Initialize New Reward Protocol
             </button>
@@ -217,8 +217,8 @@ export default function Marketplace() {
             {timers.map(timer => {
               const item = [...SHOP_ITEMS, ...customRewards].find(i => i.id === timer.itemId);
               return (
-                <div key={timer.itemId} className="flex-1 min-w-[300px] p-6 bg-gradient-to-br from-[var(--accent-primary)]/10 to-transparent border border-[var(--accent-primary)]/20 rounded-[32px] backdrop-blur-2xl shadow-xl overflow-hidden relative group">
-                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                <div key={timer.itemId} className="flex-1 min-w-[300px] p-6 bg-gradient-to-br from-[var(--accent-primary)]/20 to-transparent border border-[var(--accent-primary)]/40 rounded-[32px] backdrop-blur-2xl shadow-xl overflow-hidden relative group">
+                  <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-30 transition-opacity">
                     {getIcon(item?.iconName || '', 60)}
                   </div>
                   <div className="flex justify-between items-start mb-4">
@@ -232,7 +232,7 @@ export default function Marketplace() {
                       {timer.timeLeft}
                     </div>
                   </div>
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden mt-6">
+                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mt-6">
                     <motion.div
                       className="h-full bg-[var(--accent-primary)]"
                       initial={{ width: 0 }}
@@ -254,14 +254,14 @@ export default function Marketplace() {
             {/* Controls Bar */}
             <div className="flex flex-col md:flex-row gap-6 mb-12 items-center">
               <div className="relative flex-1 group w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" size={18} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 group-focus-within:text-white transition-colors" size={18} />
                 <input
                   type="text"
                   placeholder="SEARCH PROTOCOLS..."
                   aria-label="Search items"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 stat-label text-white outline-none focus:border-[var(--text-primary)]/40 focus:ring-4 focus:ring-[var(--text-primary)]/5 transition-all placeholder:text-white/10"
+                  className="w-full bg-white/10 border border-white/20 rounded-2xl py-4 pl-12 pr-6 stat-label text-white outline-none focus:border-[var(--text-primary)]/40 focus:ring-4 focus:ring-[var(--text-primary)]/5 transition-all placeholder:text-white/40"
                 />
               </div>
 
@@ -271,7 +271,7 @@ export default function Marketplace() {
                   aria-label="Filter by affordable items"
                   className={cn(
                     "px-6 py-4 rounded-2xl border stat-label whitespace-nowrap transition-all flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20",
-                    showAffordable ? "bg-[var(--stat-wealth)]/20 border-[var(--stat-wealth)] text-white" : "bg-white/5 border-white/10 text-white/40"
+                    showAffordable ? "bg-[var(--stat-wealth)]/30 border-[var(--stat-wealth)] text-white" : "bg-white/10 border-white/20 text-white/70"
                   )}
                 >
                   <Coins size={14} /> CAN AFFORD
@@ -280,7 +280,7 @@ export default function Marketplace() {
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value as any)}
-                  className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 stat-label text-white/60 focus:outline-none focus:border-white/30 cursor-pointer"
+                  className="bg-white/10 border border-white/20 rounded-2xl px-6 py-4 stat-label text-white/70 focus:outline-none focus:border-white/40 cursor-pointer"
                 >
                   <option value="all">ALL TYPES</option>
                   <option value="equipment">EQUIPMENT</option>
@@ -291,7 +291,7 @@ export default function Marketplace() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 stat-label text-white/60 focus:outline-none focus:border-white/30 cursor-pointer"
+                  className="bg-white/10 border border-white/20 rounded-2xl px-6 py-4 stat-label text-white/70 focus:outline-none focus:border-white/40 cursor-pointer"
                 >
                   <option value="new">SORT: NEWEST</option>
                   <option value="price">SORT: PRICE</option>
@@ -325,16 +325,16 @@ export default function Marketplace() {
                       className={cn(
                         "group relative p-8 surface-card transition-all duration-500 flex flex-col justify-between min-h-[480px] shadow-lg hover-lift overflow-hidden border-glow-professional",
                         getRarityStyles(item.rarity),
-                        owned ? "opacity-30 grayscale" : ""
+                        owned ? "opacity-50 grayscale" : ""
                       )}
                     >
                       {/* Background Shine */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.1] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                       {/* Card Header */}
                       <div className="relative z-10">
                         <div className="flex items-start justify-between mb-8">
-                          <div className="h-16 w-16 bg-white/10 rounded-3xl flex items-center justify-center text-white border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                          <div className="h-16 w-16 bg-white/20 rounded-3xl flex items-center justify-center text-white border border-white/20 group-hover:scale-110 transition-transform duration-500">
                             {getIcon(item.iconName, 24)}
                           </div>
                           <button
@@ -342,8 +342,8 @@ export default function Marketplace() {
                             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                             title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                             className={cn(
-                              "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-500/40",
-                              isWishlisted ? "bg-red-500 text-white shadow-lg" : "bg-white/5 text-white/20 hover:bg-white/10 hover:scale-110"
+                              "h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-500/60",
+                              isWishlisted ? "bg-red-500 text-white shadow-lg" : "bg-white/10 text-white/40 hover:bg-white/20 hover:scale-110"
                             )}
                           >
                             <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
@@ -356,13 +356,13 @@ export default function Marketplace() {
                                   setEditingReward(item);
                                   setIsRewardModalOpen(true);
                                 }}
-                                className="h-10 w-10 rounded-full bg-white/5 text-white/20 hover:bg-white/10 hover:text-white flex items-center justify-center transition-all"
+                                className="h-10 w-10 rounded-full bg-white/10 text-white/40 hover:bg-white/20 hover:text-white flex items-center justify-center transition-all"
                               >
                                 <Edit3 size={16} />
                               </button>
                               <button
                                 onClick={() => deleteReward(item.id)}
-                                className="h-10 w-10 rounded-full bg-red-500/10 text-red-500/40 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all"
+                                className="h-10 w-10 rounded-full bg-red-500/20 text-red-500/60 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all"
                               >
                                 <Trash2 size={16} />
                               </button>
@@ -371,44 +371,44 @@ export default function Marketplace() {
                         </div>
 
                         <div className="mb-2 flex items-center gap-2">
-                          <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-40">{item.rarity}</span>
-                          <span className="h-1 w-1 rounded-full bg-white/20" />
-                          <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-40">{item.type}</span>
+                          <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-70">{item.rarity}</span>
+                          <span className="h-1 w-1 rounded-full bg-white/60" />
+                          <span className="font-bold text-[8px] font-black tracking-[0.4em] uppercase opacity-70">{item.type}</span>
                         </div>
 
                         <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-4 group-hover:translate-x-1 transition-transform duration-500">
                           {item.name}
                         </h3>
 
-                        <p className="text-xs text-white/50 leading-relaxed font-medium mb-6 min-h-[60px]">
+                        <p className="text-xs text-white/80 leading-relaxed font-medium mb-6 min-h-[60px]">
                           {item.description}
                         </p>
 
                         {item.multiplier && (
-                          <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 w-fit mb-6">
+                          <div className="px-4 py-2 bg-white/10 rounded-xl border border-white/20 w-fit mb-6">
                             <span className="text-[10px] font-black text-[var(--stat-brand)] tracking-widest">+{((item.multiplier - 1) * 100).toFixed(0)}% GAIN</span>
                           </div>
                         )}
                       </div>
 
                       {/* Card Footer */}
-                      <div className="relative z-10 space-y-6 pt-6 border-t border-white/5">
+                      <div className="relative z-10 space-y-6 pt-6 border-t border-white/10">
                         {/* Progress Bar (if expensive) */}
                         {!canAfford && !owned && (
                           <div className="space-y-2">
-                            <div className="flex justify-between font-bold text-[8px] tracking-widest text-white/30 uppercase font-black">
+                            <div className="flex justify-between font-bold text-[8px] tracking-widest text-white/70 uppercase font-black">
                               <span>Target Progress</span>
                               <span>{progress.toFixed(0)}%</span>
                             </div>
-                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                               <motion.div
-                                className="h-full bg-white/20"
+                                className="h-full bg-white/40"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${progress}%` }}
                                 transition={{ duration: 1, ease: "easeOut" }}
                               />
                             </div>
-                            <p className="font-bold text-[8px] text-white/20 uppercase italic mt-1">System Estimating Acquisition...</p>
+                            <p className="font-bold text-[8px] text-white/40 uppercase italic mt-1">System Estimating Acquisition...</p>
                           </div>
                         )}
 
@@ -416,9 +416,9 @@ export default function Marketplace() {
                           <div className="flex items-baseline gap-1">
                             <span className={cn(
                               "text-4xl font-black tracking-tighter font-bold transition-colors duration-500",
-                              canAfford ? "text-white" : "text-white/20"
+                              canAfford ? "text-white" : "text-white/40"
                             )}>{item.cost}</span>
-                            <span className="text-[10px] font-bold text-white/20">GC</span>
+                            <span className="text-[10px] font-bold text-white/40">GC</span>
                           </div>
 
                           <div className="flex-1 flex flex-col gap-2">
@@ -455,10 +455,10 @@ export default function Marketplace() {
               </AnimatePresence>
 
               {filteredItems.length === 0 && (
-                <div className="col-span-full py-40 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[60px]">
-                  <Search size={40} className="mx-auto mb-6 text-white/10" />
-                  <h3 className="font-bold text-xl text-white/20 uppercase tracking-widest">No matching protocols found</h3>
-                  <p className="text-white/10 text-xs mt-2 uppercase tracking-widest font-bold">adjust your filters to expand the search.</p>
+                <div className="col-span-full py-40 text-center bg-white/[0.01] border border-dashed border-white/10 rounded-[60px]">
+                  <Search size={40} className="mx-auto mb-6 text-white/30" />
+                  <h3 className="font-bold text-xl text-white/40 uppercase tracking-widest">No matching protocols found</h3>
+                  <p className="text-white/30 text-xs mt-2 uppercase tracking-widest font-bold">adjust your filters to expand the search.</p>
                 </div>
               )}
             </div>
@@ -467,7 +467,7 @@ export default function Marketplace() {
           <div className="space-y-12">
             {/* Section 1: Boosters & Consumables */}
             <section>
-              <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/30 uppercase mb-8 flex items-center gap-3">
+              <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/50 uppercase mb-8 flex items-center gap-3">
                 <BarChart3 size={16} /> Loadout Management
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -509,7 +509,7 @@ export default function Marketplace() {
 
             {/* Section 2: Permanent Equipment */}
             <section>
-              <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/30 uppercase mb-8 flex items-center gap-3">
+              <h3 className="font-bold text-xs font-black tracking-[0.4em] text-white/50 uppercase mb-8 flex items-center gap-3">
                 <Shield size={16} /> Biological Augmentations
               </h3>
               <div className="space-y-4">
@@ -537,16 +537,16 @@ export default function Marketplace() {
             </section>
           </div>
         ) : (
-          <div className="py-40 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[60px]">
-            <Gift size={40} className="mx-auto mb-6 text-white/10" />
-            <h3 className="font-bold text-xl text-white/20 uppercase tracking-widest">Archive Content Restricted</h3>
-            <p className="text-white/10 text-xs mt-2 uppercase tracking-widest font-bold">deployment history and audit logs are clearing...</p>
+          <div className="py-40 text-center bg-white/[0.01] border border-dashed border-white/10 rounded-[60px]">
+            <Gift size={40} className="mx-auto mb-6 text-white/30" />
+            <h3 className="font-bold text-xl text-white/40 uppercase tracking-widest">Archive Content Restricted</h3>
+            <p className="text-white/30 text-xs mt-2 uppercase tracking-widest font-bold">deployment history and audit logs are clearing...</p>
           </div>
         )}
 
       {/* Footer Disclaimer */}
       <footer className="mt-24 p-8 rounded-[40px] bg-white/[0.01] border border-white/5 text-center">
-        <p className="font-bold text-[9px] text-white/10 uppercase tracking-[0.6em] max-w-2xl mx-auto leading-relaxed">
+        <p className="font-bold text-[9px] text-white/30 uppercase tracking-[0.6em] max-w-2xl mx-auto leading-relaxed">
           The sovereign exchange is a closed economic loop. Assets acquired are linked to your biometric signature and are non-transferable. ROI metrics are calculated based on physiological consistency.
         </p>
       </footer>
@@ -620,7 +620,7 @@ function RewardModal({ reward, onClose, onSave }: { reward: any, onClose: () => 
               <Gift size={28} />
             </div>
             <div>
-              <h2 className="font-bold text-[10px] tracking-[0.4em] text-white/30 uppercase font-black mb-1">
+              <h2 className="font-bold text-[10px] tracking-[0.4em] text-white/50 uppercase font-black mb-1">
                 {reward ? 'MODIFY PROTOCOL' : 'INITIALIZE PROTOCOL'}
               </h2>
               <div className="text-2xl font-black text-white tracking-tighter uppercase italic">
@@ -631,7 +631,7 @@ function RewardModal({ reward, onClose, onSave }: { reward: any, onClose: () => 
 
           <div className="space-y-6">
             <div>
-              <label className="font-bold text-[10px] uppercase text-white/20 mb-3 block tracking-widest font-black">Designation</label>
+              <label className="font-bold text-[10px] uppercase text-white/40 mb-3 block tracking-widest font-black">Designation</label>
               <input
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}

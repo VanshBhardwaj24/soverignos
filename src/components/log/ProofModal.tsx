@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useSovereignStore } from '../../store/sovereign';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Check, Info, FileText } from 'lucide-react';
+import {
+  Shield, Check, Info, FileText
+} from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Select } from '../ui/Select';
 

@@ -39,7 +39,7 @@ export default function Analytics() {
                   <span className="font-bold text-[10px] tracking-[0.4em] text-[var(--stat-brand)] uppercase font-black">Central Intelligence</span>
                </div>
                <h1 className="font-bold text-5xl font-black tracking-tighter text-white uppercase italic">
-                  Command <span className="text-white/20">Analytics</span>
+                  Command <span className="text-white/40">Analytics</span>
                </h1>
             </div>
          </div>
@@ -55,7 +55,7 @@ export default function Analytics() {
                      "flex items-center gap-3 px-6 py-3 rounded-2xl font-bold text-[10px] tracking-widest uppercase transition-all whitespace-nowrap border outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20",
                      activeTab === tab.id
                         ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                        : "bg-white/5 text-white/40 border-white/5 hover:border-white/10"
+                        : "bg-white/10 text-white/60 border-white/10 hover:border-white/20"
                   )}
                >
                   <tab.icon size={14} />
@@ -136,10 +136,10 @@ function OverviewTab({ store }: { store: any }) {
             {/* Trajectory */}
             <div className="lg:col-span-8 surface-card p-8 relative overflow-hidden backdrop-blur-md border-glow-professional shadow-2xl">
                <div className="flex justify-between items-center mb-8">
-                  <p className="eyebrow text-white/40">Freedom Trajectory / 30D</p>
+                  <p className="eyebrow text-white/60">Freedom Trajectory / 30D</p>
                   <div className="flex items-center gap-2">
                      <span className="w-2 h-2 rounded-full bg-[var(--stat-brand)]" />
-                     <span className="stat-label text-white/60">ACTIVE PROTOCOL</span>
+                     <span className="stat-label text-white/80">ACTIVE PROTOCOL</span>
                   </div>
                </div>
                <div className="h-[300px] w-full">
@@ -163,13 +163,13 @@ function OverviewTab({ store }: { store: any }) {
             {/* Radar and accountability */}
             <div className="lg:col-span-4 space-y-8">
                <div className="surface-card p-8 flex flex-col items-center justify-center relative overflow-hidden backdrop-blur-md">
-                  <p className="absolute top-8 left-8 eyebrow text-white/40">Stability Radar</p>
+                  <p className="absolute top-8 left-8 eyebrow text-white/60">Stability Radar</p>
                   <div className="h-[220px] w-full mt-4">
                      <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-                           <PolarGrid stroke="white" strokeOpacity={0.05} />
-                           <PolarAngleAxis dataKey="subject" tick={{ fill: 'white', fontSize: 8, opacity: 0.3 }} />
-                           <Radar name="Status" dataKey="level" stroke="white" fill="white" fillOpacity={0.1} />
+                           <PolarGrid stroke="white" strokeOpacity={0.1} />
+                           <PolarAngleAxis dataKey="subject" tick={{ fill: 'white', fontSize: 8, opacity: 0.8 }} />
+                           <Radar name="Status" dataKey="level" stroke="white" fill="white" fillOpacity={0.2} />
                         </RadarChart>
                      </ResponsiveContainer>
                   </div>
@@ -177,12 +177,12 @@ function OverviewTab({ store }: { store: any }) {
 
                <div className="surface-card p-6">
                   <div className="flex justify-between items-center mb-4">
-                     <span className="stat-label text-white/40">Accountability</span>
+                     <span className="stat-label text-white/60">Accountability</span>
                      <span className={cn("stat-value text-xs", accountabilityScore > 70 ? "text-[var(--success)]" : "text-[var(--danger)]")}>{accountabilityScore}%</span>
                   </div>
                   <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                      <motion.div
-                        className="h-full bg-white/40"
+                        className="h-full bg-white/60"
                         initial={{ width: 0 }}
                         animate={{ width: `${accountabilityScore}%` }}
                      />
@@ -193,14 +193,14 @@ function OverviewTab({ store }: { store: any }) {
             {/* Weekly Histogram */}
             <div className="lg:col-span-12 surface-card p-8">
                <div className="flex justify-between items-center mb-8">
-                  <p className="eyebrow text-white/40">Weekly Engagement / XP Vol</p>
+                  <p className="eyebrow text-white/60">Weekly Engagement / XP Vol</p>
                </div>
                <div className="h-[150px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                      <BarChart data={weeklyData}>
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#666', fontFamily: 'Geist Mono' }} />
-                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #222' }} cursor={{ fill: 'white', opacity: 0.05 }} />
-                        <Bar dataKey="xp" fill="white" fillOpacity={0.1} radius={[4, 4, 0, 0]} />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#888', opacity: 0.8, fontFamily: 'Geist Mono' }} />
+                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #222' }} cursor={{ fill: 'white', opacity: 0.1 }} />
+                        <Bar dataKey="xp" fill="white" fillOpacity={0.2} radius={[4, 4, 0, 0]} />
                      </BarChart>
                   </ResponsiveContainer>
                </div>
@@ -233,11 +233,11 @@ function ProgressionTab({ store }: { store: any }) {
    return (
       <div className="space-y-8">
          <div className="surface-card p-8">
-            <p className="eyebrow text-white/40 mb-8">Skill Accumulation / Cumulative Growth</p>
+            <p className="eyebrow text-white/60 mb-8">Skill Accumulation / Cumulative Growth</p>
             <div className="h-[400px] w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={stackData}>
-                     <XAxis dataKey="date" tick={{ fontSize: 9, opacity: 0.3 }} axisLine={false} tickLine={false} />
+                     <XAxis dataKey="date" tick={{ fontSize: 9, opacity: 0.8 }} axisLine={false} tickLine={false} />
                      <YAxis hide />
                      <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333', fontSize: '10px' }} />
                      {Object.keys(STATS).filter(id => id !== 'freedom').map(id => (
@@ -248,7 +248,7 @@ function ProgressionTab({ store }: { store: any }) {
                            stackId="1"
                            stroke={STATS[id].colorVar}
                            fill={STATS[id].colorVar}
-                           fillOpacity={0.1}
+                           fillOpacity={0.2}
                         />
                      ))}
                   </AreaChart>
@@ -269,18 +269,18 @@ function ProgressionTab({ store }: { store: any }) {
                return (
                   <div key={stat.id} className="surface-card p-6">
                      <div className="flex justify-between items-center mb-4">
-                        <span className="stat-label text-white/40">{stat.name} Progress</span>
+                        <span className="stat-label text-white/60">{stat.name} Progress</span>
                         <span className="stat-label text-white">LV. {currentLevel}</span>
                      </div>
                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                         <div
-                           className="h-full bg-white/40"
+                           className="h-full bg-white/60"
                            style={{ width: `${Math.min(progress, 100)}%` }}
                         />
                      </div>
-                     <div className="mt-2 text-right">
-                        <span className="stat-label text-white/20">{Math.floor(progressXP).toLocaleString()} / {totalNeeded.toLocaleString()} XP</span>
-                     </div>
+                      <div className="mt-2 text-right">
+                        <span className="stat-label text-white/60">{Math.floor(progressXP).toLocaleString()} / {totalNeeded.toLocaleString()} XP</span>
+                      </div>
                   </div>
                );
             })}
@@ -307,23 +307,23 @@ function MissionTab({ store }: { store: any }) {
    return (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
          <div className="lg:col-span-4 surface-card p-8 flex flex-col items-center justify-center">
-            <p className="eyebrow text-white/40 mb-8">Daily Completion</p>
+            <p className="eyebrow text-white/60 mb-8">Daily Completion</p>
             <div className="relative w-48 h-48 flex items-center justify-center">
-               <div className="stat-value text-4xl">{questStats.completed}<span className="text-sm text-white/20">/{questStats.total}</span></div>
+               <div className="stat-value text-4xl">{questStats.completed}<span className="text-sm text-white/60">/{questStats.total}</span></div>
                <svg className="absolute inset-0 w-full h-full -rotate-90">
-                  <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
+                  <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/10" />
                   <circle
                      cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="8" fill="transparent"
                      strokeDasharray={2 * Math.PI * 80}
                      strokeDashoffset={2 * Math.PI * 80 * (1 - questStats.rate / 100)}
-                     className="text-white transition-all duration-1000"
+                     className="text-white transition-all duration-1000 drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
                   />
                </svg>
             </div>
          </div>
 
          <div className="lg:col-span-8 surface-card p-8">
-            <p className="eyebrow text-white/40 mb-8">Difficulty Distribution</p>
+            <p className="eyebrow text-white/60 mb-8">Difficulty Distribution</p>
             <div className="h-[250px] w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <RePieChart>
@@ -335,9 +335,9 @@ function MissionTab({ store }: { store: any }) {
                         paddingAngle={5}
                         dataKey="value"
                      >
-                        <Cell fill="var(--success)" opacity={0.3} />
-                        <Cell fill="var(--stat-brand)" opacity={0.5} />
-                        <Cell fill="var(--danger)" opacity={0.7} />
+                        <Cell fill="var(--success)" opacity={0.4} />
+                        <Cell fill="var(--stat-brand)" opacity={0.6} />
+                        <Cell fill="var(--danger)" opacity={0.8} />
                         <Cell fill="white" opacity={0.9} />
                      </Pie>
                      <Tooltip />
@@ -348,7 +348,7 @@ function MissionTab({ store }: { store: any }) {
                {difficultyData.map((d, i) => (
                   <div key={d.name} className="flex items-center gap-2">
                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: i === 0 ? 'var(--success)' : i === 1 ? 'var(--stat-brand)' : i === 2 ? 'var(--danger)' : 'white' }} />
-                     <span className="stat-label text-white/40">{d.name}</span>
+                     <span className="stat-label text-white/60">{d.name}</span>
                   </div>
                ))}
             </div>
@@ -398,7 +398,7 @@ function FinancialTab({ store }: { store: any }) {
    return (
       <div className="space-y-8">
          <div className="surface-card p-8">
-            <p className="eyebrow text-white/40 mb-8">Net Worth Trajectory / Global Liquidity</p>
+            <p className="eyebrow text-white/60 mb-8">Net Worth Trajectory / Global Liquidity</p>
             <div className="h-[300px] w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={netWorthData}>
@@ -419,11 +419,11 @@ function FinancialTab({ store }: { store: any }) {
 
          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="surface-card p-8">
-               <p className="eyebrow text-white/40 mb-8">Cash Flow / Monthly Yield</p>
+               <p className="eyebrow text-white/60 mb-8">Cash Flow / Monthly Yield</p>
                <div className="h-[250px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                      <BarChart data={incomeVsExpense}>
-                        <XAxis dataKey="name" tick={{ fontSize: 9, opacity: 0.3 }} />
+                        <XAxis dataKey="name" tick={{ fontSize: 9, opacity: 0.6 }} />
                         <Tooltip />
                         <Bar dataKey="income" fill="var(--success)" radius={[4, 4, 0, 0]} />
                         <Bar dataKey="expense" fill="var(--danger)" radius={[4, 4, 0, 0]} />
@@ -433,13 +433,13 @@ function FinancialTab({ store }: { store: any }) {
             </div>
 
             <div className="surface-card p-8">
-               <p className="eyebrow text-white/40 mb-8">Financial Objectives</p>
+               <p className="eyebrow text-white/60 mb-8">Financial Objectives</p>
                <div className="space-y-6">
                   {(financialGoals || []).map((goal: any) => (
                      <div key={goal.id} className="space-y-2">
                         <div className="flex justify-between items-center stat-label">
                            <span className="text-white">{goal.name.toUpperCase()}</span>
-                           <span className="text-white/40">{((goal.currentAmount / goal.targetAmount) * 100).toFixed(0)}%</span>
+                           <span className="text-white/60">{((goal.currentAmount / goal.targetAmount) * 100).toFixed(0)}%</span>
                         </div>
                         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                            <div
@@ -482,11 +482,11 @@ function MindTab({ store }: { store: any }) {
    return (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
          <div className="lg:col-span-8 surface-card p-8">
-            <p className="eyebrow text-white/40 mb-8">Psychological Flux / Mood Variance</p>
+            <p className="eyebrow text-white/60 mb-8">Psychological Flux / Mood Variance</p>
             <div className="h-[250px] w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={moodData}>
-                     <XAxis dataKey="date" tick={{ fontSize: 9, opacity: 0.3 }} />
+                     <XAxis dataKey="date" tick={{ fontSize: 9, opacity: 0.6 }} />
                      <Tooltip />
                      <Line type="monotone" dataKey="intensity" stroke="var(--stat-mind)" strokeWidth={3} dot={{ fill: 'var(--stat-mind)', r: 4 }} />
                   </LineChart>
@@ -495,21 +495,21 @@ function MindTab({ store }: { store: any }) {
          </div>
 
          <div className="lg:col-span-4 surface-card p-8">
-            <p className="eyebrow text-white/40 mb-8">Mastery Status</p>
+            <p className="eyebrow text-white/60 mb-8">Mastery Status</p>
             <div className="space-y-4">
                <div className="flex justify-between items-center stat-label">
-                  <span className="text-white/40 uppercase">Cognitive Units</span>
+                  <span className="text-white/60 uppercase">Cognitive Units</span>
                   <span className="text-white">{(knowledgeCards || []).length}</span>
                </div>
                <div className="flex justify-between items-center stat-label">
-                  <span className="text-white/40 uppercase">Journal Entries</span>
+                  <span className="text-white/60 uppercase">Journal Entries</span>
                   <span className="text-white">{(journalEntries || []).length}</span>
                </div>
             </div>
          </div>
 
          <div className="lg:col-span-12 surface-card p-8">
-            <p className="eyebrow text-white/40 mb-8">Journal Frequency / Activity</p>
+            <p className="eyebrow text-white/60 mb-8">Journal Frequency / Activity</p>
             <div className="h-[120px] w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={journalData}>
@@ -537,12 +537,12 @@ function NetworkTab({ store }: { store: any }) {
       <div className="space-y-8">
          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-               <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Recruitment Funnel / Pipeline</h3>
+               <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/60 uppercase font-black mb-8">Recruitment Funnel / Pipeline</h3>
                <div className="h-[250px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                      <BarChart data={funnelData} layout="vertical">
                         <XAxis type="number" hide />
-                        <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: 'white', opacity: 0.4 }} width={100} axisLine={false} tickLine={false} />
+                        <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: 'white', opacity: 0.6 }} width={100} axisLine={false} tickLine={false} />
                         <Tooltip />
                         <Bar dataKey="count" fill="white" fillOpacity={0.1} radius={[0, 4, 4, 0]} />
                      </BarChart>
@@ -551,36 +551,36 @@ function NetworkTab({ store }: { store: any }) {
             </div>
 
             <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-               <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Venture Performance</h3>
+               <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/60 uppercase font-black mb-8">Venture Performance</h3>
                <div className="space-y-4">
                   {(ventures || []).map((v: any) => (
                      <div key={v.id} className="flex justify-between items-center p-4 surface-elevated">
                         <div className="flex flex-col">
                            <span className="h-card text-white">{v.name.toUpperCase()}</span>
-                           <span className="stat-label text-white/20">{v.category}</span>
+                           <span className="stat-label text-white/60">{v.category}</span>
                         </div>
                         <div className="stat-value text-xs text-[var(--success)] italic">
-                           +{(v.revenue || 0).toLocaleString()} <span className="stat-label opacity-40">GOLD</span>
+                           +{(v.revenue || 0).toLocaleString()} <span className="stat-label opacity-60">GOLD</span>
                         </div>
                      </div>
                   ))}
                   {(!ventures || ventures.length === 0) && (
-                     <div className="h-40 flex items-center justify-center opacity-20 font-bold text-[9px] uppercase italic tracking-[0.4em]">No Live Ventures</div>
+                     <div className="h-40 flex items-center justify-center text-white/60 font-bold text-[9px] uppercase italic tracking-[0.4em]">No Live Ventures</div>
                   )}
                </div>
             </div>
          </div>
 
          <div className="bg-white/[0.03] border border-white/10 rounded-[40px] p-8">
-            <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/40 uppercase font-black mb-8">Nexus Connectivity / Audience Growth</h3>
+            <h3 className="font-bold text-[9px] tracking-[0.3em] text-white/60 uppercase font-black mb-8">Nexus Connectivity / Audience Growth</h3>
             <div className="flex items-center gap-12">
                <div>
                   <div className="font-bold text-4xl font-black text-white">{(nexusContacts || []).length}</div>
-                  <div className="font-bold text-[9px] text-white/40 uppercase tracking-widest">Active nodes</div>
+                  <div className="font-bold text-[9px] text-white/60 uppercase tracking-widest">Active nodes</div>
                </div>
                <div className="flex-1 h-px bg-white/10" />
                <div className="text-right">
-                  <div className="font-bold text-xs text-white/40 uppercase">Integration Integrity</div>
+                  <div className="font-bold text-xs text-white/60 uppercase">Integration Integrity</div>
                   <div className="font-bold text-sm text-[var(--stat-brand)] font-black">STABLE</div>
                </div>
             </div>
@@ -592,11 +592,11 @@ function NetworkTab({ store }: { store: any }) {
 function MetricCard({ label, value, sub, icon: Icon, color }: any) {
    return (
       <div className="surface-card p-8 relative overflow-hidden group border-glow-professional shadow-lg">
-         <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12 group-hover:scale-110 transition-transform">
+         <div className="absolute top-0 right-0 p-6 opacity-15 rotate-12 group-hover:scale-110 transition-transform">
             <Icon size={80} />
          </div>
          <div className="relative z-10">
-            <span className="block eyebrow text-white/40 mb-4">{label}</span>
+            <span className="block eyebrow text-white/60 mb-4">{label}</span>
             <div className="stat-value text-4xl mb-2">{value}</div>
             <div className="flex items-center gap-2">
                <span className="stat-label" style={{ color }}>{sub}</span>

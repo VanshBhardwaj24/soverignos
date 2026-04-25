@@ -77,6 +77,7 @@ export interface Quest {
   notes?: string;
   dailyBriefingId?: string;
   dailyBriefingDate?: string;
+  pinned?: boolean;
 }
 
 export interface JobApp {
@@ -496,12 +497,13 @@ interface SovereignStore {
   completeQuest: (questId: string, skipLog?: boolean, metadata?: Record<string, any>) => Promise<void>;
   failQuest: (questId: string) => Promise<void>;
   addQuest: (quest: Omit<Quest, 'id' | 'completed' | 'streak'>) => Promise<string>;
-  protectQuest: (questId: string) => Promise<void>;
+  deleteQuest: (id: string) => Promise<void>;
+  togglePinQuest: (id: string) => Promise<void>;
   resetDailyQuests: () => Promise<void>;
   resetWeeklyQuests: () => Promise<void>;
   archiveQuest: (id: string) => Promise<void>;
   restoreQuest: (id: string) => Promise<void>;
-  deleteQuest: (id: string) => Promise<void>;
+  protectQuest: (questId: string) => Promise<void>;
   setLogModalOpen: (open: boolean, statId?: string, activityId?: string) => void;
   setTheme: (theme: 'dark' | 'light') => void;
   setSelectedStat: (statId: string | null) => void;
@@ -686,7 +688,8 @@ export const useSovereignStore = create<SovereignStore>()(
                 subtasks: q.subtasks || [],
                 notes: q.notes || '',
                 postponeCount: q.postpone_count || 0,
-                postponeHistory: q.postpone_history || []
+                postponeHistory: q.postpone_history || [],
+                pinned: q.pinned || false
               };
             })
           });
@@ -971,10 +974,10 @@ export const useSovereignStore = create<SovereignStore>()(
           id: 'wealth_engine',
           title: 'Wealth Engine',
           tasks: [
-            { title: 'Market Analysis & Trade Log', statId: 'wealth', xpReward: 50, priority: 'P0' },
-            { title: 'Business Dev / Outreach', statId: 'network', xpReward: 100, priority: 'P1' },
-            { title: 'Capital Allocation Strategy', statId: 'wealth', xpReward: 70, priority: 'P1' },
-            { title: 'Revenue Stream Audit', statId: 'wealth', xpReward: 40, priority: 'P2' }
+            { title: 'Market Analysis & Trade Log(Backtesting and journal)', statId: 'wealth', xpReward: 50, priority: 'P0' },
+            { title: 'Business Dev / Outreach(job and oppurtunity)', statId: 'network', xpReward: 100, priority: 'P1' },
+            { title: 'Capital Allocation thinking', statId: 'wealth', xpReward: 70, priority: 'P1' },
+            { title: 'Income thinking investment thoughts', statId: 'wealth', xpReward: 40, priority: 'P2' }
           ]
         },
         {
@@ -983,7 +986,7 @@ export const useSovereignStore = create<SovereignStore>()(
           tasks: [
             { title: 'Strength Training (Heavy)', statId: 'body', xpReward: 100, priority: 'P0' },
             { title: 'Cold Immersion / Shock', statId: 'body', xpReward: 50, priority: 'P1' },
-            { title: 'High Protein Intake', statId: 'spirit', xpReward: 30, priority: 'P2' },
+            { title: 'High Protein Intake diet plan', statId: 'spirit', xpReward: 30, priority: 'P2' },
             { title: 'Mental Resilience Reading', statId: 'mind', xpReward: 40, priority: 'P2' }
           ]
         },
@@ -2014,7 +2017,7 @@ export const useSovereignStore = create<SovereignStore>()(
             if (loan.status === 'repaid' || loan.status === 'defaulted') continue;
 
             const needed = loan.totalRepay - loan.amountRepaid;
-            
+
             // Repayment logic based on strategy
             let repaymentAmount = 0;
             if (loan.repaymentType === 'all_earnings') {
@@ -2400,7 +2403,8 @@ export const useSovereignStore = create<SovereignStore>()(
           priority: quest.priority || 'P2',
           repeating: quest.repeating !== undefined ? quest.repeating : true,
           postponeCount: 0,
-          postponeHistory: []
+          postponeHistory: [],
+          pinned: false
         };
 
         set((state) => ({ dailyQuests: [...state.dailyQuests, newQuest] }));
@@ -2422,6 +2426,7 @@ export const useSovereignStore = create<SovereignStore>()(
             repeating: quest.repeating !== undefined ? quest.repeating : true,
             postpone_count: 0,
             postpone_history: [],
+            pinned: false,
             created_at: new Date().toISOString()
           }]);
 
@@ -2653,7 +2658,7 @@ export const useSovereignStore = create<SovereignStore>()(
       addTransaction: async (tx) => {
         const newId = Math.random().toString(36).substr(2, 9);
         const newTx: Transaction = { ...tx, id: newId };
-        
+
         set((state) => {
           let newGold = state.gold;
           if (tx.type === 'income') {
@@ -2661,7 +2666,7 @@ export const useSovereignStore = create<SovereignStore>()(
           } else if (tx.type === 'expense') {
             newGold = Math.max(0, newGold - Number(tx.amount));
           }
-          return { 
+          return {
             transactions: [newTx, ...state.transactions],
             gold: newGold
           };
@@ -3259,6 +3264,24 @@ export const useSovereignStore = create<SovereignStore>()(
         }
       },
 
+      togglePinQuest: async (id) => {
+        const { user } = get();
+        const quest = get().dailyQuests.find(q => q.id === id);
+        const newPinned = !quest?.pinned;
+
+        set(state => ({
+          dailyQuests: state.dailyQuests.map(q => q.id === id ? { ...q, pinned: newPinned } : q)
+        }));
+
+        if (user) {
+          await supabase
+            .from('quests')
+            .update({ pinned: newPinned })
+            .eq('id', id)
+            .eq('user_id', user.id);
+        }
+      },
+
       archiveQuest: async (id) => {
         const { user } = get();
         set(state => ({
@@ -3678,6 +3701,9 @@ export const useSovereignStore = create<SovereignStore>()(
         statTodayXP: state.statTodayXP,
         gold: state.gold,
         inventory: state.inventory,
+        activeLoadout: state.activeLoadout,
+        itemCooldowns: state.itemCooldowns,
+        wishlist: state.wishlist,
         activeLoans: state.activeLoans,
         resources: state.resources,
         freedomScore: state.freedomScore,

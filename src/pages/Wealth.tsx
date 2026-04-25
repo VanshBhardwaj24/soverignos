@@ -182,7 +182,7 @@ export default function Wealth() {
             <div className={`font-bold text-3xl font-light text-[var(--stat-wealth)] tracking-tighter`}>
               ${currentBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
-            <div className="font-bold text-[10px] text-white/20 tracking-widest uppercase mt-1 opacity-50">CURRENT EQUITY</div>
+            <div className="font-bold text-[10px] text-white/50 tracking-widest uppercase mt-1">CURRENT EQUITY</div>
           </div>
         </div>
       </div>
@@ -191,7 +191,7 @@ export default function Wealth() {
         {/* P&L Chart */}
         <div className="lg:col-span-2 bg-white/[0.03] border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col min-h-[300px]">
           <div className="flex justify-between items-center mb-6 shrink-0">
-            <h3 className="font-bold text-xs tracking-[0.1em] text-white/40 uppercase">EQUITY CURVE</h3>
+            <h3 className="font-bold text-xs tracking-[0.1em] text-white/60 uppercase">EQUITY CURVE</h3>
             <span className="font-bold text-[9px] px-2 py-1 bg-black/40 border border-white/10 rounded text-[var(--success)] shadow-[0_0_10px_rgba(0,255,136,0.1)]">{pnl >= 0 ? '+' : ''}{pnl.toFixed(2)} NET 30</span>
           </div>
           <div className="flex-1 w-full min-h-0">
@@ -214,7 +214,7 @@ export default function Wealth() {
 
         {/* F8: Monthly Yield Chart */}
         <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col min-h-[300px]">
-          <h3 className="font-bold text-xs tracking-[0.1em] text-white/40 mb-6 uppercase">Monthly Yield</h3>
+          <h3 className="font-bold text-xs tracking-[0.1em] text-white/60 mb-6 uppercase">Monthly Yield</h3>
           <div className="flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={last6Months}>
@@ -231,7 +231,7 @@ export default function Wealth() {
         <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-6 relative overflow-hidden flex flex-col min-h-[300px]">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h3 className="font-bold text-[10px] tracking-[0.1em] text-white/40 uppercase">Budget Health</h3>
+              <h3 className="font-bold text-[10px] tracking-[0.1em] text-white/60 uppercase">Budget Health</h3>
               <div className={cn(
                 "font-bold text-2xl font-black",
                 totalExpense > budgetCap ? "text-[var(--danger)]" : "text-white"
@@ -268,11 +268,11 @@ export default function Wealth() {
           </div>
 
           <div className="mt-auto pt-4 border-t border-white/5">
-            <h3 className="font-bold text-[10px] tracking-[0.1em] text-white/40 mb-1 uppercase">FREEDOM DATE</h3>
+            <h3 className="font-bold text-[10px] tracking-[0.1em] text-white/60 mb-1 uppercase">FREEDOM DATE</h3>
             <div className="font-bold text-xl font-black text-[var(--stat-wealth)]">
               {getProjectedDate()}
             </div>
-            <p className="text-[9px] font-bold text-white/20 mt-1 uppercase italic tracking-widest">{runwayMonths} MONTHS REMAINING</p>
+            <p className="text-[9px] font-bold text-white/50 mt-1 uppercase italic tracking-widest">{runwayMonths} MONTHS REMAINING</p>
           </div>
         </div>
       </div>
@@ -293,8 +293,8 @@ export default function Wealth() {
                     {goal.category === 'asset' ? <Shield size={18} /> : goal.category === 'trip' ? <Plane size={18} /> : <Target size={18} />}
                   </div>
                   <div className="text-right">
-                    <span className="block font-bold text-[8px] text-white/20 uppercase tracking-widest">Deadline</span>
-                    <span className="text-[10px] font-black text-white/40 font-bold italic">{goal.deadline || 'NO LIMIT'}</span>
+                    <span className="block font-bold text-[8px] text-white/50 uppercase tracking-widest">Deadline</span>
+                    <span className="text-[10px] font-black text-white/70 font-bold italic">{goal.deadline || 'NO LIMIT'}</span>
                   </div>
                 </div>
 
@@ -302,7 +302,7 @@ export default function Wealth() {
                   <h4 className="text-sm font-black text-white uppercase italic truncate">{goal.name}</h4>
                   <div className="flex justify-between items-end mt-1">
                     <span className="text-xl font-bold font-black text-white">${goal.currentAmount.toLocaleString()}</span>
-                    <span className="text-[9px] font-bold text-white/20 uppercase">of ${goal.targetAmount.toLocaleString()}</span>
+                    <span className="text-[9px] font-bold text-white/50 uppercase">of ${goal.targetAmount.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -319,7 +319,7 @@ export default function Wealth() {
                       allocateToGoal(goal.id, Number(amount));
                     }
                   }}
-                  className="w-full py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black font-bold tracking-widest uppercase text-white/40 hover:bg-white hover:text-black transition-all"
+                  className="w-full py-3 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black font-bold tracking-widest uppercase text-white/60 hover:bg-white hover:text-black transition-all"
                 >
                   Quick Allocate
                 </button>
@@ -343,7 +343,7 @@ export default function Wealth() {
               </div>
 
               <div className="relative group max-w-xs flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[var(--stat-wealth)] transition-colors" size={14} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 group-focus-within:text-[var(--stat-wealth)] transition-colors" size={14} />
                 <input
                   value={search}
                   onChange={e => setSearch(e.target.value)}
@@ -400,7 +400,7 @@ export default function Wealth() {
           <div className="flex-1 overflow-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="border-b border-white/5 text-[10px] font-black text-white/30 uppercase tracking-[0.2em] bg-white/[0.02] sticky top-0 z-10 backdrop-blur-sm">
+                <tr className="border-b border-white/5 text-[10px] font-black text-white/60 uppercase tracking-[0.2em] bg-white/[0.02] sticky top-0 z-10 backdrop-blur-sm">
                   <th className="px-6 py-4 text-left">Timestamp</th>
                   <th className="px-6 py-4 text-left">Classification</th>
                   <th className="px-6 py-4 text-left">Sector</th>
@@ -413,8 +413,8 @@ export default function Wealth() {
                 {filteredTransactions.map(tx => (
                   <tr key={tx.id} className="group hover:bg-white/[0.02] transition-colors">
                     <td className="px-6 py-5 whitespace-nowrap">
-                      <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                        <Calendar size={12} className="opacity-40" />
+                      <div className="flex items-center gap-2 text-[10px] font-bold text-white/60 uppercase">
+                        <Calendar size={12} className="opacity-60" />
                         {new Date(tx.date).toISOString().split('T')[0]}
                       </div>
                     </td>
@@ -434,7 +434,7 @@ export default function Wealth() {
                       </span>
                     </td>
                     <td className="px-6 py-5">
-                      <span className="text-[11px] text-white/40 italic font-medium tracking-tight">
+                      <span className="text-[11px] text-white/60 italic font-medium tracking-tight">
                         {tx.description}
                       </span>
                     </td>
@@ -450,7 +450,7 @@ export default function Wealth() {
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => handleEdit(tx)}
-                          className="p-1.5 rounded bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all border border-white/10"
+                          className="p-1.5 rounded bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-all border border-white/10"
                         >
                           <Pencil size={12} />
                         </button>
@@ -467,7 +467,7 @@ export default function Wealth() {
                 {filteredTransactions.length === 0 && (
                   <tr>
                     <td colSpan={6} className="py-24 text-center">
-                      <p className="font-bold text-[10px] text-white/20 uppercase tracking-[0.4em]">Empty Registry // Awaiting Data Sync</p>
+                      <p className="font-bold text-[10px] text-white/50 uppercase tracking-[0.4em]">Empty Registry // Awaiting Data Sync</p>
                     </td>
                   </tr>
                 )}

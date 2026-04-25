@@ -2,10 +2,11 @@ import { useState, useMemo, useEffect } from 'react';
 import { useSovereignStore } from '../store/sovereign';
 import {
   AlertTriangle, Trash2, CheckCircle, Pencil, RefreshCcw,
-  Plus, Search, Zap, Flame, CheckSquare, ChevronUp, ChevronDown, RotateCcw, Target
+  Plus, Search, Zap, Flame, CheckSquare, ChevronUp, ChevronDown, RotateCcw, Target,
+  Pin, PinOff, Eraser, List
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { STATS, IDENTITY_FRAMES } from '../lib/constants';
+import { STATS } from '../lib/constants';
 import { cn } from '../lib/utils';
 import { PostponeModal } from '../components/quests/PostponeModal';
 import { ConsequenceChainModal } from '../components/psych/ConsequenceChainModal';
@@ -23,12 +24,13 @@ export default function Quests() {
   const [sortBy, setSortBy] = useState<'xp' | 'streak' | 'date'>('date');
   const [selectedQuestIds, setSelectedQuestIds] = useState<string[]>([]);
   const [isSelectMode, setIsSelectMode] = useState(false);
+  const [allCollapsed, setAllCollapsed] = useState(false);
   const [postponeId, setPostponeId] = useState<string | null>(null);
   const [consequenceQuest, setConsequenceQuest] = useState<{ id: string; statId: string; title: string } | null>(null);
   const [insuranceQuest, setInsuranceQuest] = useState<{ id: string; title: string } | null>(null);
 
   const {
-    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setPendingActivity, failQuest, bulkCompleteQuests, protectQuest
+    dailyQuests, bulkDeleteQuests, updateQuestNotes, tickQuests, setQuestModalOpen, setTargetQuestId, setPendingActivity, failQuest, bulkCompleteQuests, protectQuest, togglePinQuest
   } = useSovereignStore();
   const { checkCadence } = useCadenceStore();
   const { logSkip } = usePsychStore();
@@ -75,9 +77,9 @@ export default function Quests() {
 
     if (sortBy === 'xp') result.sort((a, b) => b.xpReward - a.xpReward);
     if (sortBy === 'streak') result.sort((a, b) => b.streak - a.streak);
-    // Date sorting assumed to be by ID or default order for now as there's no explicit date field in current Quest interface
 
-    return result;
+    // Final Sort: Pinned first
+    return result.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
   }, [dailyQuests, selectedPillar, search, activeTab, sortBy]);
 
   const stats = useMemo(() => {
@@ -192,6 +194,24 @@ export default function Quests() {
             >
               {isSelectMode ? 'EXIT SELECT' : 'SELECT MODE'}
             </button>
+
+            <div className="h-4 w-px bg-white/10 mx-2" />
+
+            <button
+              onClick={() => dailyQuests.forEach(q => q.archived && bulkDeleteQuests([q.id]))}
+              className="p-2 text-white/20 hover:text-red-500 transition-colors"
+              title="Clear All Archived"
+            >
+              <Eraser size={16} />
+            </button>
+
+            <button
+              onClick={() => setAllCollapsed(!allCollapsed)}
+              className="p-2 text-white/20 hover:text-white transition-colors"
+              title={allCollapsed ? "Expand All" : "Collapse All"}
+            >
+              <List size={16} />
+            </button>
           </div>
 
           <div className="h-4 w-px bg-white/10 hidden md:block z-10" />
@@ -250,7 +270,7 @@ export default function Quests() {
                     onClick={() => setActiveTab(tab)}
                     className={cn(
                       "relative z-10 px-5 py-1.5 font-bold text-[9px] font-bold tracking-[0.2em] uppercase transition-colors whitespace-nowrap",
-                      activeTab === tab ? "text-white" : "text-white/20 hover:text-white/40"
+                      activeTab === tab ? "text-white" : "text-white/40 hover:text-white/60"
                     )}
                   >
                     {tab}
@@ -260,10 +280,10 @@ export default function Quests() {
               })}
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-[var(--danger)] animate-pulse shadow-[0_0_5px_var(--danger)]" />
-              <span className="font-bold text-[9px] text-white/40 uppercase tracking-[0.2em]">Risk Coefficient: <span className="text-[var(--danger)] drop-shadow-[0_0_2px_var(--danger)] font-black">{stats.failureRate.toFixed(1)}%</span></span>
-            </div>
+              <span className="font-bold text-[9px] text-white/50 uppercase tracking-[0.2em]">Risk Coefficient: <span className="text-[var(--danger)] drop-shadow-[0_0_2px_var(--danger)] font-black">{stats.failureRate.toFixed(1)}%</span></span>
+            </div> */}
           </div>
 
           <div className="space-y-2">
@@ -301,6 +321,8 @@ export default function Quests() {
                     onFail={() => handleQuestFail({ id: quest.id, statId: quest.statId, title: quest.title })}
                     onUpdateNotes={(notes, subtasks, subtasksEnabled) => updateQuestNotes(quest.id, notes, subtasks, subtasksEnabled)}
                     onPostpone={() => setPostponeId(quest.id)}
+                    onTogglePin={() => togglePinQuest(quest.id)}
+                    forceCollapse={allCollapsed}
                     activeTab={activeTab}
                   />
                 ))
@@ -369,18 +391,24 @@ function Metric({ label, value, color = "text-white/80" }: { label: string, valu
 }
 
 function QuestEntry({
-  quest, onExecute, onFail, index, isSelected, onToggleSelect, isSelectMode, onUpdateNotes, onPostpone, activeTab
+  quest, onExecute, onFail, index, isSelected, onToggleSelect, isSelectMode, onUpdateNotes, onPostpone, onTogglePin, forceCollapse, activeTab
 }: {
   quest: any, onExecute: () => void, onFail: () => void, index: number,
   isSelected: boolean, onToggleSelect: () => void, isSelectMode: boolean,
   onUpdateNotes: (notes: string, subtasks: any, subtasksEnabled: boolean) => void,
   onPostpone: () => void,
+  onTogglePin: () => void,
+  forceCollapse?: boolean,
   activeTab: string
 }) {
   const isBoss = quest.type === 'boss';
   const isWeekly = quest.type === 'weekly';
   const isArchivedTab = activeTab === 'archived';
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (forceCollapse) setExpanded(false);
+  }, [forceCollapse]);
   const setTargetQuestId = useSovereignStore(state => state.setTargetQuestId);
   const setQuestModalOpen = useSovereignStore(state => state.setQuestModalOpen);
   const restoreQuest = useSovereignStore(state => state.restoreQuest);
@@ -442,17 +470,14 @@ function QuestEntry({
           )}
 
           <div>
-            {/* Identity framing */}
-            {(() => {
-              const frame = IDENTITY_FRAMES[quest.statId]; return frame && !quest.completed && !quest.failed ? (
-                <p className="font-bold text-[7px] text-white/20 uppercase tracking-widest mb-0.5">
-                  {frame.identity} {frame.question.split('.')[0].toLowerCase()}.
-                </p>
-              ) : null;
-            })()}
             <div className="flex items-center gap-1.5 mb-1">
+              {quest.pinned && (
+                <span className="flex items-center gap-1 font-bold text-[7px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                  <Pin size={8} className="fill-blue-400" /> PINNED
+                </span>
+              )}
               <span className={cn(
-                "font-bold text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm uppercase text-white/50 border border-white/5 bg-white/[0.02]",
+                "font-bold text-[7px] font-black tracking-[0.1em] px-1.5 py-0.5 rounded-sm uppercase text-white/70 border border-white/10 bg-white/[0.05]",
                 isBoss ? "text-[#7649C9] border-[#7649C9]/20 bg-[#7649C9]/5" : ""
               )}>
                 {quest.statId} // {quest.type}
@@ -500,20 +525,20 @@ function QuestEntry({
             <div className="flex items-center gap-3">
               <h3 className={cn(
                 "font-sans text-sm font-bold tracking-tight uppercase",
-                quest.completed ? "text-white/20 line-through" :
-                  quest.failed ? "text-red-500/40" : "text-white"
+                quest.completed ? "text-white/40 line-through" :
+                  quest.failed ? "text-red-500/60" : "text-white font-black"
               )}>
                 {quest.failed && <span className="mr-2 text-red-500 font-black">[FAILED]</span>}
                 {quest.title}
                 {quest.subtasksEnabled && (quest.subtasks?.length || 0) > 0 && (
-                  <span className="ml-3 font-bold text-[9px] bg-white/5 border border-white/10 px-1.5 py-0.5 rounded text-white/40 tracking-widest">
+                  <span className="ml-3 font-bold text-[9px] bg-white/5 border border-white/20 px-1.5 py-0.5 rounded text-white/60 tracking-widest">
                     {quest.subtasks?.filter((s: any) => s.completed).length || 0}/{quest.subtasks?.length || 0} ✓
                   </span>
                 )}
               </h3>
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="text-white/20 hover:text-white transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded-sm"
+                className="text-white/40 hover:text-white transition-all outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded-sm"
               >
                 {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               </button>
@@ -597,8 +622,18 @@ function QuestEntry({
               </span>
             )}
           </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={onTogglePin}
+              className={cn(
+                "p-2 transition-all hover:scale-110 icon-glow-blue",
+                quest.pinned ? "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" : "text-blue-400/40 hover:text-blue-400"
+              )}
+              title={quest.pinned ? "Unpin Mission" : "Pin Mission"}
+            >
+              {quest.pinned ? <PinOff size={14} /> : <Pin size={14} />}
+            </button>
 
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => {
                 if (quest.completed && !quest.repeating) return;
@@ -607,8 +642,8 @@ function QuestEntry({
               }}
               disabled={quest.completed && !quest.repeating}
               className={cn(
-                "p-2 transition-colors",
-                quest.completed && !quest.repeating ? "text-white/5 cursor-not-allowed" : "text-white/20 hover:text-white"
+                "p-2 transition-colors hover:scale-110 icon-glow-emerald",
+                quest.completed && !quest.repeating ? "text-white/5 cursor-not-allowed" : "text-emerald-400/40 hover:text-emerald-400"
               )}
               title={quest.completed && !quest.repeating ? "Protocol Locked" : "Edit Protocol"}
             >
@@ -617,7 +652,7 @@ function QuestEntry({
 
             <button
               onClick={() => deleteQuest(quest.id)}
-              className="p-2 text-white/10 hover:text-red-500 transition-colors"
+              className="p-2 text-rose-500/40 hover:text-rose-500 transition-colors hover:scale-110 icon-glow-rose"
               title="Delete Permanently"
             >
               <Trash2 size={14} />
@@ -626,7 +661,7 @@ function QuestEntry({
               <>
                 <button
                   onClick={onFail}
-                  className="p-2 text-white/20 hover:text-[var(--danger)] transition-colors"
+                  className="p-2 text-amber-500/40 hover:text-amber-500 transition-colors hover:scale-110 icon-glow-amber"
                   title="Mark as Failed"
                 >
                   <AlertTriangle size={14} />
@@ -648,7 +683,7 @@ function QuestEntry({
 
       <AnimatePresence>
         {expanded && (
-          <SubtaskPanel 
+          <SubtaskPanel
             quest={quest}
             onUpdateNotes={(notes, subtasks, enabled) => onUpdateNotes(notes, subtasks, enabled)}
             onCompleteSubtask={(subtaskId) => completeSubtask(quest.id, subtaskId)}

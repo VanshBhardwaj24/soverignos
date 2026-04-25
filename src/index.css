@@ -60,9 +60,11 @@
     --bg-elevated: var(--surface-3);
     --bg-hover: rgba(255, 255, 255, 0.04);
 
-    --text-primary: #FAFAFA;
-    --text-secondary: #A8A8AF;
-    --text-muted: #6E6E76;
+    --text-primary: #FFFFFF;
+    --text-secondary: #D1D1D6;
+    --text-silver: #A1A1AA;
+    --text-ghost: #71717A;
+    --text-muted: #52525B;
     --text-danger: #FF4D4D;
 
     --border-subtle: rgba(255, 255, 255, 0.06);
@@ -146,9 +148,11 @@
     --bg-elevated: var(--surface-3);
     --bg-hover: rgba(0, 0, 0, 0.04);
 
-    --text-primary: #0A0A0A;
-    --text-secondary: #4A4A52;
-    --text-muted: #8A8A92;
+    --text-primary: #000000;
+    --text-secondary: #3F3F46;
+    --text-silver: #52525B;
+    --text-ghost: #71717A;
+    --text-muted: #A1A1AA;
     --text-danger: #C0272B;
 
     --border-subtle: rgba(0, 0, 0, 0.05);
@@ -176,7 +180,7 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.12);
-    
+
     --glass-opacity: 0.8;
   }
 
@@ -264,7 +268,6 @@
   h3,
   h4 {
     font-family: 'Satoshi', 'Geist', ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: -0.02em;
     color: var(--text-primary);
   }
 
@@ -300,7 +303,6 @@
     font-weight: 700;
     font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
     line-height: 1.02;
-    letter-spacing: -0.035em;
   }
 
   .h-section {
@@ -308,7 +310,6 @@
     font-weight: 600;
     font-size: 1.75rem;
     line-height: 1.15;
-    letter-spacing: -0.025em;
   }
 
   .h-card {
@@ -316,33 +317,29 @@
     font-weight: 600;
     font-size: 1.125rem;
     line-height: 1.25;
-    letter-spacing: -0.015em;
   }
 
   .eyebrow {
     font-family: 'Geist Mono', monospace;
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-silver);
   }
 
   .stat-value {
     font-family: 'Geist Mono', monospace;
     font-size: 2.5rem;
     font-weight: 500;
-    letter-spacing: -0.03em;
     color: var(--text-primary);
   }
 
   .stat-label {
     font-family: 'Geist Mono', monospace;
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-silver);
   }
 
   .freedom-score {
@@ -520,6 +517,39 @@
 
   .text-glow-subtle {
     text-shadow: 0 0 18px color-mix(in srgb, var(--accent-primary) 18%, transparent);
+  }
+
+  /* ---- Visibility Utilities ---- */
+  .text-bright {
+    color: var(--text-primary);
+  }
+
+  .text-silver {
+    color: var(--text-silver);
+  }
+
+  .text-ghost {
+    color: var(--text-ghost);
+  }
+
+  .icon-glow-emerald:hover {
+    filter: drop-shadow(0 0 8px #4ADE80);
+  }
+
+  .icon-glow-rose:hover {
+    filter: drop-shadow(0 0 8px #FB7185);
+  }
+
+  .icon-glow-amber:hover {
+    filter: drop-shadow(0 0 8px #F5A623);
+  }
+
+  .icon-glow-blue:hover {
+    filter: drop-shadow(0 0 8px #7BB8FF);
+  }
+
+  .border-bright {
+    border-color: var(--border-strong);
   }
 
   /* ---- Sonner toasts ---- */

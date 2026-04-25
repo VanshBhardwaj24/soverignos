@@ -147,7 +147,7 @@ export default function Mind() {
         <div className="flex flex-col">
           <p className="eyebrow text-[var(--stat-mind)] mb-2">Cognitive Command</p>
           <div className="h-display flex items-center gap-3 lowercase">
-            MIND <span className="text-white/20">/</span> <span className="text-white/40">{activeTab}</span>
+            MIND <span className="text-white/40">/</span> <span className="text-white/60">{activeTab}</span>
           </div>
         </div>
 
@@ -204,7 +204,7 @@ export default function Mind() {
 
                 <div className="flex-1 overflow-y-auto no-scrollbar px-3 space-y-1 pb-6">
                   <div className="px-3 mb-2">
-                    <h3 className="eyebrow opacity-40">Taxonomy</h3>
+                    <h3 className="eyebrow opacity-60">Taxonomy</h3>
                   </div>
                   {folders.map(folder => (
                     <button
@@ -227,12 +227,12 @@ export default function Mind() {
                           {folder.id}
                         </span>
                       </div>
-                      <span className="stat-label opacity-40">{folder.count}</span>
+                      <span className="stat-label opacity-60">{folder.count}</span>
                     </button>
                   ))}
 
                   <div className="px-3 mt-8 mb-2">
-                    <h3 className="eyebrow opacity-40">Daily Reflection</h3>
+                    <h3 className="eyebrow opacity-60">Daily Reflection</h3>
                   </div>
                   <button
                     onClick={() => setShowReflection(true)}
@@ -243,11 +243,11 @@ export default function Mind() {
                   </button>
 
                   <div className="px-3 mt-8 mb-2">
-                    <h3 className="eyebrow opacity-40">Entries</h3>
+                    <h3 className="eyebrow opacity-60">Entries</h3>
                   </div>
                   <div className="space-y-1">
                     {filteredNotes.length === 0 ? (
-                      <div className="p-8 text-center opacity-20">
+                      <div className="p-8 text-center opacity-40">
                         <Book size={24} className="mx-auto mb-2" />
                         <p className="eyebrow">Vault Empty</p>
                       </div>
@@ -269,7 +269,7 @@ export default function Mind() {
                               {note.title || 'Untitled Entry'}
                             </h4>
                           </div>
-                          <p className="stat-label opacity-40 line-clamp-1">
+                          <p className="stat-label opacity-60 line-clamp-1">
                             {note.content || 'Awaiting thought sequence...'}
                           </p>
                         </button>
@@ -282,7 +282,7 @@ export default function Mind() {
               {/* Main Content */}
               <div className="flex-1 flex flex-col bg-black/40 relative">
                 {!activeNoteId ? (
-                  <div className="flex-1 flex flex-col items-center justify-center space-y-4 opacity-20 select-none">
+                  <div className="flex-1 flex flex-col items-center justify-center space-y-4 opacity-40 select-none">
                     <div className="h-20 w-20 rounded-[40px] border-2 border-dashed border-white flex items-center justify-center">
                       <Book size={32} />
                     </div>
@@ -351,7 +351,7 @@ export default function Mind() {
                     <div className="flex-1 p-16 overflow-y-auto no-scrollbar">
                       <div className="max-w-3xl mx-auto space-y-10 animate-in fade-in zoom-in-95 duration-500">
                         <div className="space-y-4">
-                          <p className="eyebrow opacity-60">System Entry</p>
+                          <p className="eyebrow opacity-80">System Entry</p>
                           <input
                             value={title}
                             onChange={e => setTitle(e.target.value)}
@@ -362,9 +362,9 @@ export default function Mind() {
 
                         {/* F15: Tags */}
                         <div className="flex flex-wrap items-center gap-2">
-                          <Tag size={12} className="text-white/20" />
+                          <Tag size={12} className="text-white/40" />
                           {tags.map(t => (
-                            <span key={t} className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-bold text-white/40 flex items-center gap-2">
+                            <span key={t} className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-bold text-white/60 flex items-center gap-2">
                               #{t}
                               <button onClick={() => setTags(tags.filter(tag => tag !== t))}><X size={10} /></button>
                             </span>
@@ -379,7 +379,7 @@ export default function Mind() {
                               }
                             }}
                             placeholder="+ Add tag..."
-                            className="bg-transparent border-none outline-none text-[10px] font-bold text-white/20 focus:text-white/40"
+                            className="bg-transparent border-none outline-none text-[10px] font-bold text-white/40 focus:text-white/60"
                           />
                         </div>
 
@@ -408,7 +408,7 @@ export default function Mind() {
               <div className="flex items-center justify-between mb-12">
                 <div>
                   <h3 className="h-section">KNOWLEDGE VAULT</h3>
-                  <p className="stat-label opacity-40 mt-1">Spaced Repetition Engine // {knowledgeCards.length} active units</p>
+                  <p className="stat-label opacity-60 mt-1">Spaced Repetition Engine // {knowledgeCards.length} active units</p>
                 </div>
                 <button
                   onClick={() => setIsAddingCard(true)}
@@ -423,7 +423,7 @@ export default function Mind() {
                   <KnowledgeCard key={card.id} card={card} />
                 ))}
                 {knowledgeCards.length === 0 && (
-                  <div className="col-span-full py-24 border border-dashed border-white/10 rounded-[40px] flex flex-col items-center justify-center opacity-20">
+                  <div className="col-span-full py-24 border border-dashed border-white/10 rounded-[40px] flex flex-col items-center justify-center opacity-40">
                     <Brain size={48} className="mb-4" />
                     <p className="eyebrow">Vault Decompressed // No Units Detected</p>
                   </div>
@@ -433,43 +433,43 @@ export default function Mind() {
               <ModalPortal>
                 <AnimatePresence>
                   {isAddingCard && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[600] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"
-                  >
-                    <form onSubmit={handleAddCard} className="w-full max-w-xl glass-premium rounded-[40px] p-10 relative">
-                      <button onClick={() => setIsAddingCard(false)} className="absolute top-8 right-8 text-white/20 hover:text-white transition-colors">
-                        <X size={24} />
-                      </button>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-[600] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"
+                    >
+                      <form onSubmit={handleAddCard} className="w-full max-w-xl glass-premium rounded-[40px] p-10 relative">
+                        <button onClick={() => setIsAddingCard(false)} className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors">
+                          <X size={24} />
+                        </button>
 
-                      <h4 className="h-section italic mb-8">Register Knowledge Unit</h4>
+                        <h4 className="h-section italic mb-8">Register Knowledge Unit</h4>
 
-                      <div className="space-y-6">
-                        <div>
-                          <label className="stat-label opacity-40 mb-3">Unit Prompt / Question</label>
-                          <input value={cardQ} onChange={e => setCardQ(e.target.value)} placeholder="E.g. The first principle of tactical code architecture?" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)]" />
+                        <div className="space-y-6">
+                          <div>
+                            <label className="stat-label opacity-40 mb-3">Unit Prompt / Question</label>
+                            <input value={cardQ} onChange={e => setCardQ(e.target.value)} placeholder="E.g. The first principle of tactical code architecture?" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)]" />
+                          </div>
+                          <div>
+                            <label className="stat-label opacity-40 mb-3">Unit Resolution / Answer</label>
+                            <textarea value={cardA} onChange={e => setCardA(e.target.value)} placeholder="Explain the concept in high-density clarity..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)] h-32 resize-none" />
+                          </div>
+                          <div>
+                            <label className="stat-label opacity-40 mb-3">Taxonomy Class</label>
+                            <select value={cardCat} onChange={e => setCardCat(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)] appearance-none font-bold text-xs uppercase">
+                              <option value="philosophy">Philosophy</option>
+                              <option value="code">Code</option>
+                              <option value="finance">Finance</option>
+                              <option value="vitality">Vitality</option>
+                            </select>
+                          </div>
+                          <button type="submit" className="btn-primary w-full">Commit to Vault</button>
                         </div>
-                        <div>
-                          <label className="stat-label opacity-40 mb-3">Unit Resolution / Answer</label>
-                          <textarea value={cardA} onChange={e => setCardA(e.target.value)} placeholder="Explain the concept in high-density clarity..." className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)] h-32 resize-none" />
-                        </div>
-                        <div>
-                          <label className="stat-label opacity-40 mb-3">Taxonomy Class</label>
-                          <select value={cardCat} onChange={e => setCardCat(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white outline-none focus:border-[var(--stat-mind)] appearance-none font-bold text-xs uppercase">
-                            <option value="philosophy">Philosophy</option>
-                            <option value="code">Code</option>
-                            <option value="finance">Finance</option>
-                            <option value="vitality">Vitality</option>
-                          </select>
-                        </div>
-                        <button type="submit" className="btn-primary w-full">Commit to Vault</button>
-                      </div>
-                    </form>
-                  </motion.div>
-                )}
-                  </AnimatePresence>
+                      </form>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </ModalPortal>
             </motion.div>
           ) : activeTab === 'archives' ? (
@@ -482,12 +482,12 @@ export default function Mind() {
             >
               <div className="mb-12">
                 <h3 className="h-section">MISSION ARCHIVES</h3>
-                <p className="stat-label opacity-40 mt-1">Boss Encounter Records // High Command Clearance Only</p>
+                <p className="stat-label opacity-60 mt-1">Boss Encounter Records // High Command Clearance Only</p>
               </div>
 
               <div className="flex flex-col gap-4">
                 {journalEntries.filter(e => e.folder === 'Archives').length === 0 ? (
-                  <div className="py-24 border border-dashed border-white/10 rounded-[40px] flex flex-col items-center justify-center opacity-20">
+                  <div className="py-24 border border-dashed border-white/10 rounded-[40px] flex flex-col items-center justify-center opacity-40">
                     <Target size={48} className="mb-4" />
                     <p className="eyebrow">No Encounters Logged in Archives</p>
                   </div>
@@ -550,43 +550,43 @@ export default function Mind() {
       <ModalPortal>
         <AnimatePresence>
           {showReflection && (
-          <div className="fixed inset-0 z-[700] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="w-full max-w-lg glass-premium rounded-[40px] p-10 relative shadow-2xl">
-              <button onClick={() => setShowReflection(false)} className="absolute top-8 right-8 text-white/20 hover:text-white"><X size={24} /></button>
-              <h3 className="h-section italic mb-8">System Recalibration</h3>
+            <div className="fixed inset-0 z-[700] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
+              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="w-full max-w-lg glass-premium rounded-[40px] p-10 relative shadow-2xl">
+                <button onClick={() => setShowReflection(false)} className="absolute top-8 right-8 text-white/20 hover:text-white"><X size={24} /></button>
+                <h3 className="h-section italic mb-8">System Recalibration</h3>
 
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <label className="stat-label opacity-40">Mood Magnitude ({mood}/10)</label>
-                  <input type="range" min="1" max="10" value={mood} onChange={e => setMood(Number(e.target.value))} className="w-full" />
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <label className="stat-label opacity-40">Mood Magnitude ({mood}/10)</label>
+                    <input type="range" min="1" max="10" value={mood} onChange={e => setMood(Number(e.target.value))} className="w-full" />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="stat-label opacity-40">Cognitive Intensity ({intensity}/10)</label>
+                    <input type="range" min="1" max="10" value={intensity} onChange={e => setIntensity(Number(e.target.value))} className="w-full" />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="stat-label opacity-40">Gratitude List (3 Tactical Wins)</label>
+                    {gratitude.map((g, i) => (
+                      <input
+                        key={i}
+                        value={g}
+                        onChange={e => {
+                          const newG = [...gratitude];
+                          newG[i] = e.target.value;
+                          setGratitude(newG);
+                        }}
+                        placeholder={`Win #${i + 1}...`}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] text-white outline-none focus:border-[var(--stat-mind)]"
+                      />
+                    ))}
+                  </div>
+                  <button onClick={handleMoodSubmit} className="btn-primary w-full">
+                    COMMIT RECALIBRATION
+                  </button>
                 </div>
-                <div className="space-y-4">
-                  <label className="stat-label opacity-40">Cognitive Intensity ({intensity}/10)</label>
-                  <input type="range" min="1" max="10" value={intensity} onChange={e => setIntensity(Number(e.target.value))} className="w-full" />
-                </div>
-                <div className="space-y-4">
-                  <label className="stat-label opacity-40">Gratitude List (3 Tactical Wins)</label>
-                  {gratitude.map((g, i) => (
-                    <input
-                      key={i}
-                      value={g}
-                      onChange={e => {
-                        const newG = [...gratitude];
-                        newG[i] = e.target.value;
-                        setGratitude(newG);
-                      }}
-                      placeholder={`Win #${i + 1}...`}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-[11px] text-white outline-none focus:border-[var(--stat-mind)]"
-                    />
-                  ))}
-                </div>
-                <button onClick={handleMoodSubmit} className="btn-primary w-full">
-                  COMMIT RECALIBRATION
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
+              </motion.div>
+            </div>
+          )}
         </AnimatePresence>
       </ModalPortal>
     </div>
@@ -599,7 +599,7 @@ function TabButton({ active, onClick, label }: { active: boolean, onClick: () =>
       onClick={onClick}
       className={cn(
         "px-6 py-2.5 rounded-xl stat-label transition-all whitespace-nowrap",
-        active ? "bg-white text-black shadow-lg" : "text-white/30 hover:text-white/60"
+        active ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white/80"
       )}
     >
       {label}

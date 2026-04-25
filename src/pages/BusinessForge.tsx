@@ -46,7 +46,7 @@ export default function BusinessForge() {
         <div>
           <p className="eyebrow text-[var(--stat-brand)] mb-2">Venture Foundry</p>
           <h1 className="h-display italic">
-            Business Command <span className="text-white/20">/</span> <span className="text-white/40">Forge</span>
+            Business Command <span className="text-white/40">/</span> <span className="text-white/60">Forge</span>
           </h1>
         </div>
 
@@ -75,69 +75,69 @@ export default function BusinessForge() {
       <ModalPortal>
         <AnimatePresence>
           {isAdding && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-          >
-            <form onSubmit={handleAdd} className="w-full max-w-lg surface-card p-8 shadow-2xl relative">
-              <button
-                type="button"
-                onClick={() => setIsAdding(false)}
-                className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"
-              >
-                <X size={20} />
-              </button>
-
-              <h3 className="h-section text-white mb-8 border-b border-white/5 pb-4 italic">Initialize venture protocol</h3>
-
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Venture Name</label>
-                  <input
-                    value={newName}
-                    onChange={e => setNewName(e.target.value)}
-                    placeholder="E.g. Nexus Multi-Agent Swarm"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[var(--stat-brand)]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Classification</label>
-                  <select
-                    value={newType}
-                    onChange={e => setNewType(e.target.value as any)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[var(--stat-brand)] appearance-none"
-                  >
-                    <option value="SAAS">SOFTWARE AS A SERVICE</option>
-                    <option value="E-COMM">E-COMMERCE</option>
-                    <option value="TRADING">TACTICAL TRADING</option>
-                    <option value="CONTENT">CONTENT / BRAND</option>
-                    <option value="SERVICE">SERVICE / AGENCY</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Tactical Summary</label>
-                  <textarea
-                    value={newDesc}
-                    onChange={e => setNewDesc(e.target.value)}
-                    placeholder="Define objective and mission scope..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[var(--stat-brand)] h-24 resize-none"
-                  />
-                </div>
-
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            >
+              <form onSubmit={handleAdd} className="w-full max-w-lg surface-card p-8 shadow-2xl relative">
                 <button
-                  type="submit"
-                  className="btn-primary w-full py-4"
+                  type="button"
+                  onClick={() => setIsAdding(false)}
+                  className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"
                 >
-                  DEPLOY TO FORGE
+                  <X size={20} />
                 </button>
-              </div>
-            </form>
-          </motion.div>
-        )}
+
+                <h3 className="h-section text-white mb-8 border-b border-white/5 pb-4 italic">Initialize venture protocol</h3>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Venture Name</label>
+                    <input
+                      value={newName}
+                      onChange={e => setNewName(e.target.value)}
+                      placeholder="E.g. Nexus Multi-Agent Swarm"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[var(--stat-brand)]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Classification</label>
+                    <select
+                      value={newType}
+                      onChange={e => setNewType(e.target.value as any)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[var(--stat-brand)] appearance-none"
+                    >
+                      <option value="SAAS">SOFTWARE AS A SERVICE</option>
+                      <option value="E-COMM">E-COMMERCE</option>
+                      <option value="TRADING">TACTICAL TRADING</option>
+                      <option value="CONTENT">CONTENT / BRAND</option>
+                      <option value="SERVICE">SERVICE / AGENCY</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[8px] font-bold text-white/30 uppercase tracking-widest mb-2">Tactical Summary</label>
+                    <textarea
+                      value={newDesc}
+                      onChange={e => setNewDesc(e.target.value)}
+                      placeholder="Define objective and mission scope..."
+                      className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-[var(--stat-brand)] h-24 resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn-primary w-full py-4"
+                  >
+                    DEPLOY TO FORGE
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          )}
         </AnimatePresence>
       </ModalPortal>
 

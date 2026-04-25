@@ -36,7 +36,7 @@ export default function Punishments() {
             Accountability command
           </p>
           <h1 className="h-display text-[var(--text-primary)]">
-            Penal protocols <span className="text-[var(--text-muted)] font-normal">&</span> sanction registry
+            Penal protocols <span className="text-white/60 font-normal">&</span> sanction registry
           </h1>
           <p className="mt-4 text-[15px] text-[var(--text-secondary)] leading-relaxed">
             The system tracks all deviations from the prime protocol. Unresolved violations cascade
@@ -77,7 +77,7 @@ export default function Punishments() {
         </div>
 
         <div className="hidden md:flex items-center gap-3 pr-3">
-          <span className="eyebrow text-[10px]">Status</span>
+          <span className="eyebrow text-[10px] text-white/60">Status</span>
           <span
             className={cn(
               'text-[12px] font-semibold tracking-[-0.005em]',
@@ -109,7 +109,7 @@ export default function Punishments() {
                 <ShieldAlert size={24} strokeWidth={1.5} />
               </div>
               <h3 className="h-card">Registry clear</h3>
-              <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
+              <p className="mt-2 text-[13px] text-white/70">
                 No active protocol violations detected.
               </p>
             </motion.div>
@@ -121,7 +121,7 @@ export default function Punishments() {
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="h-section text-[22px]">Escalation tiers</h2>
-          <p className="text-[13px] text-[var(--text-secondary)]">How violations compound.</p>
+          <p className="text-[13px] text-white/70">How violations compound.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
@@ -172,7 +172,7 @@ export default function Punishments() {
                 <div className="text-[15px] font-semibold text-[var(--text-primary)] mb-1.5">
                   {t.penalty}
                 </div>
-                <div className="text-[12px] text-[var(--text-muted)] font-mono tracking-wide">
+                <div className="text-[12px] text-white/60 font-mono tracking-wide">
                   Trigger: {t.trigger}
                 </div>
               </article>
@@ -191,7 +191,7 @@ export default function Punishments() {
         </div>
         <div className="space-y-1 text-center md:text-left">
           <h3 className="text-[14px] font-semibold text-[var(--text-primary)]">System policy</h3>
-          <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed max-w-2xl">
+          <p className="text-[13px] text-white/70 leading-relaxed max-w-2xl">
             A missed protocol at 00:00 costs 5 Accountability. Two or more consecutive failures
             trigger domain-specific consequences. Resolve penalty quests to restore integrity and
             clear violations.
@@ -235,7 +235,7 @@ function FilterButton({
             'px-1.5 py-px rounded-md text-[10px] font-mono',
             active
               ? 'bg-[var(--bg-primary)]/15 text-[var(--bg-primary)]/80'
-              : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]',
+              : 'bg-[var(--bg-elevated)] text-white/60',
           )}
         >
           {count}

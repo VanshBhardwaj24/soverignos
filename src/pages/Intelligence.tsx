@@ -40,7 +40,7 @@ const Intelligence = () => {
             <Eye className="text-blue-500 animate-pulse" size={48} />
             INTELLIGENCE
           </h1>
-          <p className="text-[var(--text-secondary)] font-bold text-xs mt-2 tracking-[0.3em] uppercase">
+          <p className="text-white/60 font-bold text-xs mt-2 tracking-[0.3em] uppercase">
             Command Center // Behavioral Stream: Active
           </p>
         </div>
@@ -130,7 +130,7 @@ const FocusBalanceVisualizer = () => {
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-2">
           <Target size={18} className="text-pink-400" />
-          <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-[var(--text-secondary)]">Focus Balance: {balance}%</h2>
+          <h2 className="font-bold text-xs tracking-[0.2em] uppercase text-white/70">Focus Balance: {balance}%</h2>
         </div>
         <span className={cn(
           "font-bold text-[9px] px-2 py-1 rounded-full uppercase tracking-widest",
