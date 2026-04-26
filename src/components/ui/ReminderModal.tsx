@@ -9,8 +9,7 @@ import {
   Award,
   AlertTriangle,
   ArrowRight,
-  ShieldCheck,
-  Flame
+  ShieldCheck
 } from 'lucide-react';
 import ReactConfetti from 'react-confetti';
 import { cn } from '../../lib/utils';
@@ -27,16 +26,11 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
     dailyQuests,
     applyDailyTemplate,
     finalizeDailyBriefing,
-    causalityDiscoveries,
-    surveillanceMetrics
+    username,
+    alias
   } = useSovereignStore();
 
-  const recentDiscovery = causalityDiscoveries.find(d => d.status === 'verified') || causalityDiscoveries[0];
-  const intelligenceTip = surveillanceMetrics.resistanceFactor < 50 
-    ? "Low Resistance detected. Prioritize P0 tasks to restore throughput."
-    : surveillanceMetrics.lateNightRisk > 30 
-    ? "High Late-Night Risk. Avoid creating missions after 11 PM."
-    : "System operating at nominal capacity. Maintain current trajectory.";
+  const displayName = alias || username || "Sovereign";
 
   const [selectedTemplateId, setSelectedTemplateId] = useState(briefingTemplates[0].id);
   const [isFinalized, setIsFinalized] = useState(false);
@@ -65,14 +59,16 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
     }
   };
 
+  const accentColor = mode === 'morning' ? "var(--stat-code)" : (allCompleted ? "var(--success)" : "var(--danger)");
+
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[500] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 sm:p-6">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+          className="absolute inset-0 bg-black/60 backdrop-blur-3xl"
           onClick={onClose}
         />
 
@@ -88,190 +84,162 @@ export const ReminderModal = ({ mode, onClose, date }: ReminderModalProps) => {
         )}
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.98, y: 10 }}
+          initial={{ opacity: 0, scale: 0.9, y: 40 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.98, y: 10 }}
-          className="relative w-full max-w-2xl bg-[#080808] border border-white/10 rounded-[32px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.8)] flex flex-col max-h-[90vh]"
+          exit={{ opacity: 0, scale: 0.9, y: 40 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          className="relative w-full max-w-lg bg-white/[0.03] border border-white/10 rounded-[40px] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] flex flex-col max-h-[90vh] backdrop-blur-2xl"
         >
-          {/* Header Accent */}
-          <div className={cn(
-            "h-1.5 w-full",
-            mode === 'morning' ? "bg-blue-500" : (allCompleted ? "bg-emerald-500" : "bg-red-500")
-          )} />
+          <div className="p-6 md:p-10 overflow-y-auto no-scrollbar">
+            {/* Compact Apple-Style Header */}
+            <div className="flex flex-col items-center text-center mb-8">
+              <motion.div 
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className={cn(
+                  "h-16 w-16 rounded-[20px] flex items-center justify-center mb-4 shadow-2xl relative",
+                  "bg-gradient-to-br from-white/10 to-transparent border border-white/10"
+                )}
+              >
+                <div className="absolute inset-0 blur-2xl opacity-20" style={{ backgroundColor: accentColor }} />
+                <div className="relative z-10" style={{ color: accentColor }}>
+                  {mode === 'morning' ? <Zap size={32} strokeWidth={1.5} /> : (allCompleted ? <ShieldCheck size={32} strokeWidth={1.5} /> : <AlertTriangle size={32} strokeWidth={1.5} />)}
+                </div>
+              </motion.div>
 
-          <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
-            {/* Icon & Title */}
-            <div className="flex items-center gap-6 mb-8">
-              <div className={cn(
-                "h-14 w-14 rounded-2xl border flex items-center justify-center shrink-0",
-                mode === 'morning' ? "bg-blue-500/10 border-blue-500/20 text-blue-400" :
-                  (allCompleted ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-500")
-              )}>
-                {mode === 'morning' ? <Zap size={28} /> : (allCompleted ? <ShieldCheck size={28} /> : <AlertTriangle size={28} />)}
-              </div>
-
-              <div className="flex-1">
-                <h2 className="font-bold text-[9px] tracking-[0.4em] text-white/30 uppercase font-black mb-1">
-                  {mode === 'morning' ? "Strategic Briefing" : "Daily Operational Report"}
-                </h2>
-                <h1 className="font-bold text-2xl font-light text-white tracking-tight leading-none">
-                  {mode === 'morning' ? "Initialize Objectives" : (allCompleted ? "Protocol Success" : "Protocol Disruption")}
-                </h1>
-              </div>
-
-              <div className="hidden sm:block text-right">
-                <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">Status</p>
-                <p className={cn(
-                  "text-[10px] font-bold uppercase tracking-widest",
-                  mode === 'morning' ? "text-blue-400" : (allCompleted ? "text-emerald-400" : "text-red-500")
-                )}>
-                  {mode === 'morning' ? "NOMINAL" : (allCompleted ? "OPTIMIZED" : "STRESSED")}
-                </p>
-              </div>
+              <h2 className="text-[10px] font-bold tracking-[0.2em] text-white/30 uppercase mb-1">
+                {mode === 'morning' ? "Strategic Briefing" : "Daily Operational Report"}
+              </h2>
+              <h1 className="text-2xl font-semibold text-white tracking-tight">
+                {mode === 'morning' ? `Good Morning, ${displayName}` : (allCompleted ? "Exceptional Integrity" : "Protocol Deviation")}
+              </h1>
+              <p className="text-xs text-white/40 mt-1 max-w-[240px] leading-relaxed">
+                {mode === 'morning' ? "Set your trajectory for the next 24 hours." : (allCompleted ? "You have maintained peak alignment." : "Inconsistencies detected in today's throughput.")}
+              </p>
             </div>
 
             {/* Content Section */}
-            <div className="space-y-6 mb-10">
+            <div className="space-y-6 mb-8">
               {mode === 'morning' ? (
                 <>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                    {briefingTemplates.map(t => (
-                      <button
-                        key={t.id}
-                        onClick={() => setSelectedTemplateId(t.id)}
-                        className={cn(
-                          "relative p-2 rounded-xl border transition-all duration-300 text-left group overflow-hidden",
-                          selectedTemplateId === t.id
-                            ? "bg-white border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                            : "bg-white/[0.02] border-white/5 text-white/40 hover:bg-white/5 hover:border-white/10"
-                        )}
-                      >
-                        <span className={cn(
-                          "relative z-10 block text-[8px] font-black uppercase tracking-tighter transition-colors",
-                          selectedTemplateId === t.id ? "text-black" : "text-white/40 group-hover:text-white"
-                        )}>
-                          {t.title.split(' ')[0]}
-                          <br />
-                          {t.title.split(' ').slice(1).join(' ')}
-                        </span>
-                      </button>
-                    ))}
+                  {/* Template Picker */}
+                  <div className="space-y-3">
+                    <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest pl-2">Trajectories</p>
+                    <div className="flex flex-wrap gap-2">
+                      {briefingTemplates.map(t => (
+                        <button
+                          key={t.id}
+                          onClick={() => setSelectedTemplateId(t.id)}
+                          className={cn(
+                            "px-4 py-2 rounded-full border transition-all duration-300 text-[11px] font-medium",
+                            selectedTemplateId === t.id
+                              ? "bg-white text-black border-white shadow-lg"
+                              : "bg-white/[0.04] border-white/5 text-white/60 hover:bg-white/10"
+                          )}
+                        >
+                          {t.title}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-white/[0.01] border border-white/5 rounded-2xl p-5 space-y-3">
-                      <h3 className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-1">Protocol Objectives</h3>
-                      <div className="space-y-2">
-                        {currentTemplate.tasks.map((task, i) => (
-                          <div key={i} className="flex items-center gap-3">
-                            <Target size={12} className="text-white/20" />
-                            <span className="font-bold text-xs text-white/70 truncate flex-1">{task.title}</span>
-                            <span className="font-bold text-[8px] text-white/10 uppercase font-black">{task.statId}</span>
-                          </div>
-                        ))}
-                      </div>
+                  {/* Objective List (More Compact) */}
+                  <div className="bg-white/[0.04] border border-white/10 rounded-[28px] p-5 space-y-4">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                      <h3 className="text-[11px] font-semibold text-white/80">Primary Objectives</h3>
+                      <span className="text-[9px] font-bold text-white/20 uppercase">{currentTemplate.tasks.length} Modules</span>
                     </div>
-
-                    <div className="space-y-4">
-                      {/* Intelligence Briefing */}
-                      <div className="p-5 rounded-2xl bg-blue-500/5 border border-blue-500/10 space-y-3">
-                        <div className="flex items-center gap-2">
-                          <Zap size={12} className="text-blue-400" />
-                          <h3 className="font-bold text-[9px] tracking-widest text-blue-400 uppercase font-black">Intelligence Briefing</h3>
-                        </div>
-                        {recentDiscovery && (
-                          <div className="space-y-1">
-                            <p className="font-bold text-[10px] text-white/80 uppercase leading-tight">{recentDiscovery.title}</p>
-                            <p className="text-[10px] text-white/40 leading-relaxed italic line-clamp-2">"{recentDiscovery.insight}"</p>
-                          </div>
-                        )}
-                        <p className="pt-2 border-t border-blue-500/10 font-bold text-[9px] text-blue-300 uppercase leading-tight flex items-start gap-2">
-                          <ArrowRight size={10} className="mt-0.5 shrink-0" />
-                          {intelligenceTip}
-                        </p>
-                      </div>
-
-                      {/* Energy / Ethical Check */}
-                      <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
-                        <div>
-                          <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">Energy Required</p>
-                          <div className="flex gap-1">
-                            {[1, 2, 3, 4, 5].map(v => (
-                              <div key={v} className={cn("h-1 w-4 rounded-full", v <= (currentTemplate.tasks.length > 5 ? 5 : currentTemplate.tasks.length) ? "bg-blue-500/40" : "bg-white/5")} />
-                            ))}
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[8px] font-black text-white/20 uppercase tracking-widest mb-1">Time Investment</p>
-                          <p className="text-[10px] font-bold text-white/60">~{currentTemplate.tasks.length * 45} mins</p>
-                        </div>
-                      </div>
+                    <div className="space-y-2 max-h-[160px] overflow-y-auto no-scrollbar">
+                      {currentTemplate.tasks.map((task, i) => (
+                        <motion.div 
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          key={i} 
+                          className="flex items-center gap-3 bg-white/[0.01] p-2.5 rounded-xl border border-white/5"
+                        >
+                          <Target size={12} className="text-white/20" />
+                          <span className="text-[12px] font-medium text-white/70 flex-1 truncate">{task.title}</span>
+                          <span className="px-1.5 py-0.5 rounded bg-white/5 text-[8px] font-bold text-white/20 uppercase">{task.statId}</span>
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
                 </>
               ) : (
-                <div className="space-y-3">
-                  {todayBriefingQuests.map((q, i) => (
-                    <div key={i} className={cn(
-                      "flex items-center gap-4 p-4 rounded-2xl border transition-all",
-                      q.completed ? "bg-emerald-500/5 border-emerald-500/10" : "bg-red-500/5 border-red-500/10"
-                    )}>
-                      {q.completed ?
-                        <CheckCircle2 size={18} className="text-emerald-400" /> :
-                        <XCircle size={18} className="text-red-500" />
-                      }
-                      <span className={cn(
-                        "font-bold text-xs",
-                        q.completed ? "text-white/80" : "text-white/40 line-through"
-                      )}>
-                        {q.title}
-                      </span>
-                    </div>
-                  ))}
+                <div className="space-y-2">
+                  <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest pl-2 mb-3">Objective Log</p>
+                  <div className="space-y-2 max-h-[240px] overflow-y-auto no-scrollbar">
+                    {todayBriefingQuests.map((q, i) => (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        key={i} 
+                        className={cn(
+                          "flex items-center gap-3 p-4 rounded-[20px] border transition-all",
+                          q.completed ? "bg-emerald-500/5 border-emerald-500/10" : "bg-white/[0.02] border-white/5"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-7 w-7 rounded-full flex items-center justify-center shrink-0",
+                          q.completed ? "bg-emerald-500/20 text-emerald-400" : "bg-white/5 text-white/10"
+                        )}>
+                          {q.completed ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+                        </div>
+                        <span className={cn(
+                          "text-[13px] font-medium flex-1 truncate",
+                          q.completed ? "text-white/90" : "text-white/30"
+                        )}>
+                          {q.title}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
                   {todayBriefingQuests.length === 0 && (
-                    <p className="text-center font-bold text-[10px] text-white/20 py-10 uppercase tracking-widest">No objectives tracked for this session.</p>
+                    <div className="py-8 text-center bg-white/[0.02] rounded-[24px] border border-dashed border-white/5">
+                      <p className="text-[12px] text-white/20 italic">No objectives tracked.</p>
+                    </div>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Footer Action */}
+            {/* Compact Footer Actions */}
             <div className="flex flex-col gap-4">
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 <button
                   onClick={onClose}
-                  className="flex-1 py-4 rounded-2xl font-bold text-[10px] text-white/20 uppercase tracking-[0.2em] border border-white/5 hover:bg-white/5 hover:text-white/40 transition-all"
+                  className="flex-1 py-3.5 rounded-[22px] font-semibold text-xs text-white/30 hover:bg-white/5 hover:text-white/50 transition-all"
                 >
-                  Stand down
+                  Dismiss
                 </button>
                 <button
                   onClick={handleAction}
                   disabled={isFinalized}
+                  style={{ backgroundColor: accentColor }}
                   className={cn(
-                    "flex-[2] py-4 rounded-2xl font-bold text-[11px] font-black tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-3 shadow-xl",
-                    mode === 'morning' ? "bg-white text-black hover:scale-[1.02] active:scale-[0.98]" :
-                      (allCompleted ? "bg-emerald-500 text-white hover:scale-[1.02] active:scale-[0.98]" : "bg-white/10 text-white/40 hover:bg-white/20")
+                    "flex-[1.8] py-3.5 rounded-[22px] font-bold text-xs text-black transition-all flex items-center justify-center gap-2 shadow-2xl hover:brightness-110 active:scale-[0.98]",
+                    isFinalized && "opacity-50 grayscale pointer-events-none",
+                    !allCompleted && mode === 'evening' && "bg-white/10 text-white/40"
                   )}
                 >
                   {mode === 'morning' ? (
-                    <>Initialise Protocol <ArrowRight size={16} /></>
+                    <>Initialize <ArrowRight size={14} /></>
                   ) : (
-                    allCompleted ? <>Claim Integrity Bonus <Award size={16} /></> : "Acknowledge Disruption"
+                    allCompleted ? <>Claim Bonus <Award size={14} /></> : "Acknowledge"
                   )}
                 </button>
               </div>
-              <p className="text-center text-[8px] text-white/10 uppercase tracking-widest italic">
-                Self-authoring protocol initiated. Choose your trajectory with intent.
+              <p className="text-center text-[9px] text-white/10 italic font-medium">
+                Sovereign OS · Authorization Verified
               </p>
             </div>
-          </div>
-
-          {/* Decorative Corner */}
-          <div className="absolute top-0 right-0 p-8 opacity-5">
-            <Flame size={120} />
           </div>
         </motion.div>
       </div>
     </AnimatePresence>
   );
 };
+
+

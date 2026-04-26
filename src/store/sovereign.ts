@@ -7,9 +7,9 @@ import {
   computeFreedomScore,
   computeSovereignty,
   SKILL_PERKS,
-  DIFFICULTY_MULTIPLIERS,
+  DIFFICULTY_MULTIPLIERS
 } from '../lib/constants';
-import type { PunitiveChoice, ShopItem } from '../lib/constants';
+import type { PunitiveChoice, ShopItem, Recipe } from '../lib/constants';
 import { toast } from 'sonner';
 import {
   calculateCorrelation,
@@ -30,6 +30,7 @@ import {
   calculateThroughputBreakdown,
   calculateAttentionAudit,
   calculateCausalGraph,
+  calculateTrajectory,
   calculateFlywheels,
   generateSystemPredictions,
   calculateEnvironmentSynergy,
@@ -38,6 +39,13 @@ import {
 import { usePsychStore } from './sovereign-psych';
 import type { LootDrop } from '../types/loot';
 import { rollLootDrop } from '../lib/loot';
+import {
+  INITIAL_NEURO_STATE,
+  calculateVariableYield,
+  calculateNeuroShift,
+  calculateDecay
+} from '../lib/neuro-engine';
+import type { NeuroState, NeuroContext } from '../lib/neuro-engine';
 
 
 export interface Quest {
@@ -419,6 +427,7 @@ interface SovereignStore {
   surveillanceMetrics: any;
   intelligenceLogs: IntelligenceLog[];
   projections: { name: number, xp: number }[];
+  blueprints: Recipe[];
 
   // F27: Marketplace & Economy
   inventory: string[];
@@ -576,11 +585,17 @@ interface SovereignStore {
   prestigeStat: (statId: string) => Promise<void>;
   collectResource: (name: string, amount: number) => void;
   craftItem: (recipeId: string) => Promise<void>;
+  addBlueprint: (data: Omit<Recipe, 'id'>) => void;
+  updateBlueprint: (id: string, data: Partial<Recipe>) => void;
+  deleteBlueprint: (id: string) => void;
   reviewKnowledgeCard: (id: string, quality: number) => void;
   checkMissionExpiries: () => Promise<void>;
   tickQuests: () => void;
   runCausalityAnalysis: (isManual?: boolean) => void;
   updateSurveillance: () => void;
+
+  neuroState: NeuroState;
+  tickNeurochemicals: () => void;
 }
 
 export const useSovereignStore = create<SovereignStore>()(
@@ -760,6 +775,7 @@ export const useSovereignStore = create<SovereignStore>()(
         setInterval(() => {
           get().checkMissionExpiries();
           get().updateSurveillance();
+          get().tickNeurochemicals();
         }, 60000);
       },
 
@@ -803,6 +819,19 @@ export const useSovereignStore = create<SovereignStore>()(
       nextSessionBoostStatId: null,
       nextSessionBoostMultiplier: 1,
 
+      neuroState: INITIAL_NEURO_STATE,
+      tickNeurochemicals: () => {
+        const { neuroState, activityLog } = get();
+
+        // Prepare context for decay calculation
+        const context: Partial<NeuroContext> = {
+          resilience: calculateResilienceScore(activityLog),
+        };
+
+        const nextState = calculateDecay(neuroState, context);
+        set({ neuroState: nextState });
+      },
+
       dailyQuests: [
         { id: 'q1', title: 'Complete 2 Leetcode Hards', xpReward: 50, statId: 'code', completed: false, type: 'daily', streak: 0, difficulty: 'hard', priority: 'P1' },
         { id: 'q2', title: 'Backtest XAU/USD Strategy', xpReward: 40, statId: 'wealth', completed: false, type: 'daily', streak: 0, difficulty: 'medium', priority: 'P1' },
@@ -819,6 +848,7 @@ export const useSovereignStore = create<SovereignStore>()(
       journalEntries: [],
       activityLog: [],
       ventures: [],
+      blueprints: [],
       knowledgeCards: [],
       moodHistory: [],
       snapshotHistory: [],
@@ -1596,10 +1626,36 @@ export const useSovereignStore = create<SovereignStore>()(
 
       // F2 + F3: logActivity with real multipliers and perk effects
       logActivity: async (statId, xp, questId?, metadata?) => {
-        const { inventory, user, statLevels, prestige, activeLoadout, nextSessionBoostStatId, nextSessionBoostMultiplier } = get();
+        const {
+          inventory, user, statLevels, prestige, activeLoadout,
+          nextSessionBoostStatId, nextSessionBoostMultiplier,
+          activityLog, snapshotHistory, statXP,
+          integrity, accountabilityScore, neuroState
+        } = get();
         const { SHOP_ITEMS } = await import('../lib/constants');
 
-        // 1. Calculate Base Multipliers (Legacy + Percs)
+        // 0. Neuro-Engine Context Preparation
+        const neuroContext: NeuroContext = {
+          willpower: calculateWillpowerReserve(activityLog),
+          entropy: calculateCognitiveEntropy(activityLog),
+          focusBalance: calculateFocusBalance(statXP),
+          resilience: calculateResilienceScore(activityLog),
+          consistency: calculateConsistency(activityLog),
+          integrity: integrity,
+          accountability: accountabilityScore,
+          trajectory: calculateTrajectory(snapshotHistory),
+          isLateNight: new Date().getHours() >= 23 || new Date().getHours() < 4,
+          flywheelActive: calculateFlywheels(activityLog).some(f => f.active),
+          chainLength: activityLog.filter(l => {
+            const diff = Date.now() - new Date(l.timestamp).getTime();
+            return diff < 30 * 60 * 1000; // 30 min window
+          }).length
+        };
+
+        // 1. Calculate Variable Yield (Dopamine/Skinner Box Hook)
+        const { yield: finalYield, isCritical, surgeType } = calculateVariableYield(xp, neuroContext);
+
+        // 2. Calculate Base Multipliers (Legacy + Percs)
         let multiplier = 1;
 
         // F3: Skill perk XP bonus based on level
@@ -1681,8 +1737,8 @@ export const useSovereignStore = create<SovereignStore>()(
           set({ nextSessionBoostStatId: null, nextSessionBoostMultiplier: 1 });
         }
 
-        const boostedXP = Math.max(0, Math.floor(xp * multiplier));
-        const bonusXP = boostedXP - xp; // Simple ROI tracking
+        const boostedXP = Math.max(0, Math.floor(finalYield * multiplier));
+        const bonusXP = boostedXP - xp; // ROI tracking
 
         // Update Loadout ROI
         if (bonusXP > 0) {
@@ -1719,6 +1775,9 @@ export const useSovereignStore = create<SovereignStore>()(
           updated_at: new Date().toISOString()
         };
 
+        // Neuro-Shift (Silent)
+        const neuroShift = calculateNeuroShift(neuroState, 'xp_gain', boostedXP, neuroContext);
+
         set((state) => {
           const newXP = (state.statXP[statId] || 0) + boostedXP;
           const newTodayXP = (state.statTodayXP[statId] || 0) + boostedXP;
@@ -1741,7 +1800,8 @@ export const useSovereignStore = create<SovereignStore>()(
             statTodayXP: { ...state.statTodayXP, [statId]: newTodayXP },
             statLevels: { ...state.statLevels, [statId]: level },
             lastLeveledStat: levelUpData,
-            activityLog: [logEntry, ...state.activityLog].slice(0, 500)
+            activityLog: [logEntry, ...state.activityLog].slice(0, 500),
+            neuroState: { ...state.neuroState, ...neuroShift }
           };
         });
 
@@ -1768,10 +1828,12 @@ export const useSovereignStore = create<SovereignStore>()(
 
         // F27: XP gain notification
         get().addNotification({
-          title: `+${boostedXP} ${statId.toUpperCase()} XP`,
-          description: multiplier > 1 ? `${(multiplier).toFixed(1)}x multiplier active` : 'Activity logged.',
-          status: 'NOW',
-          iconType: 'xp'
+          title: isCritical ? `CRITICAL SURGE! +${boostedXP} ${statId.toUpperCase()} XP` : `+${boostedXP} ${statId.toUpperCase()} XP`,
+          description: surgeType === 'surge' ? 'NEURAL SYNC PEAK: 2.5x Critical Burst applied.' :
+            surgeType === 'momentum' ? 'NEURAL MOMENTUM: 1.5x Surge applied.' :
+              multiplier > 1 ? `${(multiplier).toFixed(1)}x multiplier active` : 'Activity logged.',
+          status: isCritical ? 'URGENT' : 'NOW',
+          iconType: isCritical ? 'milestone' : 'xp'
         });
 
         const { targetQuestId } = get();
@@ -1885,9 +1947,9 @@ export const useSovereignStore = create<SovereignStore>()(
       },
 
       craftItem: async (recipeId) => {
-        const { gold, resources, user } = get();
+        const { gold, resources, blueprints, user } = get();
         const { CRAFTING_RECIPES } = await import('../lib/constants');
-        const recipe = CRAFTING_RECIPES.find(r => r.id === recipeId);
+        const recipe = CRAFTING_RECIPES.find(r => r.id === recipeId) || blueprints.find(r => r.id === recipeId);
 
         if (!recipe) return;
 
@@ -2003,6 +2065,24 @@ export const useSovereignStore = create<SovereignStore>()(
             accountabilityScore: Math.min(100, state.accountabilityScore + integrityBonus)
           };
         });
+
+        // Neuro-Shift (Silent)
+        const { activityLog, statXP, integrity, accountabilityScore, neuroState, snapshotHistory } = get();
+        const neuroContext: NeuroContext = {
+          willpower: calculateWillpowerReserve(activityLog),
+          entropy: calculateCognitiveEntropy(activityLog),
+          focusBalance: calculateFocusBalance(statXP),
+          resilience: calculateResilienceScore(activityLog),
+          consistency: calculateConsistency(activityLog),
+          integrity: integrity,
+          accountability: accountabilityScore,
+          trajectory: calculateTrajectory(snapshotHistory),
+          isLateNight: new Date().getHours() >= 23 || new Date().getHours() < 4,
+          flywheelActive: calculateFlywheels(activityLog).some(f => f.active),
+          chainLength: 0 // Not relevant here
+        };
+        const neuroShift = calculateNeuroShift(neuroState, 'quest_complete', finalXP, neuroContext);
+        set(state => ({ neuroState: { ...state.neuroState, ...neuroShift } }));
 
         // Handle Loan Repayment & Gold Distribution
         const { activeLoans } = get();
@@ -2240,6 +2320,24 @@ export const useSovereignStore = create<SovereignStore>()(
           violationStreaks: newViolationStreaks,
           punishments: [newPunishment, ...state.punishments].slice(0, 100)
         }));
+
+        // Neuro-Shift (Silent) - Crash
+        const { neuroState: currentNeuro, activityLog: aLog, statXP: sXP, integrity: i, accountabilityScore: aScore, snapshotHistory: sHistory } = get();
+        const neuroCtx: NeuroContext = {
+          willpower: calculateWillpowerReserve(aLog),
+          entropy: calculateCognitiveEntropy(aLog),
+          focusBalance: calculateFocusBalance(sXP),
+          resilience: calculateResilienceScore(aLog),
+          consistency: calculateConsistency(aLog),
+          integrity: i,
+          accountability: aScore,
+          trajectory: calculateTrajectory(sHistory),
+          isLateNight: new Date().getHours() >= 23 || new Date().getHours() < 4,
+          flywheelActive: calculateFlywheels(aLog).some(f => f.active),
+          chainLength: 0
+        };
+        const neuroCrash = calculateNeuroShift(currentNeuro, 'violation', 0, neuroCtx);
+        set(state => ({ neuroState: { ...state.neuroState, ...neuroCrash } }));
 
         if (user) {
           const { error: upsertError } = await supabase.from('quests').upsert({
@@ -3366,6 +3464,25 @@ export const useSovereignStore = create<SovereignStore>()(
         // Implementation for trip checklist
       },
 
+      addBlueprint: (data) => {
+        const newId = `custom_bp_${Math.random().toString(36).substr(2, 9)}`;
+        set(state => ({
+          blueprints: [{ ...data, id: newId } as Recipe, ...state.blueprints]
+        }));
+      },
+
+      updateBlueprint: (id, data) => {
+        set(state => ({
+          blueprints: state.blueprints.map(bp => bp.id === id ? { ...bp, ...data } : bp)
+        }));
+      },
+
+      deleteBlueprint: (id) => {
+        set(state => ({
+          blueprints: state.blueprints.filter(bp => bp.id !== id)
+        }));
+      },
+
       tickQuests: () => {
         const { dailyQuests, failQuest } = get();
         let changed = false;
@@ -3693,6 +3810,7 @@ export const useSovereignStore = create<SovereignStore>()(
         // NOTE: lastWeeklyReset NOT persisted - only set after sync succeeds
         knowledgeCards: state.knowledgeCards,
         ventures: state.ventures,
+        blueprints: state.blueprints,
         punishments: state.punishments,
         accountabilityScore: state.accountabilityScore,
         // Added for persistent progress & briefing fix

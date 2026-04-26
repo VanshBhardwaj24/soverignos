@@ -1,27 +1,38 @@
-import { User, Shield, LogOut, Bell, Eye, Database, Download, Upload, Paintbrush, Droplet } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  User, Shield, LogOut, Bell, Database, 
+  Download, Upload, Paintbrush, Droplet, 
+  ChevronRight, Lock, Key, Globe, Trash2, Check, ExternalLink,
+  Mail, Info
+} from 'lucide-react';
 import { useSovereignStore } from '../store/sovereign';
 import { useAppearance } from '../hooks/useAppearance';
 import { DeadManSwitchConfig } from '../components/psych/DeadManSwitchConfig';
-
-const ACCENT_COLORS = [
-  { name: 'Silver', value: '#E5E5E5' },
-  { name: 'Cobalt', value: '#3B82F6' },
-  { name: 'Emerald', value: '#10B981' },
-  { name: 'Amber', value: '#F59E0B' },
-  { name: 'Rose', value: '#F43F5E' },
-  { name: 'Violet', value: '#8B5CF6' }
-];
+import { cn } from '../lib/utils';
 
 const THEMES = [
-  { id: 'daylight', name: 'Daylight', label: 'LIGHT', bg1: '#E2E8F0', bg2: '#F8FAFC' },
-  { id: 'obsidian', name: 'Obsidian', label: 'DARK', bg1: '#0F0F10', bg2: '#1D1D20' },
-  { id: 'ethereal', name: 'Ethereal', label: 'GLASS', bg1: '#1e293b', bg2: '#334155' },
-  { id: 'deep-sea', name: 'Deep Sea', label: 'ABYSS', bg1: '#020617', bg2: '#0f172a' },
-  { id: 'neon', name: 'Neon', label: 'CYBER', bg1: '#09090b', bg2: '#18181b' },
-  { id: 'midnight', name: 'Midnight', label: 'GOLD', bg1: '#020205', bg2: '#08080c' },
+  { id: 'daylight', name: 'Daylight', label: 'LIGHT', bg: 'bg-white', text: 'text-black', border: 'border-slate-200' },
+  { id: 'obsidian', name: 'Obsidian', label: 'DARK', bg: 'bg-[#0F0F10]', text: 'text-white', border: 'border-white/10' },
+  { id: 'ethereal', name: 'Ethereal', label: 'GLASS', bg: 'bg-slate-900/50', text: 'text-white', border: 'border-white/20' },
+  { id: 'deep-sea', name: 'Deep Sea', label: 'ABYSS', bg: 'bg-[#020617]', text: 'text-blue-50', border: 'border-blue-900/30' },
+  { id: 'neon', name: 'Neon', label: 'CYBER', bg: 'bg-black', text: 'text-green-400', border: 'border-green-900/30' },
+  { id: 'midnight', name: 'Midnight', label: 'GOLD', bg: 'bg-[#020205]', text: 'text-amber-50', border: 'border-amber-900/20' },
 ] as const;
 
+const ACCENT_COLORS = [
+  { name: 'Silver', value: '#E5E5E5', class: 'bg-[#E5E5E5]' },
+  { name: 'Azure', value: '#3B82F6', class: 'bg-[#3B82F6]' },
+  { name: 'Emerald', value: '#10B981', class: 'bg-[#10B981]' },
+  { name: 'Amber', value: '#F59E0B', class: 'bg-[#F59E0B]' },
+  { name: 'Rose', value: '#F43F5E', class: 'bg-[#F43F5E]' },
+  { name: 'Violet', value: '#8B5CF6', class: 'bg-[#8B5CF6]' }
+];
+
+type SettingSection = 'profile' | 'appearance' | 'security' | 'data' | 'about';
+
 export default function Settings() {
+  const [activeSection, setActiveSection] = useState<SettingSection>('profile');
   const { user, logout } = useSovereignStore();
   const { theme, setTheme, accentColor, setAccentColor, glassOpacity, setGlassOpacity } = useAppearance();
 
@@ -44,7 +55,7 @@ export default function Settings() {
     reader.onload = (event) => {
       const content = event.target?.result as string;
       try {
-        JSON.parse(content); // Type check
+        JSON.parse(content);
         localStorage.setItem('sovereign-storage', content);
         window.location.reload();
       } catch (err) {
@@ -54,190 +65,424 @@ export default function Settings() {
     reader.readAsText(file);
   };
 
+  const sections: { id: SettingSection; label: string; icon: any }[] = [
+    { id: 'profile', label: 'Identity', icon: User },
+    { id: 'appearance', label: 'Appearance', icon: Paintbrush },
+    { id: 'security', label: 'Security', icon: Shield },
+    { id: 'data', label: 'Data', icon: Database },
+    { id: 'about', label: 'About', icon: Info },
+  ];
+
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto pb-12">
-      <div className="mb-12">
-        <p className="eyebrow text-white/60 mb-2">System Preferences</p>
-        <h1 className="h-display">Core Settings</h1>
-      </div>
+    <div className="max-w-[1200px] mx-auto py-12 px-6 min-h-screen">
+      {/* Page Header */}
+      <header className="mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-4 mb-4"
+        >
+          <div className="h-px w-12 bg-white/10" />
+          <span className="text-[10px] font-black tracking-[0.4em] uppercase text-white/40">Configuration Panel</span>
+        </motion.div>
+        <h1 className="text-6xl font-black tracking-tighter text-white mb-4">SETTINGS</h1>
+        <p className="text-white/40 text-lg font-medium max-w-xl">
+          Calibrate your OS environment, identity parameters, and neural synchronization protocols.
+        </p>
+      </header>
 
-      <div className="space-y-8">
-        {/* Profile Section */}
-        <section className="surface-card overflow-hidden shadow-xl border-glow-professional">
-          <div className="p-6 border-b border-white/5 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center text-white">
-              <User size={24} />
-            </div>
-            <div>
-              <h3 className="h-card text-white">Identity Module</h3>
-              <p className="stat-label text-white/60">{user?.email || 'Unauthorized session'}</p>
-            </div>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between py-2 border-b border-white/5">
-              <div className="flex items-center gap-3">
-                <Shield size={16} className="text-white/60" />
-                <span className="stat-label text-white/80">Security Level</span>
-              </div>
-              <span className="stat-label px-2 py-1 rounded bg-white/5 border border-white/10 text-[var(--success)]">ENCRYPTED</span>
-            </div>
-            <div className="flex items-center justify-between py-2 border-b border-white/5">
-              <div className="flex items-center gap-3">
-                <Database size={16} className="text-white/60" />
-                <span className="stat-label text-white/80">Cloud Synchronization</span>
-              </div>
-              <span className="stat-label px-2 py-1 rounded bg-white/5 border border-white/10 text-[var(--success)]">ACTIVE</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Preferences Section */}
-        <section className="surface-card p-8 shadow-xl space-y-8 border-glow-professional">
-          <div className="space-y-6">
-            <div className="flex items-center gap-4 mb-4">
-              <Eye size={20} className="text-white/60" />
-              <div>
-                <h4 className="h-card text-white">Immersion Theme</h4>
-                <p className="stat-label text-white/60 italic">Select operational environment palette.</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-              {THEMES.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => setTheme(t.id as any)}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    theme === t.id 
-                      ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/5 shadow-[0_0_15px_var(--accent-primary)] shadow-opacity-20' 
-                      : 'border-white/10 hover:border-white/30 bg-white/[0.02]'
-                  }`}
-                >
-                  <div className="h-16 w-full rounded-xl mb-3 border border-white/10 overflow-hidden flex flex-col" style={{ backgroundColor: t.bg1 }}>
-                    <div className="h-4 w-full bg-black/20" />
-                    <div className="flex-1 flex p-1.5 gap-1.5">
-                      <div className="w-1/3 rounded bg-white/10 shadow-sm" style={{ backgroundColor: t.bg2 }} />
-                      <div className="w-2/3 rounded bg-white/10 shadow-sm" style={{ backgroundColor: t.bg2 }} />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-xs text-white">{t.name}</div>
-                      <div className="text-[9px] font-black tracking-widest text-white/60">{t.label}</div>
-                    </div>
-                    {theme === t.id && (
-                      <div className="h-4 w-4 rounded-full bg-[var(--accent-primary)] flex items-center justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-black" />
-                      </div>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-            <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Bell size={20} className="text-white/60" />
-              <div>
-                <h4 className="h-card text-white">Neural Alerts</h4>
-                <p className="stat-label text-white/60 italic">System-wide notifications for quest timers.</p>
-              </div>
-            </div>
-            <div className="flex h-5 w-10 items-center rounded-full bg-white/5 p-1 cursor-pointer">
-              <div className="h-3 w-3 rounded-full bg-white shadow-sm" />
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-white/5 space-y-6">
-            <div className="flex items-center gap-4 mb-4">
-              <Paintbrush size={20} className="text-white/60" />
-              <div>
-                <h4 className="h-card text-white">Visual Preferences</h4>
-                <p className="stat-label text-white/60 italic">Customize system accent color and glassmorphism.</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h5 className="eyebrow text-white/60">Accent Color</h5>
-              <div className="flex gap-3">
-                {ACCENT_COLORS.map(color => (
-                  <button
-                    key={color.name}
-                    onClick={() => setAccentColor(color.value)}
-                    className="h-8 w-8 rounded-full border-2 transition-all flex items-center justify-center"
-                    style={{ 
-                      backgroundColor: color.value,
-                      borderColor: accentColor === color.value ? 'white' : 'transparent',
-                      transform: accentColor === color.value ? 'scale(1.1)' : 'scale(1)',
-                      opacity: accentColor === color.value ? 1 : 0.6
-                    }}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h5 className="eyebrow text-white/60">Glass Opacity: {Math.round(glassOpacity * 100)}%</h5>
-              <div className="flex items-center gap-4">
-                <Droplet size={16} className="text-white/60" />
-                <input 
-                  type="range" 
-                  min="0.1" 
-                  max="1" 
-                  step="0.05"
-                  value={glassOpacity}
-                  onChange={(e) => setGlassOpacity(parseFloat(e.target.value))}
-                  className="flex-1 accent-white"
+      <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16">
+        {/* Navigation Sidebar */}
+        <aside className="space-y-2">
+          {sections.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setActiveSection(s.id)}
+              className={cn(
+                "w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 group relative overflow-hidden",
+                activeSection === s.id 
+                  ? "bg-white text-black shadow-[0_20px_40px_rgba(255,255,255,0.1)]" 
+                  : "text-white/40 hover:text-white hover:bg-white/5"
+              )}
+            >
+              {activeSection === s.id && (
+                <motion.div 
+                  layoutId="active-bg"
+                  className="absolute inset-0 bg-white"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
-              </div>
-            </div>
-          </div>
+              )}
+              <s.icon size={20} className="relative z-10" />
+              <span className="text-sm font-bold tracking-tight relative z-10">{s.label}</span>
+              <ChevronRight 
+                size={16} 
+                className={cn(
+                  "ml-auto transition-transform duration-300 relative z-10",
+                  activeSection === s.id ? "rotate-90" : "opacity-0 group-hover:opacity-100"
+                )} 
+              />
+            </button>
+          ))}
 
-          <div className="pt-8 border-t border-white/5 space-y-4">
-            <h4 className="eyebrow text-white/40">Data Management</h4>
-            <div className="flex gap-4">
-              <button
-                onClick={handleExport}
-                className="btn-secondary flex-1 py-3"
-              >
-                <Download size={14} /> Export Backup
-              </button>
-              <label className="btn-secondary flex-1 py-3 cursor-pointer">
-                <Upload size={14} /> Import Backup
-                <input type="file" className="hidden" onChange={handleImport} accept=".json" />
-              </label>
-            </div>
+          <div className="pt-12 mt-12 border-t border-white/5">
+            <button
+              onClick={() => logout()}
+              className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-rose-500 hover:bg-rose-500/10 transition-all duration-300 group"
+            >
+              <LogOut size={20} />
+              <span className="text-sm font-bold tracking-tight">Terminate Session</span>
+            </button>
           </div>
-        </section>
+        </aside>
 
-        {/* Dead Man's Switch Section */}
-        <section className="surface-card p-8 shadow-xl">
-          <DeadManSwitchConfig />
-        </section>
+        {/* Content Area */}
+        <main className="min-h-[600px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-12"
+            >
+              {activeSection === 'profile' && (
+                <div className="space-y-12">
+                  <SectionTitle title="Identity Module" subtitle="Manage your core identity and session parameters." />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <div className="flex items-center gap-6 mb-8">
+                        <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center text-white border border-white/10 shadow-inner">
+                          <User size={32} />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-white mb-1">User Entity</h3>
+                          <p className="text-white/40 text-sm font-mono tracking-tight">{user?.email || 'UNAUTHORIZED_ACCESS'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <InfoRow label="Security Clearance" value="LEVEL_01" color="text-blue-400" />
+                        <InfoRow label="Session Integrity" value="VERIFIED" color="text-emerald-400" />
+                        <InfoRow label="Protocol Status" value="ACTIVE" color="text-emerald-400" />
+                      </div>
+                    </Card>
 
-        {/* Danger Zone */}
-        <section className="border border-[var(--danger)]/30 rounded-2xl p-8 bg-[var(--danger)]/[0.02] space-y-4">
-          <div className="flex items-center gap-4 text-[var(--danger)]">
-            <LogOut size={20} />
-            <div>
-              <h4 className="h-card">Terminate Protocol</h4>
-              <p className="stat-label italic text-[var(--danger)]/70">Disconnect identity and clear neural cache.</p>
-            </div>
-          </div>
-          <button
-            onClick={() => logout()}
-            className="w-full bg-[var(--danger)]/10 hover:bg-[var(--danger)]/20 border border-[var(--danger)]/30 text-[var(--danger)] stat-label py-4 italic"
-          >
-            Log Out from Hub
-          </button>
-        </section>
+                    <Card>
+                      <h3 className="text-lg font-bold text-white mb-6">Synchronization</h3>
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Database size={18} className="text-white/40" />
+                            <span className="text-sm font-medium text-white/70">Cloud Backup</span>
+                          </div>
+                          <Toggle active={true} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Bell size={18} className="text-white/40" />
+                            <span className="text-sm font-medium text-white/70">Neural Alerts</span>
+                          </div>
+                          <Toggle active={true} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Globe size={18} className="text-white/40" />
+                            <span className="text-sm font-medium text-white/70">Auto-Geolocation</span>
+                          </div>
+                          <Toggle active={false} />
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'appearance' && (
+                <div className="space-y-12">
+                  <SectionTitle title="Visual Environment" subtitle="Calibrate the interface aesthetics and ocular parameters." />
+                  
+                  <Card>
+                    <h3 className="text-lg font-bold text-white mb-8">Immersion Theme</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                      {THEMES.map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => setTheme(t.id as any)}
+                          className={cn(
+                            "group flex flex-col p-4 rounded-2xl border transition-all duration-500",
+                            theme === t.id 
+                              ? "bg-white/10 border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.05)]" 
+                              : "bg-white/[0.02] border-white/5 hover:border-white/10"
+                          )}
+                        >
+                          <div className={cn("aspect-video w-full rounded-xl mb-4 border shadow-2xl relative overflow-hidden", t.bg, t.border)}>
+                             <div className="absolute top-2 left-2 right-2 h-2 bg-black/10 rounded" />
+                             <div className="absolute top-6 left-2 w-1/3 bottom-2 bg-black/5 rounded" />
+                             <div className="absolute top-6 right-2 w-1/2 bottom-2 bg-black/5 rounded" />
+                             {theme === t.id && (
+                               <motion.div 
+                                 layoutId="active-theme" 
+                                 className="absolute inset-0 border-2 border-white/40 rounded-xl z-20" 
+                               />
+                             )}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="text-left">
+                              <p className="text-sm font-bold text-white">{t.name}</p>
+                              <p className="text-[10px] font-black tracking-widest text-white/30 uppercase">{t.label}</p>
+                            </div>
+                            {theme === t.id && (
+                              <div className="h-5 w-5 rounded-full bg-white flex items-center justify-center">
+                                <Check size={12} className="text-black" />
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </Card>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <h3 className="text-lg font-bold text-white mb-8">Accent Chromatics</h3>
+                      <div className="grid grid-cols-6 gap-4">
+                        {ACCENT_COLORS.map((color) => (
+                          <button
+                            key={color.name}
+                            onClick={() => setAccentColor(color.value)}
+                            className={cn(
+                              "h-10 w-10 rounded-full border-2 transition-all hover:scale-110 relative",
+                              accentColor === color.value ? "border-white scale-110 shadow-lg" : "border-transparent opacity-60 hover:opacity-100"
+                            )}
+                            style={{ backgroundColor: color.value }}
+                            title={color.name}
+                          >
+                            {accentColor === color.value && (
+                              <motion.div layoutId="active-accent" className="absolute -inset-2 border border-white/20 rounded-full" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </Card>
+
+                    <Card>
+                      <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-lg font-bold text-white">Glass Dynamics</h3>
+                        <span className="text-sm font-mono text-white/40">{Math.round(glassOpacity * 100)}%</span>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <Droplet size={20} className="text-white/20" />
+                        <input
+                          type="range"
+                          min="0.1"
+                          max="1"
+                          step="0.01"
+                          value={glassOpacity}
+                          onChange={(e) => setGlassOpacity(parseFloat(e.target.value))}
+                          className="flex-1 accent-white h-1.5 bg-white/10 rounded-full cursor-pointer appearance-none"
+                        />
+                      </div>
+                      <p className="mt-6 text-[10px] text-white/20 uppercase tracking-[0.2em] font-bold">Adjust transparency for translucent interface modules.</p>
+                    </Card>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'security' && (
+                <div className="space-y-12">
+                  <SectionTitle title="Security Protocols" subtitle="Reinforce system defenses and fail-safe mechanisms." />
+                  
+                  <Card className="bg-rose-500/[0.02] border-rose-500/10">
+                    <DeadManSwitchConfig />
+                  </Card>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <div className="flex items-center gap-3 mb-6">
+                        <Lock size={18} className="text-blue-400" />
+                        <h3 className="text-lg font-bold text-white">Advanced Protection</h3>
+                      </div>
+                      <p className="text-white/40 text-sm mb-8 leading-relaxed">
+                        Enable biometric verification for high-value transactions and protocol modifications.
+                      </p>
+                      <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 rounded-2xl">
+                        <span className="text-sm font-bold text-white/70">Biometric Authentication</span>
+                        <Toggle active={false} />
+                      </div>
+                    </Card>
+
+                    <Card>
+                      <div className="flex items-center gap-3 mb-6">
+                        <Key size={18} className="text-amber-400" />
+                        <h3 className="text-lg font-bold text-white">API Access</h3>
+                      </div>
+                      <p className="text-white/40 text-sm mb-8 leading-relaxed">
+                        Generate access tokens for external integrations and automated data harvesting.
+                      </p>
+                      <button className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-white text-xs font-black tracking-widest uppercase hover:bg-white/10 transition-all">
+                        Generate Token
+                      </button>
+                    </Card>
+                  </div>
+                </div>
+              )}
+
+              {activeSection === 'data' && (
+                <div className="space-y-12">
+                  <SectionTitle title="Data Core" subtitle="Archive, restore, and audit your behavioral data streams." />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <div className="flex items-center gap-3 mb-6">
+                        <Download size={18} className="text-emerald-400" />
+                        <h3 className="text-lg font-bold text-white">System Export</h3>
+                      </div>
+                      <p className="text-white/40 text-sm mb-8 leading-relaxed">
+                        Generate a complete cryptographic backup of your Sovereign OS instance.
+                      </p>
+                      <button 
+                        onClick={handleExport}
+                        className="w-full py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 text-xs font-black tracking-widest uppercase hover:bg-emerald-500 hover:text-white transition-all"
+                      >
+                        Initiate Export
+                      </button>
+                    </Card>
+
+                    <Card>
+                      <div className="flex items-center gap-3 mb-6">
+                        <Upload size={18} className="text-blue-400" />
+                        <h3 className="text-lg font-bold text-white">Protocol Injection</h3>
+                      </div>
+                      <p className="text-white/40 text-sm mb-8 leading-relaxed">
+                        Restore your system state from a previous backup file (.json).
+                      </p>
+                      <label className="block w-full py-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl text-blue-400 text-xs font-black tracking-widest uppercase hover:bg-blue-500 hover:text-white text-center cursor-pointer transition-all">
+                        Select File
+                        <input type="file" className="hidden" onChange={handleImport} accept=".json" />
+                      </label>
+                    </Card>
+                  </div>
+
+                  <Card className="border-rose-500/20 bg-rose-500/[0.01]">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Trash2 size={18} className="text-rose-500" />
+                      <h3 className="text-lg font-bold text-white">Nuclear Option</h3>
+                    </div>
+                    <p className="text-white/40 text-sm mb-8 leading-relaxed">
+                      This will permanently wipe all local and cloud data associated with your entity. This action is irreversible.
+                    </p>
+                    <button className="px-8 py-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-500 text-xs font-black tracking-widest uppercase hover:bg-rose-500 hover:text-white transition-all">
+                      Factory Reset Engine
+                    </button>
+                  </Card>
+                </div>
+              )}
+
+              {activeSection === 'about' && (
+                <div className="space-y-12">
+                  <SectionTitle title="System Intel" subtitle="Version parameters and developer transmission channels." />
+                  
+                  <Card className="flex flex-col items-center text-center py-16">
+                    <div className="h-24 w-24 bg-white text-black rounded-3xl flex items-center justify-center mb-8 shadow-[0_0_50px_rgba(255,255,255,0.2)]">
+                      <span className="text-5xl font-black italic">S</span>
+                    </div>
+                    <h2 className="text-3xl font-black tracking-tighter mb-2 text-white">SOVEREIGN OS</h2>
+                    <p className="text-white/40 text-sm font-mono tracking-widest mb-12 uppercase">v1.0.4-alpha // BUILD_BETA_R2</p>
+                    
+                    <div className="flex gap-6">
+                      <SocialLink icon={Globe} href="https://github.com" />
+                      <SocialLink icon={Mail} href="mailto:support@sovereignos.ai" />
+                      <SocialLink icon={Info} href="#" />
+                    </div>
+                  </Card>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <h3 className="text-lg font-bold text-white mb-6">Documentation</h3>
+                      <p className="text-white/40 text-sm mb-8 leading-relaxed">
+                        Access the operational manual for Sovereign OS protocols and behavioral design.
+                      </p>
+                      <button className="flex items-center gap-2 text-white text-xs font-bold hover:text-blue-400 transition-colors">
+                        Read System Manual <ExternalLink size={12} />
+                      </button>
+                    </Card>
+                    <Card>
+                      <h3 className="text-lg font-bold text-white mb-6">Feedback Channel</h3>
+                      <p className="text-white/40 text-sm mb-8 leading-relaxed">
+                        Report anomalies or suggest protocol enhancements to the central intelligence.
+                      </p>
+                      <button className="flex items-center gap-2 text-white text-xs font-bold hover:text-blue-400 transition-colors">
+                        Submit Transmission <ExternalLink size={12} />
+                      </button>
+                    </Card>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </main>
       </div>
 
-      <div className="mt-12 text-center opacity-50 select-none">
-        <span className="font-bold text-[9px] tracking-[0.5em] text-white/60 uppercase">Sovereign OS · v1.0.4-alpha</span>
-      </div>
+      <footer className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 opacity-30 select-none">
+        <p className="text-[10px] font-bold tracking-[0.4em] text-white uppercase">Operational Success Through Total Discipline</p>
+        <p className="text-[10px] font-mono text-white">© 2026 SOVEREIGN_PROTOCOLS_INTEL</p>
+      </footer>
     </div>
+  );
+}
+
+function SectionTitle({ title, subtitle }: { title: string; subtitle: string }) {
+  return (
+    <div className="mb-10">
+      <h2 className="text-4xl font-bold tracking-tight text-white mb-3 italic">{title}</h2>
+      <p className="text-white/40 text-base font-medium">{subtitle}</p>
+    </div>
+  );
+}
+
+function Card({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn("surface-card p-8 bg-white/[0.03] border-white/5 rounded-[32px] shadow-2xl relative overflow-hidden group", className)}>
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div className="relative z-10">{children}</div>
+    </div>
+  );
+}
+
+function InfoRow({ label, value, color = "text-white/80" }: { label: string; value: string; color?: string }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-white/[0.05]">
+      <span className="text-[10px] font-black tracking-widest uppercase text-white/30">{label}</span>
+      <span className={cn("text-xs font-black tracking-widest uppercase", color)}>{value}</span>
+    </div>
+  );
+}
+
+function Toggle({ active }: { active: boolean }) {
+  return (
+    <div className={cn(
+      "h-6 w-11 rounded-full p-1 transition-all duration-300 cursor-pointer flex items-center",
+      active ? "bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]" : "bg-white/10"
+    )}>
+      <motion.div 
+        animate={{ x: active ? 20 : 0 }}
+        className="h-4 w-4 rounded-full bg-white shadow-sm" 
+      />
+    </div>
+  );
+}
+
+function SocialLink({ icon: Icon, href }: { icon: any; href: string }) {
+  return (
+    <a 
+      href={href} 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="h-12 w-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:scale-110 transition-all duration-300"
+    >
+      <Icon size={20} />
+    </a>
   );
 }

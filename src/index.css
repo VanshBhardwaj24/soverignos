@@ -642,4 +642,35 @@
   [data-sonner-toast]::after {
     animation: none !important;
   }
+  /* ---- Dopamine Rush Utilities ---- */
+  .glow-stat-code { filter: drop-shadow(0 0 6px var(--stat-code)); }
+  .glow-stat-wealth { filter: drop-shadow(0 0 6px var(--stat-wealth)); }
+  .glow-stat-body { filter: drop-shadow(0 0 6px var(--stat-body)); }
+  .glow-stat-mind { filter: drop-shadow(0 0 6px var(--stat-mind)); }
+  .glow-stat-brand { filter: drop-shadow(0 0 6px var(--stat-brand)); }
+  .glow-stat-network { filter: drop-shadow(0 0 6px var(--stat-network)); }
+  .glow-stat-spirit { filter: drop-shadow(0 0 6px var(--stat-spirit)); }
+  .glow-stat-create { filter: drop-shadow(0 0 6px var(--stat-create)); }
+  .glow-stat-sovereignty { filter: drop-shadow(0 0 6px var(--stat-brand)); }
+  .glow-stat-freedom { filter: drop-shadow(0 0 6px var(--stat-freedom)); }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
 }

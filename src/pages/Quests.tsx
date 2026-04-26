@@ -95,8 +95,7 @@ export default function Quests() {
   }, [dailyQuests]);
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1200px] mx-auto pb-12">
-
+    <div className="max-w-[1100px] mx-auto pb-24 px-4 sm:px-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
       <ConsequenceChainModal
         open={!!consequenceQuest}
         statId={consequenceQuest?.statId ?? 'code'}
@@ -242,42 +241,26 @@ export default function Quests() {
           {/* Tab Navigation & Secondary Meta */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Tabs Row */}
-            <div className="relative flex p-1 bg-white/[0.03] border border-white/5 rounded-xl w-fit overflow-hidden">
-              <motion.div
-                layoutId="activeTab"
-                className="absolute inset-y-1 bg-white/10 rounded-lg shadow-sm"
-                initial={false}
-                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                style={{
-                  left: `${Object.keys({ strategic: 0, operational: 1, campaigns: 2, archived: 3 }).indexOf(activeTab) * 25}%`,
-                  width: '25%'
-                }}
-              />
-              {(['strategic', 'operational', 'campaigns', 'archived'] as QuestTab[]).map((tab) => {
-                const count = dailyQuests.filter(q => {
-                  const isArchived = q.archived === true;
-                  const isCompleted = q.completed === true;
-                  if (tab === 'archived') return isArchived || (isCompleted && !q.repeating);
-                  return !isArchived && (!isCompleted || q.repeating) && (
-                    (tab === 'strategic' && q.type === 'daily') ||
-                    (tab === 'operational' && q.type === 'weekly') ||
-                    (tab === 'campaigns' && (q.type === 'boss' || q.type === 'raid'))
-                  );
-                }).length;
-                return (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={cn(
-                      "relative z-10 px-5 py-1.5 font-bold text-[9px] font-bold tracking-[0.2em] uppercase transition-colors whitespace-nowrap",
-                      activeTab === tab ? "text-white" : "text-white/40 hover:text-white/60"
-                    )}
-                  >
-                    {tab}
-                    <span className="bg-white/10 px-1.5 rounded text-[8px] ml-2">{count}</span>
-                  </button>
-                )
-              })}
+            <div className="relative flex items-center p-1 bg-[#090909] border border-white/[0.05] rounded-full w-full lg:w-fit shadow-2xl">
+              {(['strategic', 'operational', 'campaigns', 'archived'] as QuestTab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    "relative px-6 py-2 font-black text-[10px] tracking-[0.1em] uppercase transition-all duration-300 whitespace-nowrap flex-1 lg:flex-none lg:min-w-[130px] text-center",
+                    activeTab === tab ? "text-black" : "text-white/40 hover:text-white/70"
+                  )}
+                >
+                  {activeTab === tab && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-white rounded-full"
+                      transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
+                    />
+                  )}
+                  <span className="relative z-10">{tab}</span>
+                </button>
+              ))}
             </div>
 
             {/* <div className="flex items-center gap-3">
@@ -336,14 +319,14 @@ export default function Quests() {
       <AnimatePresence>
         {selectedQuestIds.length > 0 && (
           <motion.div
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black p-4 rounded-2xl shadow-[0_20px_50px_rgba(255,255,255,0.1)] flex items-center gap-8 z-50 border border-white/20"
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-4 rounded-[28px] shadow-[0_32px_64px_rgba(0,0,0,0.4)] flex items-center gap-8 z-50 backdrop-blur-xl"
           >
             <div className="flex flex-col">
-              <span className="text-[10px] font-black tracking-widest uppercase opacity-40">Active Selection</span>
-              <span className="text-sm font-black uppercase tracking-tight">{selectedQuestIds.length} MISSION(S)</span>
+              <span className="text-[10px] font-bold tracking-widest uppercase opacity-40">Selected</span>
+              <span className="text-sm font-bold tracking-tight">{selectedQuestIds.length} Missions</span>
             </div>
 
             <div className="h-8 w-px bg-black/10" />
@@ -365,7 +348,7 @@ export default function Quests() {
                 }}
                 className="flex items-center gap-2 px-4 py-2 border border-black/10 rounded-xl text-[10px] font-black tracking-widest uppercase hover:bg-black/5 transition-all"
               >
-                <Trash2 size={14} /> PURGE
+                Delete
               </button>
             </div>
           </motion.div>
@@ -456,16 +439,33 @@ function QuestEntry({
               aria-label={quest.completed && quest.repeating ? "Protocol successfully executed" : `Execute protocol: ${quest.title}`}
               disabled={quest.completed || quest.failed}
               className={cn(
-                "h-8 w-8 rounded-lg flex items-center justify-center transition-all border",
-                quest.completed ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20 shadow-[0_0_10px_var(--success)]" :
-                  isBoss ? "bg-[#7649C9]/20 text-[#7649C9] border-[#7649C9]/30" :
+                "h-9 w-9 rounded-xl flex items-center justify-center transition-all border duration-500 group/zap relative",
+                quest.completed ? "bg-[var(--success)]/10 text-[var(--success)] border-[var(--success)]/20 shadow-[0_0_15px_rgba(74,222,128,0.2)]" :
+                  isBoss ? "bg-[#7649C9]/20 text-[#7649C9] border-[#7649C9]/30 shadow-[0_0_15px_rgba(118,73,201,0.2)]" :
                     quest.failed ? "bg-red-500/20 text-red-500 border-red-500/30" :
-                      "bg-white/5 text-muted-foreground border-white/10 hover:text-foreground hover:border-white/30",
-                quest.completed && quest.repeating && "opacity-50 grayscale-[0.5]"
+                      "bg-white/[0.03] border-white/10 hover:border-white/20",
+                !quest.completed && !quest.failed && !isBoss && `glow-stat-${quest.statId}`
               )}
+              style={(!quest.completed && !quest.failed && !isBoss) ? {
+                color: `var(--stat-${quest.statId})`,
+                borderColor: `color-mix(in srgb, var(--stat-${quest.statId}) 30%, transparent)`,
+                backgroundColor: `color-mix(in srgb, var(--stat-${quest.statId}) 5%, transparent)`
+              } : undefined}
               title={quest.completed && quest.repeating ? "Protocol successfully executed for today." : "Execute protocol"}
             >
-              {quest.completed ? <CheckSquare size={16} /> : <Zap size={16} strokeWidth={1.5} />}
+              <div className="absolute inset-0 rounded-xl bg-current opacity-0 group-hover/zap:opacity-10 transition-opacity" />
+              {quest.completed ? (
+                <CheckSquare size={18} className="relative z-10" />
+              ) : (
+                <Zap
+                  size={18}
+                  strokeWidth={2}
+                  className={cn(
+                    "relative z-10 transition-transform duration-500 group-hover/zap:scale-110",
+                    !quest.completed && !quest.failed && "animate-pulse-slow"
+                  )}
+                />
+              )}
             </button>
           )}
 
