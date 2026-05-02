@@ -213,3 +213,46 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
+-- ONBOARDING & SETTINGS PERSISTENCE MIGRATION
+DO $$
+BEGIN
+    -- Onboarding status flag
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='onboarding_complete') THEN
+        ALTER TABLE user_stats ADD COLUMN onboarding_complete BOOLEAN DEFAULT FALSE;
+    END IF;
+
+    -- Daily XP quota set during onboarding
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='daily_goal_xp') THEN
+        ALTER TABLE user_stats ADD COLUMN daily_goal_xp INT DEFAULT 200;
+    END IF;
+
+    -- Priority stats selected during onboarding (e.g. ['code', 'wealth', 'body'])
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='priority_stats') THEN
+        ALTER TABLE user_stats ADD COLUMN priority_stats TEXT[] DEFAULT '{}';
+    END IF;
+
+    -- Appearance synchronization
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='theme') THEN
+        ALTER TABLE user_stats ADD COLUMN theme TEXT DEFAULT 'obsidian';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='accent_color') THEN
+        ALTER TABLE user_stats ADD COLUMN accent_color TEXT DEFAULT '#E5E5E5';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='glass_opacity') THEN
+        ALTER TABLE user_stats ADD COLUMN glass_opacity NUMERIC DEFAULT 0.8;
+    END IF;
+
+    -- Onboarding "Sovereign Path" selection (which briefing template the user chose)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='sovereign_path') THEN
+        ALTER TABLE user_stats ADD COLUMN sovereign_path TEXT DEFAULT NULL;
+    END IF;
+
+    -- Create level stats for spirit and create if missing
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='create_level') THEN
+        ALTER TABLE user_stats ADD COLUMN create_level INT DEFAULT 1;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='user_stats' AND column_name='create_xp') THEN
+        ALTER TABLE user_stats ADD COLUMN create_xp INT DEFAULT 0;
+    END IF;
+END $$;
+

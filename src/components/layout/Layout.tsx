@@ -5,6 +5,7 @@ import { Sidebar } from './Sidebar';
 import { CommandPalette } from './CommandPalette';
 import { ParticleBackground } from './ParticleBackground';
 import { FlowPlayer } from './FlowPlayer';
+import { AudioController } from '../../lib/audio/AudioController';
 import { InventoryModal } from './InventoryModal';
 import { NotificationPanel } from './NotificationPanel';
 import { useSovereignStore } from '../../store/sovereign';
@@ -20,10 +21,12 @@ import { cn } from '../../lib/utils';
 import { useDailyBriefing } from '../../hooks/useDailyBriefing';
 import { ReminderModal } from '../ui/ReminderModal';
 import { useKeyboardEngine } from '../../hooks/useKeyboardEngine';
+import { useAudioShortcuts } from '../../hooks/useAudioShortcuts';
 import { OnboardingWizard } from '../onboarding/OnboardingWizard';
 
 export const Layout = () => {
   useKeyboardEngine();
+  useAudioShortcuts();
   const setLogModalOpen = useSovereignStore(state => state.setLogModalOpen);
   const setQuestModalOpen = useSovereignStore(state => state.setQuestModalOpen);
   const theme = useSovereignStore(state => state.theme);
@@ -60,7 +63,7 @@ export const Layout = () => {
     };
     const aura = mainStatRoutes[path] || 'dashboard';
     document.documentElement.setAttribute('data-aura', aura);
-    
+
     // Scroll to top on page change
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname]);
@@ -137,8 +140,8 @@ export const Layout = () => {
             initial={{ opacity: 0, y: 4, filter: 'blur(4px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -4, filter: 'blur(4px)' }}
-            transition={{ 
-              duration: 0.15, 
+            transition={{
+              duration: 0.15,
               ease: [0.23, 1, 0.32, 1] // Snappy out-expo
             }}
           >
@@ -157,6 +160,14 @@ export const Layout = () => {
       <QuestModal />
       <ProofModal />
       {location.pathname === '/' && <FlowPlayer />}
+      <AudioController />
+
+      {/* Persistent visible-but-hidden YouTube container for cross-page audio */}
+      <div
+        id="youtube-player-container"
+        className="fixed bottom-0 right-0 w-[1px] h-[1px] opacity-0 pointer-events-none z-0"
+      />
+
       <CommandPalette />
       <InventoryModal />
       <GodModeTracker />

@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useSovereignStore } from '../store/sovereign';
 
 export type ThemeOptions = 'obsidian' | 'daylight' | 'ethereal' | 'deep-sea' | 'neon' | 'midnight';
 
@@ -53,6 +55,23 @@ export function useAppearance() {
     root.style.setProperty('--accent-primary', accentColor);
     root.style.setProperty('--glass-opacity', glassOpacity.toString());
     
+  }, [theme, accentColor, glassOpacity]);
+
+  useEffect(() => {
+    const user = useSovereignStore.getState().user;
+    if (!user) return;
+
+    const timer = setTimeout(() => {
+      supabase.from('user_stats').update({
+        theme,
+        accent_color: accentColor,
+        glass_opacity: glassOpacity,
+      }).eq('id', user.id).then(({ error }) => {
+        if (error) console.error('[APPEARANCE_SYNC_ERROR]:', error);
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [theme, accentColor, glassOpacity]);
 
   return { theme, accentColor, glassOpacity, setTheme, setAccentColor, setGlassOpacity };

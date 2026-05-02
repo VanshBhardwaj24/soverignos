@@ -4,7 +4,7 @@ import {
   User, Shield, LogOut, Bell, Database, 
   Download, Upload, Paintbrush, Droplet, 
   ChevronRight, Lock, Key, Globe, Trash2, Check, ExternalLink,
-  Mail, Info
+  Mail, Info, Edit2, Save, X
 } from 'lucide-react';
 import { useSovereignStore } from '../store/sovereign';
 import { useAppearance } from '../hooks/useAppearance';
@@ -31,9 +31,62 @@ const ACCENT_COLORS = [
 
 type SettingSection = 'profile' | 'appearance' | 'security' | 'data' | 'about';
 
+const EditableField = ({ label, value, onSave, multiline = false }: { label: string, value: string, onSave: (v: string) => void, multiline?: boolean }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentValue, setCurrentValue] = useState(value);
+
+  const handleSave = () => {
+    onSave(currentValue);
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="text-[10px] tracking-widest text-white/40 uppercase font-black">{label}</label>
+        {isEditing ? (
+          <div className="flex gap-2">
+            <button onClick={() => { setIsEditing(false); setCurrentValue(value); }} className="text-white/40 hover:text-white transition-colors">
+              <X size={14} />
+            </button>
+            <button onClick={handleSave} className="text-emerald-400 hover:text-emerald-300 transition-colors">
+              <Save size={14} />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setIsEditing(true)} className="text-white/20 hover:text-white transition-colors">
+            <Edit2 size={12} />
+          </button>
+        )}
+      </div>
+      {isEditing ? (
+        multiline ? (
+          <textarea
+            value={currentValue}
+            onChange={(e) => setCurrentValue(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-white/30 outline-none resize-none"
+            rows={3}
+          />
+        ) : (
+          <input
+            type="text"
+            value={currentValue}
+            onChange={(e) => setCurrentValue(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-white/30 outline-none"
+          />
+        )
+      ) : (
+        <div className="text-sm text-white bg-white/[0.02] border border-white/5 rounded-xl p-3">
+          {value || <span className="text-white/20 italic">Not set</span>}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function Settings() {
   const [activeSection, setActiveSection] = useState<SettingSection>('profile');
-  const { user, logout } = useSovereignStore();
+  const { logout, alias, username, bio, dailyGoalXP, updateProfile, setDailyGoalXP, resetOnboarding } = useSovereignStore();
   const { theme, setTheme, accentColor, setAccentColor, glassOpacity, setGlassOpacity } = useAppearance();
 
   const handleExport = () => {
@@ -152,20 +205,44 @@ export default function Settings() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
-                      <div className="flex items-center gap-6 mb-8">
-                        <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center text-white border border-white/10 shadow-inner">
-                          <User size={32} />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-white mb-1">User Entity</h3>
-                          <p className="text-white/40 text-sm font-mono tracking-tight">{user?.email || 'UNAUTHORIZED_ACCESS'}</p>
-                        </div>
-                      </div>
-                      
+                      <h3 className="text-lg font-bold text-white mb-6">Identity Parameters</h3>
                       <div className="space-y-4">
-                        <InfoRow label="Security Clearance" value="LEVEL_01" color="text-blue-400" />
-                        <InfoRow label="Session Integrity" value="VERIFIED" color="text-emerald-400" />
-                        <InfoRow label="Protocol Status" value="ACTIVE" color="text-emerald-400" />
+                        <EditableField label="Operational Alias" value={alias} onSave={(v) => updateProfile({ alias: v })} />
+                        <EditableField label="System Username" value={username} onSave={(v) => updateProfile({ username: v })} />
+                        <EditableField label="Operational Bio" value={bio} onSave={(v) => updateProfile({ bio: v })} multiline />
+                      </div>
+                    </Card>
+
+                    <Card>
+                      <h3 className="text-lg font-bold text-white mb-6">Daily Quota</h3>
+                      <div className="flex items-center gap-6">
+                        <span className="text-4xl font-bold text-white">{dailyGoalXP}</span>
+                        <span className="text-sm text-white/40">XP / DAY</span>
+                      </div>
+                      <input
+                        type="range" min="50" max="500" step="50"
+                        value={dailyGoalXP}
+                        onChange={e => setDailyGoalXP(parseInt(e.target.value))}
+                        className="w-full mt-4 accent-white"
+                      />
+                      <div className="flex justify-between text-[10px] text-white/20 mt-2 uppercase tracking-widest">
+                        <span>Cadet (50)</span>
+                        <span>Elite (500)</span>
+                      </div>
+                    </Card>
+
+                    <Card>
+                      <h3 className="text-lg font-bold text-white mb-6">System Administration</h3>
+                      <div className="space-y-4">
+                        <button
+                          onClick={async () => {
+                            await resetOnboarding();
+                            window.location.reload();
+                          }}
+                          className="w-full py-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-400 text-xs font-black tracking-widest uppercase hover:bg-amber-500 hover:text-white transition-all"
+                        >
+                          Re-run Onboarding Sequence
+                        </button>
                       </div>
                     </Card>
 
@@ -451,14 +528,6 @@ function Card({ children, className }: { children: React.ReactNode; className?: 
   );
 }
 
-function InfoRow({ label, value, color = "text-white/80" }: { label: string; value: string; color?: string }) {
-  return (
-    <div className="flex items-center justify-between py-2 border-b border-white/[0.05]">
-      <span className="text-[10px] font-black tracking-widest uppercase text-white/30">{label}</span>
-      <span className={cn("text-xs font-black tracking-widest uppercase", color)}>{value}</span>
-    </div>
-  );
-}
 
 function Toggle({ active }: { active: boolean }) {
   return (

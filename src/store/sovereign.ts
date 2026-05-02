@@ -565,7 +565,8 @@ interface SovereignStore {
   setBudgetCap: (cap: number) => void;
   setSidebarCollapsed: (v: boolean) => void;
   setDailyGoalXP: (xp: number) => void;
-  setOnboardingComplete: () => void;
+  setOnboardingComplete: () => Promise<void>;
+  resetOnboarding: () => Promise<void>;
   logout: () => Promise<void>;
   clearPunishment: (id: string) => Promise<void>;
   updateProfile: (data: Partial<{ alias: string, username: string, bio: string }>) => Promise<void>;
@@ -853,6 +854,7 @@ export const useSovereignStore = create<SovereignStore>()(
       unlockedSkills: [],
       integrity: 100,
       consecutiveDaysFailed: 0,
+      blueprints: [],
       goals: [],
       contentPieces: [],
       socialAccounts: [],
@@ -921,7 +923,6 @@ export const useSovereignStore = create<SovereignStore>()(
       journalEntries: [],
       activityLog: [],
       ventures: [],
-      blueprints: [],
       knowledgeCards: [],
       moodHistory: [],
       snapshotHistory: [],
@@ -2667,8 +2668,48 @@ export const useSovereignStore = create<SovereignStore>()(
       setSelectedStat: (statId) => set({ selectedStat: statId }),
       setBudgetCap: (budgetCap) => set({ budgetCap }),
       setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
-      setDailyGoalXP: (xp) => set({ dailyGoalXP: xp }),
-      setOnboardingComplete: () => set({ onboardingComplete: true }),
+      setDailyGoalXP: (xp) => {
+        set({ dailyGoalXP: xp });
+        const { user } = get();
+        if (user) {
+          supabase.from('user_stats').update({ daily_goal_xp: xp }).eq('id', user.id)
+            .then(({ error }) => {
+              if (error) console.error('[DAILY_GOAL_SYNC_ERROR]:', error);
+            });
+        }
+      },
+      setOnboardingComplete: async () => {
+        set({ onboardingComplete: true });
+        const { user } = get();
+        if (user) {
+          const { error } = await supabase.from('user_stats').update({
+            onboarding_complete: true,
+            daily_goal_xp: get().dailyGoalXP,
+            alias: get().alias,
+            username: get().username,
+          }).eq('id', user.id);
+          if (error) {
+            console.error('[ONBOARDING_SYNC_ERROR]:', error);
+            toast.error('CLOUD SYNC FAILURE', {
+              description: 'Onboarding saved locally but failed to persist to cloud.'
+            });
+          } else {
+            console.log('[ONBOARDING] Successfully synced to cloud.');
+          }
+        }
+      },
+      resetOnboarding: async () => {
+        set({ onboardingComplete: false });
+        const { user } = get();
+        if (user) {
+          await supabase.from('user_stats').update({
+            onboarding_complete: false
+          }).eq('id', user.id);
+        }
+        toast.info('ONBOARDING RESET', {
+          description: 'System will re-initialize on next page load.'
+        });
+      },
 
       toggleNotifications: (open) => set((state) => ({ notificationsOpen: open ?? !state.notificationsOpen })),
       addNotification: (n) => {
