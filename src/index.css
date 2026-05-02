@@ -104,7 +104,13 @@
     --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55);
 
     --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
     --glass-opacity: 0.8;
+    --glow-intensity: 0.5;
+    --transition-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   :root.light {
@@ -176,12 +182,13 @@
     --danger: #DC2626;
     --warning: #D97706;
 
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.12);
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.16);
 
-    --glass-opacity: 0.8;
+    --glass-opacity: 0.90;
+    --glow-intensity: 0.15;
   }
 
   :root.ethereal {
@@ -642,25 +649,62 @@
   [data-sonner-toast]::after {
     animation: none !important;
   }
+
   /* ---- Dopamine Rush Utilities ---- */
-  .glow-stat-code { filter: drop-shadow(0 0 6px var(--stat-code)); }
-  .glow-stat-wealth { filter: drop-shadow(0 0 6px var(--stat-wealth)); }
-  .glow-stat-body { filter: drop-shadow(0 0 6px var(--stat-body)); }
-  .glow-stat-mind { filter: drop-shadow(0 0 6px var(--stat-mind)); }
-  .glow-stat-brand { filter: drop-shadow(0 0 6px var(--stat-brand)); }
-  .glow-stat-network { filter: drop-shadow(0 0 6px var(--stat-network)); }
-  .glow-stat-spirit { filter: drop-shadow(0 0 6px var(--stat-spirit)); }
-  .glow-stat-create { filter: drop-shadow(0 0 6px var(--stat-create)); }
-  .glow-stat-sovereignty { filter: drop-shadow(0 0 6px var(--stat-brand)); }
-  .glow-stat-freedom { filter: drop-shadow(0 0 6px var(--stat-freedom)); }
+  .glow-stat-code {
+    filter: drop-shadow(0 0 6px var(--stat-code));
+  }
+
+  .glow-stat-wealth {
+    filter: drop-shadow(0 0 6px var(--stat-wealth));
+  }
+
+  .glow-stat-body {
+    filter: drop-shadow(0 0 6px var(--stat-body));
+  }
+
+  .glow-stat-mind {
+    filter: drop-shadow(0 0 6px var(--stat-mind));
+  }
+
+  .glow-stat-brand {
+    filter: drop-shadow(0 0 6px var(--stat-brand));
+  }
+
+  .glow-stat-network {
+    filter: drop-shadow(0 0 6px var(--stat-network));
+  }
+
+  .glow-stat-spirit {
+    filter: drop-shadow(0 0 6px var(--stat-spirit));
+  }
+
+  .glow-stat-create {
+    filter: drop-shadow(0 0 6px var(--stat-create));
+  }
+
+  .glow-stat-sovereignty {
+    filter: drop-shadow(0 0 6px var(--stat-brand));
+  }
+
+  .glow-stat-freedom {
+    filter: drop-shadow(0 0 6px var(--stat-freedom));
+  }
 
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
   }
 
   .hover-glow:hover {

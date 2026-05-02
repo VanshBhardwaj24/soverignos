@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { Activity } from 'lucide-react';
 import { useSovereignStore } from '../../store/sovereign';
+import { memo } from 'react';
 
-export function StabilityMeter() {
+export const StabilityMeter = memo(function StabilityMeter() {
   const { integrity } = useSovereignStore();
   const stability = integrity || 85.4;
 
@@ -49,4 +50,4 @@ export function StabilityMeter() {
       </p>
     </div>
   );
-}
+});

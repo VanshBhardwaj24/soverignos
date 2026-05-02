@@ -1,12 +1,12 @@
 import { Activity } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 
 interface Props {
   entries: { timestamp: string; xp: number }[];
 }
 
-export const InteractiveHeatmap = ({ entries = [] }: Props) => {
+export const InteractiveHeatmap = memo(({ entries = [] }: Props) => {
   const daysInYear = 365;
   
   const heatmapData = useMemo(() => {
@@ -86,6 +86,6 @@ export const InteractiveHeatmap = ({ entries = [] }: Props) => {
 
     </div>
   )
-}
+});
 
 

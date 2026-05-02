@@ -20,6 +20,7 @@ import { cn } from '../../lib/utils';
 import { useDailyBriefing } from '../../hooks/useDailyBriefing';
 import { ReminderModal } from '../ui/ReminderModal';
 import { useKeyboardEngine } from '../../hooks/useKeyboardEngine';
+import { OnboardingWizard } from '../onboarding/OnboardingWizard';
 
 export const Layout = () => {
   useKeyboardEngine();
@@ -30,6 +31,7 @@ export const Layout = () => {
   const setLastLeveledStat = useSovereignStore(state => state.setLastLeveledStat);
   const pendingLootDrop = useSovereignStore(state => state.pendingLootDrop);
   const setPendingLootDrop = useSovereignStore(state => state.setPendingLootDrop);
+  const onboardingComplete = useSovereignStore(state => state.onboardingComplete);
   const location = useLocation();
 
   const { modalMode, closeBriefing, date } = useDailyBriefing();
@@ -158,6 +160,7 @@ export const Layout = () => {
       <CommandPalette />
       <InventoryModal />
       <GodModeTracker />
+      {!onboardingComplete && <OnboardingWizard />}
     </div>
   );
 };

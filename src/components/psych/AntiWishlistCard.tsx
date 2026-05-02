@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Lock, Skull, Trash2, Eye } from 'lucide-react';
 import { usePsychStore } from '../../store/sovereign-psych';
 import { cn } from '../../lib/utils';
 
-export function AntiWishlistCard() {
+export const AntiWishlistCard = memo(function AntiWishlistCard() {
   const { antiWishlist, antiWishlistLocked, antiWishlistLockedAt, addAntiWishlistItem, removeAntiWishlistItem, lockAntiWishlist } = usePsychStore();
   const [newItem, setNewItem] = useState('');
   const [expanded, setExpanded] = useState(true);
@@ -147,4 +147,4 @@ export function AntiWishlistCard() {
       </AnimatePresence>
     </div>
   );
-}
+});

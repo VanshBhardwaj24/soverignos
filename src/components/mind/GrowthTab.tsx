@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { useSovereignStore } from '../../store/sovereign';
 import { Shield, Target, Zap, Award, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
-export function GrowthTab() {
+export const GrowthTab = memo(function GrowthTab() {
   const { statLevels } = useSovereignStore();
 
   const skills = [
@@ -112,4 +113,4 @@ export function GrowthTab() {
       </div>
     </div>
   );
-}
+});

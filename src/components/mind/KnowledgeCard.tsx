@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Check, RotateCcw, HelpCircle, GraduationCap } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -10,7 +10,7 @@ interface KnowledgeCardProps {
   card: IKnowledgeCard;
 }
 
-export function KnowledgeCard({ card }: KnowledgeCardProps) {
+export const KnowledgeCard = memo(function KnowledgeCard({ card }: KnowledgeCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const toggleMastered = useSovereignStore(state => state.toggleCardMastered);
 
@@ -83,4 +83,4 @@ export function KnowledgeCard({ card }: KnowledgeCardProps) {
       </motion.div>
     </div>
   );
-}
+});

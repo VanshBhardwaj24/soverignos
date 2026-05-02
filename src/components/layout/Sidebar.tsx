@@ -2,11 +2,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, BarChart2, Target, Briefcase, Plane, Settings,
   PieChart, Shield, Zap, Brain, AlertTriangle, ChevronLeft,
-  ChevronRight, Calendar,
+  ChevronRight, Calendar, Feather, Flag, LogOut, User
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion } from 'framer-motion';
 import { useSovereignStore } from '../../store/sovereign';
+import { supabase } from '../../lib/supabase';
 
 // Sentence-case labels, grouped semantically — Linear/Apple style.
 const NAV_GROUPS: Array<{
@@ -20,6 +21,8 @@ const NAV_GROUPS: Array<{
         { path: '/quests', label: 'Missions', icon: Target },
         { path: '/punishments', label: 'Accountability', icon: AlertTriangle },
         { path: '/marketplace', label: 'Rewards', icon: Shield },
+        { path: '/goals', label: 'Goals', icon: Flag },
+
       ],
     },
     {
@@ -27,6 +30,7 @@ const NAV_GROUPS: Array<{
       items: [
         { path: '/wealth', label: 'Wealth', icon: BarChart2 },
         { path: '/jobs', label: 'Opportunities', icon: Briefcase },
+        { path: '/brand', label: 'Brand', icon: Feather },
         { path: '/forge', label: 'Business forge', icon: Zap },
         { path: '/mind', label: 'Mind vault', icon: Brain },
         { path: '/travel', label: 'Travel log', icon: Plane },
@@ -40,10 +44,6 @@ const NAV_GROUPS: Array<{
         { path: '/intelligence', label: 'Intelligence', icon: Zap },
         { path: '/sunday', label: 'Sunday protocol', icon: Calendar },
       ],
-    },
-    {
-      heading: 'System',
-      items: [{ path: '/settings', label: 'Settings', icon: Settings }],
     },
   ];
 
@@ -137,16 +137,35 @@ export const Sidebar = () => {
 
       <div
         className={cn(
-          'border-t border-[var(--border-default)] px-4 py-4 flex items-center gap-3 text-[var(--text-muted)]',
-          sidebarCollapsed && 'justify-center px-0',
+          'border-t border-[var(--border-default)] px-4 py-4 flex items-center justify-around text-[var(--text-muted)]',
+          sidebarCollapsed && 'flex-col gap-4',
         )}
       >
-        {/* <div className="h-2 w-2 rounded-full bg-[var(--success)] shadow-[0_0_8px_var(--success)]" /> */}
-        {!sidebarCollapsed && (
-          <span className="text-[11px] font-medium tracking-wide">
-            System secure
-          </span>
-        )}
+        <button
+          onClick={() => navigate('/profile')}
+          className="p-2 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors"
+          title="Profile"
+        >
+          <User size={18} />
+        </button>
+        <button
+          onClick={() => navigate('/settings')}
+          className="p-2 hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors"
+          title="Settings"
+        >
+          <Settings size={18} />
+        </button>
+        <button
+          onClick={async () => {
+            if (window.confirm('Initialize shutdown sequence?')) {
+              await supabase.auth.signOut();
+            }
+          }}
+          className="p-2 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+          title="Logout"
+        >
+          <LogOut size={18} />
+        </button>
       </div>
     </motion.aside>
   );

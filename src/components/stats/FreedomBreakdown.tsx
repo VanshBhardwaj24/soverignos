@@ -1,21 +1,22 @@
 import { useSovereignStore } from '../../store/sovereign';
 import { STATS } from '../../lib/constants';
 import { motion } from 'framer-motion';
+import { memo, useMemo } from 'react';
 
-export const FreedomBreakdown = () => {
+export const FreedomBreakdown = memo(() => {
   const statLevels = useSovereignStore(state => state.statLevels);
   const freedomScore = useSovereignStore(state => state.freedomScore);
 
-  const weights: Record<string, number> = {
+  const weights: Record<string, number> = useMemo(() => ({
     code: 0.22,
     wealth: 0.22,
     body: 0.15,
     mind: 0.12,
     brand: 0.15,
     network: 0.14,
-  };
+  }), []);
 
-  const breakdown = Object.entries(weights).map(([statId, weight]) => {
+  const breakdown = useMemo(() => Object.entries(weights).map(([statId, weight]) => {
     const level = statLevels[statId] || 0;
     const normalizedLevel = Math.min(level / 50, 1) * 100;
     const contribution = normalizedLevel * weight;
@@ -26,7 +27,7 @@ export const FreedomBreakdown = () => {
       contribution: contribution.toFixed(2),
       percent: ((contribution / freedomScore) * 100).toFixed(0)
     };
-  });
+  }), [weights, statLevels, freedomScore]);
 
   return (
     <div className="p-5 rounded-[24px] border border-white/5 bg-white/[0.02] flex flex-col gap-4">
@@ -55,4 +56,4 @@ export const FreedomBreakdown = () => {
       </div>
     </div>
   );
-};
+});

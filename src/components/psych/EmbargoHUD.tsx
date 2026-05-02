@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldAlert, Clock, Flame } from 'lucide-react';
 import { usePsychStore } from '../../store/sovereign-psych';
@@ -10,7 +11,7 @@ const EMBARGO_RULES = [
   '⚡ CREATE stat output is mandatory until embargo lifts',
 ];
 
-export function EmbargoHUD() {
+export const EmbargoHUD = memo(function EmbargoHUD() {
   const { embargoActive, embargoStartDate, clearEmbargo } = usePsychStore();
 
   const getDaysActive = () => {
@@ -92,4 +93,4 @@ export function EmbargoHUD() {
       )}
     </AnimatePresence>
   );
-}
+});

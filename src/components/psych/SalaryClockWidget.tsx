@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import { IndianRupee, TrendingDown, CheckCircle2 } from 'lucide-react';
 import { usePsychStore } from '../../store/sovereign-psych';
@@ -17,7 +17,7 @@ function formatINR(amount: number): string {
   return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(Math.floor(amount));
 }
 
-export function SalaryClockWidget() {
+export const SalaryClockWidget = memo(function SalaryClockWidget() {
   const { salaryClockConfig, configureSalaryClock, stopSalaryClock } = usePsychStore();
   const { jobApplications } = useSovereignStore();
   const [currentCost, setCurrentCost] = useState(0);
@@ -173,4 +173,4 @@ export function SalaryClockWidget() {
       )}
     </div>
   );
-}
+});

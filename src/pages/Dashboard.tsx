@@ -52,12 +52,30 @@ export default function Dashboard() {
 
   const [quickQuest, setQuickQuest] = React.useState('');
 
-  const goldToday = activityLog
-    .filter(log => {
-      const today = new Date().toISOString().split('T')[0];
-      return log.timestamp.startsWith(today);
+  const heatmapEntries = React.useMemo(
+    () => activityLog.map(log => ({ timestamp: log.timestamp, xp: log.xp })),
+    [activityLog]
+  );
+
+  const statBarData = React.useMemo(() =>
+    Object.values(STATS).map(stat => {
+      const isSovereignty = stat.id === 'sovereignty';
+      const currentXP = isSovereignty
+        ? Object.values(statXP).reduce((a, b) => a + b, 0)
+        : (statXP[stat.id] || 0);
+      const currentLevel = isSovereignty
+        ? computeSovereigntyLevel(currentXP)
+        : (statLevels[stat.id] || 1);
+      return { stat, isSovereignty, currentXP, currentLevel };
     })
-    .reduce((sum, log) => sum + (log.xp / 10), 0);
+  , [statXP, statLevels]);
+
+  const goldToday = React.useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return activityLog
+      .filter(log => log.timestamp.startsWith(today))
+      .reduce((sum, log) => sum + (log.xp / 10), 0);
+  }, [activityLog]);
 
   const handleQuickAdd = (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,27 +192,17 @@ export default function Dashboard() {
             <div className="absolute inset-0 bg-noise opacity-5 pointer-events-none" />
             <h2 className="font-bold text-[10px] tracking-[0.2em] text-white/60 uppercase mb-2 relative z-10">Capabilities Progression</h2>
             <div className="space-y-4 relative z-10">
-              {Object.values(STATS).map(stat => {
-                const isSovereignty = stat.id === 'sovereignty';
-                const currentXP = isSovereignty
-                  ? Object.values(statXP).reduce((a, b) => a + b, 0)
-                  : (statXP[stat.id] || 0);
-                const currentLevel = isSovereignty
-                  ? computeSovereigntyLevel(currentXP)
-                  : (statLevels[stat.id] || 1);
-
-                return (
-                  <div key={stat.id} className={isSovereignty ? "border border-[var(--stat-brand)]/20 bg-[var(--stat-brand)]/5 p-2 rounded-xl" : ""}>
-                    <XPBar
-                      statId={stat.id}
-                      name={stat.name}
-                      level={currentLevel}
-                      xp={currentXP}
-                      color={stat.colorVar}
-                    />
-                  </div>
-                );
-              })}
+              {statBarData.map(({ stat, isSovereignty, currentXP, currentLevel }) => (
+                <div key={stat.id} className={isSovereignty ? "border border-[var(--stat-brand)]/20 bg-[var(--stat-brand)]/5 p-2 rounded-xl" : ""}>
+                  <XPBar
+                    statId={stat.id}
+                    name={stat.name}
+                    level={currentLevel}
+                    xp={currentXP}
+                    color={stat.colorVar}
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -383,7 +391,7 @@ export default function Dashboard() {
           <HonestSentence />
 
           <div className="w-full">
-            <InteractiveHeatmap entries={activityLog.map(log => ({ timestamp: log.timestamp, xp: log.xp }))} />
+            <InteractiveHeatmap entries={heatmapEntries} />
           </div>
         </div>
 
@@ -424,7 +432,7 @@ export default function Dashboard() {
   );
 }
 
-function BioSync() {
+const BioSync = React.memo(function BioSync() {
   const { moodHistory, addMoodEntry } = useSovereignStore();
   const todayEntry = moodHistory.find(m => new Date(m.date).toDateString() === new Date().toDateString());
 
@@ -525,9 +533,9 @@ function BioSync() {
       </div>
     </div>
   );
-}
+});
 
-function FocusTimer() {
+const FocusTimer = React.memo(function FocusTimer() {
   const { logActivity } = useSovereignStore();
   const [minutes, setMinutes] = React.useState(25);
   const [seconds, setSeconds] = React.useState(0);
@@ -626,4 +634,4 @@ function FocusTimer() {
       </div>
     </div>
   );
-}
+});

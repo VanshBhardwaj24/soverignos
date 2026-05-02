@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { xpForLevel, totalXPForSovereigntyLevel } from '../../lib/constants';
+import { memo } from 'react';
 
 interface XPBarProps {
   statId: string;
@@ -9,7 +10,7 @@ interface XPBarProps {
   color: string;
 }
 
-export function XPBar({ statId, name, level, xp, color }: XPBarProps) {
+export const XPBar = memo(function XPBar({ statId, name, level, xp, color }: XPBarProps) {
   const isSovereignty = statId === 'sovereignty';
 
   const currentLevelXP = isSovereignty ? totalXPForSovereigntyLevel(level) : xpForLevel(level);
@@ -55,4 +56,4 @@ export function XPBar({ statId, name, level, xp, color }: XPBarProps) {
       </div>
     </div>
   );
-}
+});

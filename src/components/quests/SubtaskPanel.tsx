@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, CheckSquare, Plus, Zap, AlertTriangle, ToggleLeft, ToggleRight, List } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -55,7 +55,7 @@ function distributeXP(subtasks: NonNullable<Quest['subtasks']>, parentXP: number
   });
 }
 
-export function SubtaskPanel({ quest, onUpdateNotes, onCompleteSubtask, isArchived }: SubtaskPanelProps) {
+export const SubtaskPanel = memo(function SubtaskPanel({ quest, onUpdateNotes, onCompleteSubtask, isArchived }: SubtaskPanelProps) {
   const [notes, setNotes] = useState(quest.notes || '');
   const subtasks = quest.subtasks || [];
   const subtasksEnabled = quest.subtasksEnabled ?? false;
@@ -73,9 +73,9 @@ export function SubtaskPanel({ quest, onUpdateNotes, onCompleteSubtask, isArchiv
     onUpdateNotes(notes, subtasks, !subtasksEnabled);
   };
 
-  const completedCount = subtasks.filter(st => st.completed).length;
-  const totalXPAllocated = subtasks.reduce((sum, st) => sum + (st.xpReward || 0), 0);
-  const totalPenalty = subtasks.reduce((sum, st) => sum + (st.penaltyXP || 0), 0);
+  const completedCount = useMemo(() => subtasks.filter(st => st.completed).length, [subtasks]);
+  const totalXPAllocated = useMemo(() => subtasks.reduce((sum, st) => sum + (st.xpReward || 0), 0), [subtasks]);
+  const totalPenalty = useMemo(() => subtasks.reduce((sum, st) => sum + (st.penaltyXP || 0), 0), [subtasks]);
 
   const addSubtask = () => {
     if (isArchived || subtasks.length >= 10) return;
@@ -317,4 +317,4 @@ export function SubtaskPanel({ quest, onUpdateNotes, onCompleteSubtask, isArchiv
       </div>
     </div>
   );
-}
+});

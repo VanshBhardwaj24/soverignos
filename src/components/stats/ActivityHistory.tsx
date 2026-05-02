@@ -2,10 +2,11 @@ import { useSovereignStore } from '../../store/sovereign';
 import { STATS } from '../../lib/constants';
 import { Zap, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
-export const ActivityHistory = () => {
+export const ActivityHistory = React.memo(() => {
   const activityLog = useSovereignStore(state => state.activityLog);
-  const recent = activityLog.slice(0, 15);
+  const recent = React.useMemo(() => activityLog.slice(0, 15), [activityLog]);
 
   if (recent.length === 0) {
     return (
@@ -68,4 +69,4 @@ export const ActivityHistory = () => {
       </div>
     </div>
   );
-};
+});

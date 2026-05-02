@@ -11,7 +11,7 @@ const EXAMPLE_SENTENCES = [
   'Solid day. Needs to happen 6 more times this week.',
 ];
 
-export function HonestSentence() {
+export const HonestSentence = React.memo(function HonestSentence() {
   const { dailySentences, addDailySentence } = usePsychStore();
   const [text, setText] = useState('');
   const [showHistory, setShowHistory] = useState(false);
@@ -141,4 +141,4 @@ export function HonestSentence() {
       </AnimatePresence>
     </div>
   );
-}
+});

@@ -139,6 +139,43 @@ export const SKILL_PERKS: Record<string, SkillPerk[]> = {
   ],
 };
 
+export const GOAL_TEMPLATES = [
+  {
+    id: 'leetcode_mastery',
+    title: 'LeetCode Elite',
+    type: 'monthly',
+    statId: 'code',
+    targetValue: 50,
+    unit: 'Problems',
+    icon: 'Activity',
+    xpReward: 500,
+    gcReward: 200
+  },
+  {
+    id: 'trading_consistency',
+    title: 'Trading discipline',
+    type: 'weekly',
+    statId: 'wealth',
+    targetValue: 5,
+    unit: 'Days',
+    icon: 'TrendingUp',
+    xpReward: 300,
+    gcReward: 150
+  },
+  {
+    id: 'gym_streak',
+    title: 'Physical dominance',
+    type: 'weekly',
+    statId: 'body',
+    targetValue: 4,
+    unit: 'Sessions',
+    icon: 'Flame',
+    xpReward: 250,
+    gcReward: 100
+  }
+];
+
+
 // F13: System Ranks based on Freedom Score
 export const SYSTEM_RANKS = [
   { min: 0, name: 'Rookie Initiate', color: '#888888', tier: 0 },
@@ -165,8 +202,9 @@ export function getSovereigntyRank(level: number) {
 }
 
 export function totalXPForSovereigntyLevel(level: number): number {
+  if (level <= 1) return 0;
   // Exponential curve: 93 * Level^1.2 hits ~2400 at level 15
-  return Math.floor(93 * Math.pow(level, 1.2));
+  return Math.floor(93 * Math.pow(level - 1, 1.2));
 }
 
 export function computeSovereigntyLevel(totalXP: number): number {
@@ -182,7 +220,8 @@ export function getRank(freedomScore: number) {
 }
 
 export function xpForLevel(level: number): number {
-  return Math.floor(100 * Math.pow(level, 1.5));
+  if (level <= 1) return 0;
+  return Math.floor(100 * Math.pow(level - 1, 1.5));
 }
 
 export function computeFreedomScore(stats: Record<string, number>): number {

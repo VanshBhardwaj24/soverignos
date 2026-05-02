@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { useSovereignStore } from '../../store/sovereign';
 import { Shield } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { getRank as getCentralizedRank } from '../../lib/constants';
 
-export function SystemRank() {
+export const SystemRank = memo(function SystemRank() {
   const freedomScore = useSovereignStore(state => state.freedomScore);
 
   const centralizedRank = getCentralizedRank(freedomScore);
@@ -31,4 +32,4 @@ export function SystemRank() {
       </div>
     </div>
   );
-}
+});

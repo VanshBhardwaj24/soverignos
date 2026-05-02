@@ -48,6 +48,46 @@ import {
 import type { NeuroState, NeuroContext } from '../lib/neuro-engine';
 
 
+export interface Goal {
+  id: string;
+  title: string;
+  description: string;
+  type: 'daily' | 'weekly' | 'monthly' | 'yearly' | 'life';
+  status: 'active' | 'completed' | 'expired';
+  progress: number;
+  deadline: string;
+  xpReward: number;
+  gcReward: number;
+  tags: string[];
+  statId: string;
+  parentGoalId?: string;
+  isAutoTracked?: boolean;
+  templateId?: string;
+  targetValue?: number;
+  createdAt: string;
+}
+
+export interface ContentPiece {
+  id: string;
+  title: string;
+  accountId: string;
+  status: 'idea' | 'research' | 'production' | 'refinement' | 'scheduled' | 'uploaded';
+  platform: string;
+  scheduledDate?: string;
+  isRepeating?: boolean;
+  notes?: string;
+  repeatConfig?: { frequency: string };
+  reminderEnabled?: boolean;
+  reminderOffset?: number;
+  assets?: string[];
+}
+
+export interface SocialAccount {
+  id: string;
+  platform: string;
+  handle: string;
+}
+
 export interface Quest {
   id: string;
   title: string;
@@ -429,6 +469,11 @@ interface SovereignStore {
   projections: { name: number, xp: number }[];
   blueprints: Recipe[];
 
+  goals: Goal[];
+  contentPieces: ContentPiece[];
+  socialAccounts: SocialAccount[];
+
+
   // F27: Marketplace & Economy
   inventory: string[];
   wishlist: string[];
@@ -596,6 +641,18 @@ interface SovereignStore {
 
   neuroState: NeuroState;
   tickNeurochemicals: () => void;
+
+  addGoal: (goal: Omit<Goal, 'id' | 'createdAt' | 'status'>) => Promise<void>;
+  updateGoal: (id: string, data: Partial<Goal>) => Promise<void>;
+  deleteGoal: (id: string) => Promise<void>;
+  completeGoal: (id: string) => Promise<void>;
+  syncAutoTrackedGoals: () => void;
+  checkGoalExpiries: () => void;
+
+  addContentPiece: (piece: Omit<ContentPiece, 'id'>) => Promise<void>;
+  updateContentPiece: (id: string, data: Partial<ContentPiece>) => Promise<void>;
+  deleteContentPiece: (id: string) => Promise<void>;
+  addSocialAccount: (acc: Omit<SocialAccount, 'id'>) => Promise<void>;
 }
 
 export const useSovereignStore = create<SovereignStore>()(
@@ -796,6 +853,22 @@ export const useSovereignStore = create<SovereignStore>()(
       unlockedSkills: [],
       integrity: 100,
       consecutiveDaysFailed: 0,
+      goals: [],
+      contentPieces: [],
+      socialAccounts: [],
+
+      addGoal: async () => {},
+      updateGoal: async () => {},
+      deleteGoal: async () => {},
+      completeGoal: async () => {},
+      syncAutoTrackedGoals: () => {},
+      checkGoalExpiries: () => {},
+
+      addContentPiece: async () => {},
+      updateContentPiece: async () => {},
+      deleteContentPiece: async () => {},
+      addSocialAccount: async () => {},
+
       streaks: {
         code: { current: 0, longest: 0 },
         wealth: { current: 0, longest: 0 },
@@ -1783,8 +1856,7 @@ export const useSovereignStore = create<SovereignStore>()(
           const newTodayXP = (state.statTodayXP[statId] || 0) + boostedXP;
 
           let level = 1;
-          while (xpForLevel(level) <= newXP) { level++; }
-          level = Math.max(1, level - 1);
+          while (xpForLevel(level + 1) <= newXP) { level++; }
 
           const oldLevel = state.statLevels[statId] || 1;
           let levelUpData = state.lastLeveledStat;

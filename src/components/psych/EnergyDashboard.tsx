@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Zap, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { usePsychStore } from '../../store/sovereign-psych';
@@ -51,7 +51,7 @@ function computeCorrelations(energyLogs: { date: string; level: number }[]): Cor
   return results.filter(r => Math.abs(r.delta) > 0.1);
 }
 
-export function EnergyDashboard() {
+export const EnergyDashboard = memo(function EnergyDashboard() {
   const { energyLogs, logEnergy, getTodayEnergy } = usePsychStore();
   // const { moodHistory } = useSovereignStore();
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
@@ -59,12 +59,12 @@ export function EnergyDashboard() {
   const todayEnergy = getTodayEnergy();
   const today = new Date().toISOString().split('T')[0];
 
-  const last60 = energyLogs.slice(0, 60).reverse();
-  const correlations = computeCorrelations(energyLogs);
+  const last60 = useMemo(() => energyLogs.slice(0, 60).reverse(), [energyLogs]);
+  const correlations = useMemo(() => computeCorrelations(energyLogs), [energyLogs]);
 
   // 7-day average
-  const last7 = energyLogs.slice(0, 7);
-  const avg7 = last7.length > 0 ? (last7.reduce((s, e) => s + e.level, 0) / last7.length).toFixed(1) : '—';
+  const last7 = useMemo(() => energyLogs.slice(0, 7), [energyLogs]);
+  const avg7 = useMemo(() => last7.length > 0 ? (last7.reduce((s, e) => s + e.level, 0) / last7.length).toFixed(1) : '—', [last7]);
 
   return (
     <div className="p-5 rounded-[24px] border border-white/[0.06] bg-white/[0.02] space-y-5">
@@ -187,4 +187,4 @@ export function EnergyDashboard() {
       )}
     </div>
   );
-}
+});

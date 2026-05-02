@@ -15,6 +15,8 @@ import Analytics from './pages/Analytics';
 import Intelligence from './pages/Intelligence';
 import SundayProtocol from './pages/SundayProtocol';
 import Profile from './pages/Profile';
+import Goals from './pages/Goals';
+import Brand from './pages/Brand';
 import { useEffect } from 'react';
 import { AuthOverlay } from './components/auth/AuthOverlay';
 import { Toaster, toast } from 'sonner';
@@ -71,6 +73,8 @@ function App() {
             <Route path="/sunday" element={<SundayProtocol />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/goals" element={<Goals />} />
+            <Route path="/brand" element={<Brand />} />
             <Route path="*" element={<Dashboard />} />
           </Route>
         </Routes>
