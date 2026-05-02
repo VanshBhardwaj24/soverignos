@@ -1,5 +1,5 @@
 import { useSovereignStore } from '../../store/sovereign';
-import { Bell, Plus, User, Moon, Sun, ShoppingBag, Award, Target } from 'lucide-react';
+import { Bell, Plus, User, Moon, Sun, ShoppingBag, Target, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
@@ -8,7 +8,7 @@ export const Header = () => {
   const {
     freedomScore, setQuestModalOpen, theme, setTheme,
     toggleNotifications, notifications, gold, statTodayXP, dailyGoalXP,
-    alias,
+    alias, setCommandPaletteOpen,
   } = useSovereignStore();
 
   const getGreeting = () => {
@@ -64,25 +64,58 @@ export const Header = () => {
 
         <div className="hidden lg:flex flex-col items-center gap-1.5 pl-8 border-l border-[var(--border-default)]">
           <div className="flex items-center justify-between w-32 font-mono text-[9px] text-[var(--text-muted)] uppercase tracking-wider">
-            <span>Daily Goal</span>
-            <span className={cn(totalTodayXP >= dailyGoalXP ? "text-[var(--success)] font-bold" : "")}>
+            <span className="opacity-100">Daily Goal</span>
+            <span className={cn(
+              "font-bold transition-all duration-500",
+              totalTodayXP >= dailyGoalXP ? "text-[#00FFA3] drop-shadow-glow" : "text-white/80"
+            )}>
               {totalTodayXP} / {dailyGoalXP}
             </span>
           </div>
-          <div className="w-32 h-1 bg-[var(--xp-bar-track)] rounded-full overflow-hidden">
+          <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden relative group">
+            {/* Background shimmer */}
+            <motion.div
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent z-0"
+            />
+
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${goalProgress}%` }}
+              animate={{
+                width: `${goalProgress}%`,
+                boxShadow: totalTodayXP >= dailyGoalXP ? '0 0 12px #00FFA3' : '0 0 8px rgba(255,255,255,0.1)'
+              }}
+              transition={{ type: 'spring', stiffness: 50, damping: 20 }}
               className={cn(
-                "h-full transition-colors",
-                totalTodayXP >= dailyGoalXP ? "bg-[var(--success)]" : "bg-[var(--text-primary)]/40"
+                "h-full relative z-10 rounded-full transition-colors duration-500",
+                totalTodayXP >= dailyGoalXP
+                  ? "bg-[#00FFA3] shadow-[0_0_15px_#00FFA3]"
+                  : "bg-gradient-to-r from-white/40 to-white/60"
               )}
-            />
+            >
+              {/* Active filling pulse */}
+              {totalTodayXP < dailyGoalXP && totalTodayXP > 0 && (
+                <motion.div
+                  animate={{ opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute inset-0 bg-white/30 rounded-full"
+                />
+              )}
+            </motion.div>
           </div>
         </div>
       </div>
 
       <div className="flex-1 flex items-center justify-end gap-3 md:gap-4">
+        <button
+          onClick={() => setCommandPaletteOpen(true)}
+          className="text-[var(--text-secondary)] hover:text-white transition-all p-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)]/20 rounded-lg group relative"
+          title="Search (⌘K)"
+        >
+          <Search size={18} className="group-hover:text-[#00FFA3] group-hover:drop-shadow-[0_0_8px_#00FFA3] transition-all" />
+        </button>
+
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
@@ -99,7 +132,7 @@ export const Header = () => {
           <Target size={16} /> MISSION <kbd className="hidden lg:inline px-1 py-0.5 bg-black/10 dark:bg-white/10 rounded ml-2 text-xs">M</kbd>
         </button>
 
-        <button
+        {/* <button
           onClick={() => navigate('/mind?tab=nexus')}
           className={cn(
             "p-2 rounded-full transition-all group",
@@ -108,7 +141,7 @@ export const Header = () => {
           title="Sovereign Evolution"
         >
           <Award size={18} className="group-hover:scale-110 transition-transform" />
-        </button>
+        </button> */}
 
         <button
           onClick={() => navigate('/marketplace')}
@@ -118,7 +151,7 @@ export const Header = () => {
           )}
         >
           <ShoppingBag size={16} />
-          <span className="font-bold text-[10px] font-black">{gold} GC</span>
+          <span className="font-bold text-[10px] font-black text-gold">{gold} GC</span>
         </button>
 
         <button

@@ -1,11 +1,30 @@
 import { motion } from 'framer-motion';
 import { Activity } from 'lucide-react';
 import { useSovereignStore } from '../../store/sovereign';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 export const StabilityMeter = memo(function StabilityMeter() {
-  const { integrity } = useSovereignStore();
+  const { integrity, activityLog } = useSovereignStore();
   const stability = integrity || 85.4;
+
+  const historyData = useMemo(() => {
+    const days = 7;
+    const data = Array(days).fill(0);
+    const now = new Date();
+    
+    activityLog.forEach(log => {
+      const logDate = new Date(log.timestamp);
+      const diffTime = now.getTime() - logDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays >= 0 && diffDays < days) {
+        data[(days - 1) - diffDays] += log.xp;
+      }
+    });
+
+    const maxXP = Math.max(...data, 100);
+    return data.map(xp => Math.max(10, (xp / maxXP) * 100));
+  }, [activityLog]);
 
   return (
     <div className="p-5 rounded-[24px] bg-white/[0.02] border border-white/5 flex flex-col gap-4 shadow-lg relative overflow-hidden group">
@@ -34,7 +53,7 @@ export const StabilityMeter = memo(function StabilityMeter() {
           <div className="absolute left-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-white animate-pulse" />
         </motion.div>
 
-        {[40, 60, 45, 80, 70, 90, 85].map((val, i) => (
+        {historyData.map((val, i) => (
           <motion.div
             key={i}
             initial={{ height: 0 }}

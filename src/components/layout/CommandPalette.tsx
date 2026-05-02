@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSovereignStore } from '../../store/sovereign';
 
 export const CommandPalette = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useSovereignStore(state => state.commandPaletteOpen);
+  const setIsOpen = useSovereignStore(state => state.setCommandPaletteOpen);
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
   const setLogModalOpen = useSovereignStore(state => state.setLogModalOpen);
@@ -14,14 +15,14 @@ export const CommandPalette = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        setIsOpen((open) => !open);
+        setIsOpen(!isOpen);
       }
       if (e.key === 'Escape') setIsOpen(false);
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isOpen, setIsOpen]);
 
   const commands = [
     { id: 'log', name: 'Log Activity', icon: Terminal, action: () => setLogModalOpen(true) },
@@ -45,12 +46,12 @@ export const CommandPalette = () => {
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => setIsOpen(false)}
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200]"
           />
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -59,7 +60,7 @@ export const CommandPalette = () => {
           >
             <div className="flex items-center px-4 border-b border-white/10">
               <Search size={20} className="text-gray-500" />
-              <input 
+              <input
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -68,7 +69,7 @@ export const CommandPalette = () => {
               />
               <kbd className="hidden md:inline font-bold text-[10px] text-gray-500 bg-white/5 px-2 py-1 rounded">ESC</kbd>
             </div>
-            
+
             <div className="max-h-80 overflow-y-auto p-2">
               {filteredCommands.length === 0 ? (
                 <div className="p-8 text-center text-gray-500 font-bold text-sm">NO COMMAND FOUND</div>

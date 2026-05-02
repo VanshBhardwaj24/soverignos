@@ -530,6 +530,8 @@ interface SovereignStore {
   dailyGoalXP: number;
   onboardingComplete: boolean;
   sidebarCollapsed: boolean;
+  commandPaletteOpen: boolean;
+  setCommandPaletteOpen: (open: boolean) => void;
 
   selectedStat: string | null;
   lastLeveledStat: { statId: string; oldLevel: number; newLevel: number } | null;
@@ -669,6 +671,14 @@ export const useSovereignStore = create<SovereignStore>()(
         const { user } = get();
         if (!user) return;
 
+        const getISTNow = () => {
+          const now = new Date();
+          const istOffset = 5.5 * 60 * 60 * 1000;
+          return new Date(now.getTime() + istOffset);
+        };
+        const istNow = getISTNow();
+        const today = `${istNow.getUTCFullYear()}-${String(istNow.getUTCMonth() + 1).padStart(2, '0')}-${String(istNow.getUTCDate()).padStart(2, '0')}`;
+
         const { data: txs } = await supabase.from('transactions').select('*').eq('user_id', user.id);
         if (txs) {
           set({
@@ -802,16 +812,36 @@ export const useSovereignStore = create<SovereignStore>()(
             lastDailyReset: stats.last_daily_reset || get().lastDailyReset,
             lastWeeklyReset: stats.last_weekly_reset || get().lastWeeklyReset
           });
+
+          // F-SYNC: Recover Today's XP from Activity Log
+          try {
+            // Simplified: Fetch all logs from the last 24h and filter for IST "today"
+            const { data: recentLogs } = await supabase
+              .from('activity_log')
+              .select('*')
+              .eq('user_id', user.id)
+              .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+            if (recentLogs) {
+              const recoveredTodayXP: Record<string, number> = { code: 0, wealth: 0, body: 0, mind: 0, brand: 0, network: 0, spirit: 0, create: 0 };
+              
+              recentLogs.forEach(log => {
+                const logDate = new Date(log.created_at).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }).split(',')[0];
+                const istTodayStr = istNow.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }).split(',')[0];
+                
+                if (logDate === istTodayStr) {
+                  recoveredTodayXP[log.stat_id] = (recoveredTodayXP[log.stat_id] || 0) + (log.xp || 0);
+                }
+              });
+              
+              set({ statTodayXP: recoveredTodayXP });
+            }
+          } catch (err) {
+            console.warn('[SYNC_ERROR] Failed to recover Today XP:', err);
+          }
+
           get().recomputeFreedom();
         }
-
-        const getISTNow = () => {
-          const now = new Date();
-          const istOffset = 5.5 * 60 * 60 * 1000;
-          return new Date(now.getTime() + istOffset);
-        };
-        const istNow = getISTNow();
-        const today = `${istNow.getUTCFullYear()}-${String(istNow.getUTCMonth() + 1).padStart(2, '0')}-${String(istNow.getUTCDate()).padStart(2, '0')}`;
 
         // Hardened Reset Guard: Check BOTH local state and DB state
         const lastResetFromDB = stats?.last_daily_reset;
@@ -1019,6 +1049,8 @@ export const useSovereignStore = create<SovereignStore>()(
       dailyGoalXP: 200,
       onboardingComplete: false,
       sidebarCollapsed: false,
+      commandPaletteOpen: false,
+      setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
 
       selectedStat: null,
       lastLeveledStat: null,
